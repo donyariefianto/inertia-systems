@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Theme initialization - prevents flash -->
+  <script>
+    (function() {
+      try {
+        const stored = localStorage.getItem('theme-state');
+        if (stored) {
+          const state = JSON.parse(stored);
+          const root = document.documentElement;
+          
+          // Apply dark mode class
+          if (state.mode === 'dark') {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
+          
+          // Apply color theme class
+          if (state.colorTheme && state.colorTheme !== 'default') {
+            root.classList.add(`theme-${state.colorTheme}`);
+          }
+        } else {
+          // Fallback to system preference
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (prefersDark) {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      } catch (e) {
+        console.error('Theme initialization failed:', e);
+      }
+    })();
+  </script>
+    @vite(['inertia/app/app.ts', `inertia/pages/${page.component}.svelte`])
+    @inertiaHead()
+    @stack('dumper')
+  </head>
+
+  <body class="min-h-screen w-screen font-sans">
+    @inertia()
+  </body>
+
+</html>
