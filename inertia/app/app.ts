@@ -1,5 +1,5 @@
 import '../css/app.css'
-
+import '@fortawesome/fontawesome-free/css/all.css';
 import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { hydrate, mount } from 'svelte'

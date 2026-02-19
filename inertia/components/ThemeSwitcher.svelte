@@ -4,21 +4,28 @@
 
 <div class="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border border-border bg-card p-2 shadow-lg">
   <button 
+    type="button"
     onclick={toggleDarkMode}
-    class="rounded-full p-2 text-foreground hover:bg-muted transition"
+    class="rounded-full p-2 text-foreground hover:bg-muted transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     title="Toggle Dark Mode"
   >
-    {#if themeState.mode === 'dark'} 🌙 {:else} ☀️ {/if}
+    <i class="fas {themeState.mode === 'dark' ? 'fa-moon text-primary' : 'fa-sun text-warning'} text-lg"></i>
   </button>
 
   <div class="h-4 w-px bg-border"></div>
 
   <div class="flex gap-1">
-    <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button onclick={() => setThemeColor('default')} class="h-4 w-4 rounded-full bg-blue-600 ring-2 ring-offset-1 ring-offset-card hover:scale-110 transition {themeState.color === 'default' ? 'ring-foreground' : 'ring-transparent'}"></button>
-    <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button onclick={() => setThemeColor('theme-forest')} class="h-4 w-4 rounded-full bg-green-700 ring-2 ring-offset-1 ring-offset-card hover:scale-110 transition {themeState.color === 'theme-forest' ? 'ring-foreground' : 'ring-transparent'}"></button>
-    <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button onclick={() => setThemeColor('theme-ocean')} class="h-4 w-4 rounded-full bg-cyan-700 ring-2 ring-offset-1 ring-offset-card hover:scale-110 transition {themeState.color === 'theme-ocean' ? 'ring-foreground' : 'ring-transparent'}"></button>
+    <button 
+      type="button" 
+      aria-label="Default Theme"
+      onclick={() => setThemeColor('default')} 
+      class="h-5 w-5 rounded-full bg-zinc-600 ring-2 ring-offset-1 ring-offset-card hover:scale-110 transition {themeState.colorTheme === 'default' ? 'ring-foreground' : 'ring-transparent'}">
+    </button>
+    <button 
+      type="button" 
+      aria-label="Forest Theme"
+      onclick={() => setThemeColor('forest')} 
+      class="h-5 w-5 rounded-full bg-emerald-700 ring-2 ring-offset-1 ring-offset-card hover:scale-110 transition {themeState.colorTheme === 'forest' ? 'ring-foreground' : 'ring-transparent'}">
+    </button>
   </div>
 </div>

@@ -19,6 +19,7 @@ router.delete('/logout', '#controllers/backends_controller.logout')
 router
   .group(() => {
     router.get('/', '#controllers/frontends_controller.home')
+    router.get('/*', '#controllers/backends_controller.navigation')
   })
   .use(middleware.auth())
   .prefix('systems')

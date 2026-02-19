@@ -10,49 +10,46 @@
 </script>
 
 <MainLayout>
-  <div class="flex min-h-screen">
-    
-    <aside class="hidden w-64 border-r border-border bg-card p-6 md:block">
-      <div class="mb-8 text-xl font-bold text-primary">EnterpriseApp</div>
-      <nav class="space-y-2">
-        <!-- svelte-ignore a11y_invalid_attribute -->
-        <a href="#" class="block rounded-md bg-primary/10 px-4 py-2 text-sm font-medium text-primary">Dashboard</a>
-        <!-- svelte-ignore a11y_invalid_attribute -->
-        <a href="#" class="block rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">Settings</a>
-        <!-- svelte-ignore a11y_invalid_attribute -->
-        <a href="#" class="block rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">Users</a>
-      </nav>
-    </aside>
+  <div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Dashboard Operasional</h1>
+      <p class="mt-2 text-sm text-muted-foreground">Pantau metrik utama dan kinerja sistem.</p>
+    </div>
+    <button 
+      type="button"
+      onclick={logout} 
+      class="inline-flex items-center justify-center rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+    >
+      <i class="fas fa-sign-out-alt mr-2"></i> Keluar
+    </button>
+  </div>
 
-    <div class="flex-1 bg-background">
-      <header class="flex h-16 items-center justify-between border-b border-border px-6">
-        <h1 class="text-lg font-semibold text-foreground">Dashboard</h1>
-        <button 
-          onclick={logout} 
-          class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
-        >
-          Logout
-        </button>
-      </header>
-
-      <div class="p-6">
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {#each ['Total Revenue', 'Active Users', 'Server Load'] as item}
-            <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 class="text-sm font-medium text-muted-foreground">{item}</h3>
-              <div class="mt-2 text-3xl font-bold text-foreground">
-                {item === 'Total Revenue' ? '$45,231.89' : item === 'Active Users' ? '+2350' : '34%'}
-              </div>
-            </div>
-          {/each}
-        </div>
-
-        <div class="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h2 class="text-lg font-medium text-foreground">Recent Activity</h2>
-          <div class="mt-4 h-48 rounded-lg border border-dashed border-border bg-muted/50 flex items-center justify-center text-muted-foreground">
-            Chart Placeholder
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {#each [
+      { label: 'Total Revenue', value: '$45,231.89', icon: 'fa-wallet', color: 'text-success' },
+      { label: 'Active Users', value: '+2,350', icon: 'fa-users', color: 'text-primary' },
+      { label: 'Server Load', value: '34%', icon: 'fa-server', color: 'text-warning' }
+    ] as item}
+      <div class="rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-sm font-medium text-muted-foreground">{item.label}</h3>
+            <div class="mt-2 text-3xl font-bold text-foreground">{item.value}</div>
+          </div>
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 {item.color}">
+            <i class="fas {item.icon} text-xl"></i>
           </div>
         </div>
+      </div>
+    {/each}
+  </div>
+
+  <div class="mt-8 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <h2 class="mb-4 text-lg font-semibold text-foreground">Aktivitas Terkini</h2>
+    <div class="flex h-72 items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 text-muted-foreground">
+      <div class="text-center">
+        <i class="fas fa-chart-area mb-3 text-5xl opacity-40"></i>
+        <p class="text-sm">Modul ECharts siap diintegrasikan di sini.</p>
       </div>
     </div>
   </div>

@@ -1,47 +1,42 @@
-// State global menggunakan Svelte 5 Runes
 export const themeState = $state({
-  mode: 'light', // 'light' | 'dark'
-  color: 'default', // 'default' | 'theme-forest' | 'theme-ocean'
-})
+  mode: 'light',
+  colorTheme: 'default'
+});
 
 export function initTheme() {
-  // Load dari localStorage jika ada
-  const savedMode = localStorage.getItem('app-mode')
-  const savedColor = localStorage.getItem('app-theme')
-
-  if (savedMode) themeState.mode = savedMode
-  if (savedColor) themeState.color = savedColor
-
-  applyTheme()
+  if (typeof window === 'undefined') return;
+  const stored = localStorage.getItem('theme-state');
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    themeState.mode = parsed.mode || 'light';
+    themeState.colorTheme = parsed.colorTheme || 'default';
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    themeState.mode = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme();
 }
 
 export function toggleDarkMode() {
-  themeState.mode = themeState.mode === 'dark' ? 'light' : 'dark'
-  applyTheme()
+  themeState.mode = themeState.mode === 'dark' ? 'light' : 'dark';
+  applyTheme();
 }
 
-export function setThemeColor(colorName) {
-  themeState.color = colorName
-  applyTheme()
+export function setThemeColor(colorTheme: string) {
+  themeState.colorTheme = colorTheme;
+  applyTheme();
 }
 
 function applyTheme() {
-  const root = document.documentElement
-
-  // Reset classes
-  root.classList.remove('dark', 'theme-forest', 'theme-ocean')
-
-  // Apply Dark Mode
-  if (themeState.mode === 'dark') {
-    root.classList.add('dark')
+  if (typeof window === 'undefined') return;
+  const root = document.documentElement;
+  
+  root.classList.toggle('dark', themeState.mode === 'dark');
+  
+  root.className = root.className.replace(/\btheme-\S+/g, '');
+  if (themeState.colorTheme !== 'default') {
+    root.classList.add(`theme-${themeState.colorTheme}`);
   }
-
-  // Apply Color Theme
-  if (themeState.color !== 'default') {
-    root.classList.add(themeState.color)
-  }
-
-  // Save preferences
-  localStorage.setItem('app-mode', themeState.mode)
-  localStorage.setItem('app-theme', themeState.color)
+  
+  localStorage.setItem('theme-state', JSON.stringify({ mode: themeState.mode, colorTheme: themeState.colorTheme }));
 }
