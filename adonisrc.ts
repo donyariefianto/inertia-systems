@@ -25,7 +25,7 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands')],
+  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/cache/commands')],
 
   /*
   |--------------------------------------------------------------------------
@@ -53,6 +53,8 @@ export default defineConfig({
     () => import('@adonisjs/inertia/inertia_provider'),
     () => import('#providers/app_provider'),
     () => import('@adonisjs/i18n/i18n_provider'),
+    () => import('@adonisjs/cache/cache_provider'),
+    () => import('@adonisjs/redis/redis_provider'),
   ],
 
   /*
