@@ -12,10 +12,10 @@ export const splashConfig = writable<{
 })
 
 if (typeof window !== 'undefined') {
-  splashConfig.subscribe(config => {
+  splashConfig.subscribe((config) => {
     if (config.visible) {
       setTimeout(() => {
-        splashConfig.update(c => ({ ...c, visible: false }))
+        splashConfig.update((c) => ({ ...c, visible: false }))
       }, config.duration)
     }
   })

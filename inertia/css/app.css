@@ -1,7 +1,7 @@
 /* ==========================================================================
    Tailwind CSS v4 - Impor Dasar
    ========================================================================== */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ==========================================================================
    Konfigurasi Varian Kustom
@@ -291,7 +291,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

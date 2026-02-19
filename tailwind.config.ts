@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class', // penting agar class dark diaktifkan
-  content: [
-    './resources/views/**/*.edge',
-    './inertia/**/*.{js,ts,svelte}',
-  ],
+  content: ['./resources/views/**/*.edge', './inertia/**/*.{js,ts,svelte}'],
   theme: {
     extend: {
       colors: {

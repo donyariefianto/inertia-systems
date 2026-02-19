@@ -17,7 +17,7 @@ function applyTheme(state: ThemeState) {
   root.classList.toggle('dark', state.mode === 'dark')
 
   // Hapus semua class tema lama (yang dimulai dengan theme-)
-  Array.from(root.classList).forEach(cls => {
+  Array.from(root.classList).forEach((cls) => {
     if (cls.startsWith('theme-')) root.classList.remove(cls)
   })
 
@@ -54,7 +54,7 @@ export const themeState = writable<ThemeState>(initialState)
 
 // Terapkan tema saat store berubah (hanya di browser)
 if (typeof window !== 'undefined') {
-  themeState.subscribe(state => {
+  themeState.subscribe((state) => {
     localStorage.setItem('theme-state', JSON.stringify(state))
     applyTheme(state)
   })
@@ -62,15 +62,15 @@ if (typeof window !== 'undefined') {
 
 // Action functions
 export const setMode = (mode: ThemeMode) => {
-  themeState.update(state => ({ ...state, mode }))
+  themeState.update((state) => ({ ...state, mode }))
 }
 
 export const setColorTheme = (colorTheme: ColorTheme) => {
-  themeState.update(state => ({ ...state, colorTheme }))
+  themeState.update((state) => ({ ...state, colorTheme }))
 }
 
 export const toggleMode = () => {
-  themeState.update(state => ({
+  themeState.update((state) => ({
     ...state,
     mode: state.mode === 'light' ? 'dark' : 'light',
   }))
