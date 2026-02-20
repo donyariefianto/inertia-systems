@@ -72,6 +72,7 @@
     "@noble/hashes": "^2.0.1",
     "@tailwindcss/vite": "^4.1.18",
     "@vinejs/vine": "^3.0.1",
+    "drawflow": "^0.0.60",
     "edge.js": "^6.2.1",
     "luxon": "^3.7.2",
     "mongodb": "^7.1.0",
