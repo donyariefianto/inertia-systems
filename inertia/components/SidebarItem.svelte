@@ -1,95 +1,116 @@
 <script>
-  import { Link, page } from '@inertiajs/svelte';
-  import SidebarItem from './SidebarItem.svelte'; // Pengganti svelte:self untuk Svelte 5
+  import { Link, page } from '@inertiajs/svelte'
+  import SidebarItem from './SidebarItem.svelte'
+  import { slide } from 'svelte/transition'
 
-  let { item, depth = 0 } = $props();
-  let isOpen = $state(false);
+  let { item, depth = 0, isCollapsed = false } = $props()
+  let isOpen = $state(false)
 
-  // 1. PATH NORMALIZATION: Pastikan selalu berawalan /systems/ jika tidak ada
+  // 1. NORMALISASI PATH SECARA PRESISI
   const safePath = $derived.by(() => {
-    if (!item.path) return null;
-    const cleanPath = item.path.replace(/^\//, ''); // Hapus slash di depan
-    return cleanPath.startsWith('systems/') ? `/${cleanPath}` : `/systems/${cleanPath}`;
-  });
+    if (!item.path) return null
+    const cleanPath = item.path.replace(/^\//, '')
+    return cleanPath.startsWith('systems/') ? `/${cleanPath}` : `/systems/${cleanPath}`
+  })
 
-  // 2. PRECISION ACTIVE MATCHING
+  // 2. DETEKSI STATUS AKTIF (SUPPORT PARENT/CHILD)
   const isActive = $derived.by(() => {
-    const currentUrl = $page.url.split('?')[0]; // Abaikan query parameter
-    if (safePath === currentUrl) return true;
-    
+    const currentUrl = $page.url.split('?')[0]
+    if (safePath === currentUrl) return true
+
     if (item.sub_sidemenu && item.sub_sidemenu.length > 0) {
-      return item.sub_sidemenu.some(sub => {
-        const subClean = sub.path?.replace(/^\//, '');
-        const subPath = subClean.startsWith('systems/') ? `/${subClean}` : `/systems/${subClean}`;
-        return currentUrl.startsWith(subPath);
-      });
+      return item.sub_sidemenu.some((sub) => {
+        const subClean = sub.path?.replace(/^\//, '')
+        const subPath = subClean.startsWith('systems/') ? `/${subClean}` : `/systems/${subClean}`
+        return currentUrl.startsWith(subPath)
+      })
     }
-    return false;
-  });
+    return false
+  })
 
-  // 3. ENTERPRISE TYPE BADGES
-  const typeBadge = $derived.by(() => {
-    if (!item.type) return null;
-    switch(item.type.toLowerCase()) {
-      case 'chartview': return { label: 'CHART', class: 'bg-blue-500/10 text-blue-500 border-blue-500/20' };
-      case 'tableview': return { label: 'TABLE', class: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' };
-      case 'settings': return { label: 'CONFIG', class: 'bg-amber-500/10 text-amber-500 border-amber-500/20' };
-      default: return null;
-    }
-  });
-
-  // 4. AUTO-EXPAND BEHAVIOR
+  // 3. AUTO-EXPAND JIKA CHILD AKTIF
   $effect(() => {
-    if (isActive && item.sub_sidemenu && !isOpen) {
-      isOpen = true;
-    }
-  });
-
-  const indent = $derived(`${1 + depth * 0.75}rem`);
+    if (isActive && item.sub_sidemenu) isOpen = true
+  })
 </script>
 
-<div class="w-full mb-0.5">
+<div class="relative w-full">
   {#if item.sub_sidemenu && item.sub_sidemenu.length > 0}
     <button
       type="button"
-      aria-expanded={isOpen}
-      onclick={() => (isOpen = !isOpen)}
-      class="group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
-             {isActive || isOpen ? 'bg-primary/10 text-primary font-bold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
-      style="padding-left: {indent}"
+      onclick={() => !isCollapsed && (isOpen = !isOpen)}
+      class="group relative flex h-10 w-full items-center rounded-xl transition-all duration-200 outline-none
+             {isActive
+        ? 'bg-primary/5 text-primary shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]'
+        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+      title={isCollapsed ? item.name : ''}
     >
-      <div class="flex items-center gap-3">
-        <i class="{item.icon || 'fas fa-folder'} w-5 text-center text-lg transition-transform duration-200 {isActive || isOpen ? 'scale-110' : ''}"></i>
-        <span class="tracking-wide">{item.name}</span>
+      {#if isActive && !isCollapsed}
+        <div class="absolute -left-1.5 h-5 w-1 rounded-r-full bg-primary"></div>
+      {/if}
+
+      <div class="flex w-12 shrink-0 items-center justify-center">
+        <i
+          class="{item.icon ||
+            'fas fa-folder'} text-[15px] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {isActive
+            ? 'scale-110'
+            : 'group-hover:scale-110'}"
+        ></i>
       </div>
-      <i class="fas fa-chevron-right text-[10px] transition-transform duration-200 opacity-60 {isOpen ? 'rotate-90' : ''}"></i>
+
+      <div
+        class="flex flex-1 items-center justify-between pr-3 transition-opacity duration-300 {isCollapsed
+          ? 'opacity-0 pointer-events-none'
+          : 'opacity-100'}"
+      >
+        <span class="truncate text-[13px] font-semibold tracking-tight">{item.name}</span>
+        <i
+          class="fas fa-chevron-right text-[9px] opacity-40 transition-transform duration-300 {isOpen
+            ? 'rotate-90'
+            : ''}"
+        ></i>
+      </div>
     </button>
 
-    {#if isOpen}
-      <div class="mt-1 space-y-0.5 overflow-hidden animate-fade-in relative before:absolute before:left-4 before:top-0 before:h-full before:w-px before:bg-border/50">
+    {#if isOpen && !isCollapsed}
+      <div
+        class="mt-1 space-y-0.5 ml-5 pl-2.5 border-l-2 border-border/40 overflow-hidden"
+        transition:slide={{ duration: 250, axis: 'y' }}
+      >
         {#each item.sub_sidemenu as sub (sub.id)}
-          <SidebarItem item={sub} depth={depth + 1} />
+          <SidebarItem item={sub} depth={depth + 1} {isCollapsed} />
         {/each}
       </div>
     {/if}
-
   {:else if safePath}
     <Link
       href={safePath}
-      class="group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
-             {isActive ? 'bg-primary text-primary-foreground shadow-md font-bold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
-      style="padding-left: {indent}"
+      class="group relative flex h-10 w-full items-center rounded-xl transition-all duration-200 outline-none
+             {isActive
+        ? 'bg-primary/10 text-primary shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
+        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+      title={isCollapsed ? item.name : ''}
     >
-      <div class="flex items-center gap-3">
-        <i class="{item.icon || 'fas fa-circle text-[8px]'} w-5 text-center text-lg transition-transform duration-200 {isActive ? 'scale-110' : ''}"></i>
-        <span class="tracking-wide">{item.name}</span>
-      </div>
-      
-      {#if typeBadge}
-        <span class="text-[9px] px-1.5 py-0.5 rounded border font-black tracking-tighter transition-colors {typeBadge.class} {isActive ? 'bg-white/20 text-white border-white/40' : ''}">
-          {typeBadge.label}
-        </span>
+      {#if isActive && !isCollapsed}
+        <div class="absolute -left-1.5 h-6 w-1 rounded-r-full bg-primary"></div>
       {/if}
+
+      <div class="flex w-12 shrink-0 items-center justify-center">
+        <i
+          class="{item.icon ||
+            'fas fa-circle text-[6px]'} text-[15px] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {isActive
+            ? 'scale-110'
+            : 'group-hover:scale-110'}"
+        ></i>
+      </div>
+
+      <div
+        class="flex flex-1 items-center justify-between pr-3 transition-opacity duration-300 {isCollapsed
+          ? 'opacity-0 pointer-events-none'
+          : 'opacity-100'}"
+      >
+        <span class="truncate text-[13px] font-semibold tracking-tight">{item.name}</span>
+      </div>
     </Link>
   {/if}
 </div>
