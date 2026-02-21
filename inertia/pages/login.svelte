@@ -29,22 +29,19 @@
       <div
         class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-2xl font-bold backdrop-blur-sm shadow-inner"
       >
-        TB
+        A
       </div>
       <span class="text-2xl font-bold tracking-wide"
-        >Sahabat<span class="opacity-80">System</span></span
+        >AION<span class="opacity-80">System</span></span
       >
     </div>
 
     <div class="relative z-10 max-w-md">
-      <h2 class="text-3xl font-bold leading-tight">Sistem Manajemen Tersentralisasi</h2>
-      <p class="mt-4 text-lg opacity-80">
-        Pantau operasional, proyeksi, dan kinerja pabrik secara real-time dari satu tempat yang
-        aman.
-      </p>
+      <h2 class="text-3xl font-bold leading-tight">Next-Generation Autonomous Intelligence System</h2>
+      <p class="mt-4 text-lg opacity-80">A universal intelligence ecosystem that orchestrates data, predicts risks, and executes solutions autonomously. Built with cutting-edge technology to transcend traditional monitoring boundaries.</p>
     </div>
 
-    <div class="relative z-10 text-sm opacity-60">&copy; 2026 TB Sahabat. All rights reserved.</div>
+    <div class="relative z-10 text-sm opacity-60">&copy; 2026 AION. All rights reserved.</div>
   </div>
 
   <div class="flex w-full flex-col items-center justify-center p-8 lg:w-7/12">
@@ -53,9 +50,9 @@
         <div
           class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-sm"
         >
-          TB
+          A
         </div>
-        <span class="text-xl font-bold">Sahabat<span class="text-primary">System</span></span>
+        <span class="text-xl font-bold">AION<span class="text-primary">System</span></span>
       </div>
 
       <div>
@@ -82,7 +79,7 @@
             bind:value={$form.email}
             required
             class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-            placeholder="admin@sahabat.com"
+            placeholder="admin@aion.com"
           />
         </div>
 

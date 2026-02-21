@@ -111,7 +111,13 @@ export default class InertiaShareMiddleware {
                     name: 'app_name',
                     label: 'Nama Aplikasi',
                     type: 'text',
-                    default: 'TB Sahabat System',
+                    default: 'AION System',
+                  },
+                  {
+                    name: 'app_short_name',
+                    label: 'Nama Pendek Aplikasi',
+                    type: 'text',
+                    default: 'AION',
                   },
                   {
                     name: 'maintenance_mode',

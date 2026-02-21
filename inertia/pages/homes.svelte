@@ -47,7 +47,7 @@
         <h1 class="text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
           Portal <span
             class="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent"
-            >Sahabat</span
+            >AION</span
           >
         </h1>
         <p class="mt-1.5 flex items-center gap-2 text-sm text-muted-foreground">

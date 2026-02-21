@@ -17,7 +17,7 @@
       </div>
     </div>
     <h1 class="text-2xl font-bold tracking-tight text-foreground">
-      Sahabat<span class="text-primary">System</span>
+      AION<span class="text-primary">System</span>
     </h1>
     <p class="mt-2 text-sm text-muted-foreground animate-pulse">Memuat modul enterprise...</p>
   </div>

@@ -37,7 +37,7 @@
     {#if !isDesktopCollapsed}
       <div class="flex flex-col min-w-0" in:fade={{ duration: 200, delay: 100 }}>
         <span class="text-sm font-black tracking-tighter text-foreground uppercase truncate">
-          Sahabat <span class="text-primary">System</span>
+          AION <span class="text-primary">System</span>
         </span>
         <span
           class="text-[9px] font-bold text-muted-foreground leading-none tracking-[0.2em] uppercase truncate"
