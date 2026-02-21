@@ -340,22 +340,14 @@
     })
 
     editor.on('contextmenu', (e) => {
-      // 1. Cari elemen node terdekat dari target klik
       const nodeEl = e.target.closest('.drawflow-node')
       if (!nodeEl) return
-
-      // 2. Ekstrak ID (Drawflow menggunakan format "node-123")
       const id = nodeEl.id.replace('node-', '')
       const nodeInfo = editor.getNodeFromId(id)
 
       if (nodeInfo) {
         nodeEl.classList.add('selected')
-
-        // Sinkronkan ke state internal Drawflow agar shortcut (del, dll) sinkron
         editor.node_selected = nodeEl
-        // ----------------------------------------------------------
-
-        // Update State Svelte 5 Anda
         selectedNodeId = id
         selectedNodeData = $state.snapshot(nodeInfo.data || {})
         selectedNodeConfig = getNodeConfig(nodeInfo.name)
@@ -389,10 +381,7 @@
     try {
       const dataRaw = event.dataTransfer.getData('application/json')
       if (!dataRaw) return
-
       const node = JSON.parse(dataRaw)
-
-      // Kalkulasi Koordinat Presisi Drawflow
       const rect = document.getElementById('drawflow-canvas').getBoundingClientRect()
       const x =
         (event.clientX - rect.left) *
@@ -409,7 +398,7 @@
 
   function addNodeToCanvas(node, x, y) {
     const html = `
-        <div class="node-card w-[240px] rounded-xl border border-border bg-card shadow-xl overflow-hidden pointer-events-auto">
+      <div class="node-card w-[240px] rounded-xl border border-border bg-card shadow-xl overflow-hidden pointer-events-auto">
         <div class="px-4 py-2 flex items-center gap-2 border-b border-border ${node.headerColor || 'bg-muted/50'}">
             <i class="${node.icon} text-white text-[10px]"></i>
             <span class="text-[10px] font-black uppercase tracking-widest text-white truncate flex-1">${node.label}</span>
@@ -419,9 +408,8 @@
             ${node.desc}
             </p>
         </div>
-        </div>
+      </div>
     `
-
     editor.addNode(
       node.type,
       node.inputs ?? 1,
@@ -639,7 +627,7 @@
         title="Clear Canvas"
         disabled={isLocked}
       >
-        <i class="fas fa-trash-alt"></i>
+        <i class="fas fa-eraser"></i>
       </button>
       <button
         onclick={() => (isDrawerOpen = true)}
@@ -694,8 +682,8 @@
               Kelola otomasi sistem
             </p>
           </div>
-          <!-- svelte-ignore a11y_consider_explicit_label -->
           <button
+            aria-label="Rules"
             onclick={() => (isDrawerOpen = false)}
             class="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -749,54 +737,46 @@
     {/if}
   </main>
   {#if selectedNodeConfig}
-    <aside
-      transition:fly={{ x: 360, duration: 400, opacity: 1 }}
-      class="w-[360px] border-l border-border bg-card shadow-[-10px_0_30px_rgba(0,0,0,0.1)] z-50 flex flex-col shrink-0 overflow-hidden"
+    <button
+      class="absolute inset-0 bg-background/60 backdrop-blur-sm z-30"
+      in:fade={{ duration: 200 }}
+      out:fade={{ duration: 200 }}
+      onclick={() => (selectedNodeConfig = false)}
+      title="Properties"
     >
-      <div class="p-6 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-2">
-            <div
-              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-lg {selectedNodeConfig.headerColor} ring-4 ring-background"
+    </button>
+    <div
+      class="absolute right-0 top-0 bottom-0 w-[420px] border-l border-border bg-card shadow-2xl z-40 flex flex-col"
+      in:fly={{ x: 420, duration: 300, opacity: 1 }}
+      out:fly={{ x: 420, duration: 250, opacity: 1 }}
+    >
+      <div
+        class="flex items-center justify-between border-b border-border p-6 bg-card/90 backdrop-blur"
+      >
+        <div>
+          <h2 class="text-xl font-black text-foreground">{selectedNodeConfig.label}</h2>
+          <div class="flex items-center gap-2 mt-1">
+            <span
+              class="text-[9px] font-black uppercase tracking-tighter bg-muted px-1.5 py-0.5 rounded text-muted-foreground"
+              >ID: {selectedNodeId}</span
             >
-              <i class="{selectedNodeConfig.icon} text-xl"></i>
-            </div>
-            <div class="min-w-0">
-              <h2 class="text-sm font-black text-foreground truncate leading-tight">
-                {selectedNodeConfig.label}
-              </h2>
-              <div class="flex items-center gap-2 mt-1">
-                <span
-                  class="text-[9px] font-black uppercase tracking-tighter bg-muted px-1.5 py-0.5 rounded text-muted-foreground"
-                  >ID: {selectedNodeId}</span
-                >
-                <span class="h-1 w-1 rounded-full bg-border"></span>
-                <span class="text-[9px] font-bold text-primary uppercase tracking-widest"
-                  >{selectedNodeConfig.id}</span
-                >
-              </div>
-            </div>
+            <span class="h-1 w-1 rounded-full bg-border"></span>
+            <span class="text-[9px] font-bold text-primary uppercase tracking-widest"
+              >{selectedNodeConfig.id}</span
+            >
+            <span class="text-[9px] font-bold text-primary uppercase tracking-widest"
+              >{selectedNodeConfig.desc}</span
+            >
           </div>
-
-          <button
-            type="button"
-            onclick={closeProperties}
-            class="group flex h-8 w-8 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all active:scale-90"
-            title="Tutup Pengaturan"
-          >
-            <i class="fas fa-times text-xs transition-transform group-hover:rotate-90"></i>
-          </button>
         </div>
-
-        {#if selectedNodeConfig.desc}
-          <p
-            class="text-[11px] text-muted-foreground mt-5 leading-relaxed bg-muted/30 p-3 rounded-lg border border-border/40"
-          >
-            {selectedNodeConfig.desc}
-          </p>
-        {/if}
+        <button
+          aria-label="Rules"
+          onclick={closeProperties}
+          class="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-
       <div class="flex-1 overflow-y-auto p-6 space-y-7 custom-scrollbar">
         {#if selectedNodeConfig.fields && selectedNodeConfig.fields.length > 0}
           {#each selectedNodeConfig.fields as field}
@@ -897,7 +877,6 @@
           </div>
         {/if}
       </div>
-
       <div class="p-6 border-t border-border bg-card/80 backdrop-blur-md space-y-3">
         <button
           type="button"
@@ -908,7 +887,7 @@
           Delete Component
         </button>
       </div>
-    </aside>
+    </div>
   {/if}
 </div>
 

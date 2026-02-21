@@ -8,7 +8,6 @@
   import Sidebar from '~/components/Sidebar.svelte'
   import SplashScreen from '~/components/SplashScreen.svelte'
 
-  
   import TableView from '~/pages/generic/TableView.svelte'
   import ChartView from '~/pages/generic/ChartView.svelte'
   import SettingsView from '~/pages/generic/SettingsView.svelte'
@@ -16,8 +15,8 @@
   let { children } = $props()
   let isMobileOpen = $state(false)
   let isDesktopCollapsed = $state(false)
+  let isOrchestrating = $state(true)
 
-  
   const decryptedMenu = $derived.by(() => {
     const sidebarProp = $page.props.sidebar
     if (!sidebarProp?.nonce || !sidebarProp?.ciphertext) return null
@@ -31,15 +30,10 @@
     }
   })
 
-  
   const activeMenuItem = $derived.by(() => {
     if (!decryptedMenu?.sidemenu) return null
-
-    
     const rawUrl = $page.url.split('?')[0].replace(/^\//, '')
     const currentUrl = rawUrl.startsWith('systems/') ? rawUrl : `systems/${rawUrl}`
-
-    
     function findActive(items) {
       for (const item of items) {
         if (item.path) {
@@ -56,7 +50,6 @@
       }
       return null
     }
-
     return findActive(decryptedMenu.sidemenu)
   })
 
@@ -69,6 +62,12 @@
   $effect(() => {
     const _ = $page.url
     isMobileOpen = false
+    if (isOrchestrating) {
+      const timer = setTimeout(() => {
+        isOrchestrating = false
+      }, 1700)
+      return () => clearTimeout(timer)
+    }
   })
 </script>
 
@@ -94,8 +93,6 @@
       >
         <i class="fas fa-bars text-xl"></i>
       </button>
-
-      <!-- <div class="hidden lg:block"></div> -->
 
       <button
         type="button"
@@ -124,7 +121,11 @@
     </header>
 
     <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 animate-fade-in custom-scrollbar">
-      {#if activeMenuItem?.type}
+      {#if isOrchestrating && activeMenuItem?.type}
+        <div class="max-w-full overflow-hidden">
+          {@render children()}
+        </div>
+      {:else if activeMenuItem?.type}
         {#if activeMenuItem.type === 'tableview'}
           <TableView config={activeMenuItem.config} title={activeMenuItem.name} />
         {:else if activeMenuItem.type === 'chartview'}

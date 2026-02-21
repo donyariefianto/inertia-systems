@@ -1,34 +1,57 @@
 import { page } from '@inertiajs/svelte'
+import { get } from 'svelte/store'
 
-export const i18nState = $state({
-  locale: 'id',
-  dict: {} as Record<string, any>,
+export const i18nStates = $state({
+  get locale() {
+    return (get(page).props as any).locale || 'id'
+  },
+  get dict() {
+    return (get(page).props as any).translations || {}
+  },
 })
 
-/**
- * Inisialisasi/Update kamus bahasa dari props Inertia
- */
-export function updateTranslations() {
-  const props = page.props as any
-  if (props.translations) {
-    i18nState.locale = props.locale || 'id'
-    i18nState.dict = props.translations
+let _locale = $state('id')
+let _dict = $state<Record<string, any>>({})
+
+page.subscribe(($page) => {
+  if (!$page || !$page.props) {
+    return
   }
+  const props = $page.props as any
+  if (props.locale) {
+    _locale = props.locale
+  }
+  if (props.translations) {
+    _dict = props.translations
+  }
+})
+
+export function t(key: string, params: Record<string, any> = {}): any {
+  const dict = i18nState.dict
+  if (!dict) return key
+
+  let value = dict[key]
+  if (value === undefined) {
+    value = key.split('.').reduce((acc, part) => {
+      return acc && typeof acc === 'object' ? acc[part] : undefined
+    }, dict)
+  }
+  if (value === undefined || value === null) {
+    return key
+  }
+  if (typeof value === 'string') {
+    return value.replace(/{(\w+)}/g, (match, prop) => {
+      return params[prop] !== undefined ? String(params[prop]) : match
+    })
+  }
+  return value
 }
 
-/**
- * Fungsi $t (Translate) - Mendukung nested keys (e.g., 'auth.login')
- */
-export function t(key: string): string {
-  const keys = key.split('.')
-  let value = i18nState.dict
-
-  for (const k of keys) {
-    if (value && value[k]) {
-      value = value[k]
-    } else {
-      return key // Fallback ke key asli jika tidak ditemukan
-    }
-  }
-  return value as unknown as string
+export const i18nState = {
+  get locale() {
+    return _locale
+  },
+  get dict() {
+    return _dict
+  },
 }

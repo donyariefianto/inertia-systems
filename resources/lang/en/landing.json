@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "architecture": "Architecture",
+    "features": "Features",
+    "workflow": "Workflow",
+    "demo": "Request Demo"
+  },
+  "hero": {
+    "badge": "Next-Generation Autonomous Intelligence System",
+    "title": "Master Complexity with the",
+    "highlight": "AION Platform",
+    "desc": "A universal intelligence ecosystem that orchestrates data, predicts risks, and executes solutions autonomously. Built with cutting-edge technology to transcend traditional monitoring boundaries.",
+    "btn_primary": "Explore Architecture",
+    "btn_secondary": "Read Documentation"
+  },
+  "features": {
+    "title": "Beyond Traditional Monitoring",
+    "desc": "AION transforms raw data into measurable and automated actions.",
+    "agent_title": "Autonomous Decision Agent",
+    "agent_desc": "Beyond reporting anomalies, our system acts autonomously with one-click solution options.",
+    "view_title": "Dynamic View Builder",
+    "view_desc": "Design complex analytic dashboards through instantly rendered JSON configurations.",
+    "context_title": "Semantic Context Connector",
+    "context_desc": "Automatically link internal and external data to formulate predictive weights."
+  },
+  "pillars": {
+    "cat_core": "Core Operations",
+    "cat_framework": "Flexibility Framework",
+    "cat_ai": "Intelligent Autonomous",
+    "badge": "The Master Blueprint",
+    "title": "12-Pillar Architecture",
+    "desc": "A solid foundation for enterprise-scale autonomous system intelligence.",
+    "items": {
+      "master_state": {
+        "name": "Master State",
+        "desc": "Precise real-time representation of asset and entity status."
+      },
+      "event_ledger": {
+        "name": "Event Ledger",
+        "desc": "Immutable delta event records for an indisputable audit trail."
+      },
+      "projections": {
+        "name": "Materialized Projections",
+        "desc": "Ready-to-serve data aggregations for instant visualization without heavy compute."
+      },
+      "insights": {
+        "name": "Predictive Insights",
+        "desc": "Deep statistical analysis for future trend and anomaly projections."
+      },
+      "rule_engine": {
+        "name": "Dynamic Rule Engine",
+        "desc": "Data flow control and logic validation without the need for code changes."
+      },
+      "metadata": {
+        "name": "Metadata Registry",
+        "desc": "Taxonomy standardization and cross-sector parameters for data integrity."
+      },
+      "archiving": {
+        "name": "Cold Archiving",
+        "desc": "Data lifecycle management for long-term storage efficiency."
+      },
+      "security": {
+        "name": "Security Audit",
+        "desc": "High-level security compliance and strict data access monitoring."
+      },
+      "logic": {
+        "name": "Prescriptive Logic",
+        "desc": "Automated solution recommendations based on outcome optimization."
+      },
+      "orchestration": {
+        "name": "Agentic Orchestration",
+        "desc": "Autonomous task execution by TypeScript-based AI Agents asynchronously."
+      },
+      "knowledge_graph": {
+        "name": "Semantic Knowledge Graph",
+        "desc": "Mapping entity relationships with real-world context for system understanding."
+      },
+      "feedback_loop": {
+        "name": "Adaptive Feedback Loop",
+        "desc": "Self-evolving system through continuous learning from action outcomes."
+      }
+    }
+  },
+  "workflow": {
+    "title": "Continuous Autonomy Pipeline",
+    "desc": "From anomaly detection to system learning.",
+    "steps": {
+      "sensing": "API ingestion to the Event Ledger.",
+      "processing": "Asynchronous Dynamic Rule evaluation.",
+      "synthesizing": "AI Agent contextualization.",
+      "acting": "Autonomous action orchestration.",
+      "learning": "Continuous model optimization."
+    }
+  },
+  "tech": {
+    "title": "Powered by Modern Tech",
+    "desc": "High performance with Enterprise-grade security.",
+    "categories": {
+      "framework": "Framework",
+      "infrastructure": "Infrastructures",
+      "db": "Main Database",
+      "queue": "Queue & Worker",
+      "ai": "AI",
+      "frontend": "Interfaces"
+    }
+  },
+  "footer": {
+    "architecture": "Architecture",
+    "engine": "Autonomous Engine",
+    "privacy": "Privacy & Security",
+    "rights": "AION Platform. All rights reserved.",
+    "features": "Features"
+  }
+}

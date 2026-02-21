@@ -1,0 +1,111 @@
+{
+  "nav": {
+    "demo": "Minta Demo"
+  },
+  "hero": {
+    "badge": "Sistem Intelijen Otonom Generasi Berikutnya",
+    "title": "Kendalikan Kompleksitas dengan",
+    "highlight": "AION Platform",
+    "desc": "Ekosistem intelijen universal yang mengorkestrasi data, memprediksi risiko, dan mengeksekusi solusi secara otomatis. Dibangun dengan teknologi terkini untuk melampaui batas pemantauan tradisional.",
+    "btn_primary": "Jelajahi Arsitektur",
+    "btn_secondary": "Baca Dokumentasi"
+  },
+  "features": {
+    "title": "Lebih Dari Sekadar Pemantauan",
+    "desc": "AION mentransformasi data mentah menjadi tindakan yang terukur dan otomatis.",
+    "agent_title": "Autonomous Decision Agent",
+    "agent_desc": "Tidak hanya melaporkan anomali, sistem kami bertindak otomatis dengan opsi solusi sekali klik.",
+    "view_title": "Dynamic View Builder",
+    "view_desc": "Rancang dashboard analitik kompleks melalui konfigurasi JSON yang di-render instan.",
+    "context_title": "Semantic Context Connector",
+    "context_desc": "Hubungkan data internal dan eksternal secara otomatis untuk merumuskan bobot prediksi."
+  },
+  "pillars": {
+    "cat_core": "Operasional Inti",
+    "cat_framework": "Framework Fleksibilitas",
+    "cat_ai": "Intelligent Autonomous",
+    "badge": "The Master Blueprint",
+    "title": "Arsitektur 12 Pilar",
+    "desc": "Fondasi kokoh untuk inteligensi sistem otonom berskala enterprise.",
+    "items": {
+      "master_state": {
+        "name": "Master State",
+        "desc": "Representasi real-time dari status aset/entitas secara presisi."
+      },
+      "event_ledger": {
+        "name": "Event Ledger",
+        "desc": "Catatan delta peristiwa immutable untuk audit trail yang tidak terbantahkan."
+      },
+      "projections": {
+        "name": "Materialized Projections",
+        "desc": "Agregasi data siap saji untuk visualisasi instan tanpa beban komputasi berat."
+      },
+      "insights": {
+        "name": "Predictive Insights",
+        "desc": "Analisis statistik mendalam untuk proyeksi tren dan anomali masa depan."
+      },
+      "rule_engine": {
+        "name": "Dynamic Rule Engine",
+        "desc": "Kendali alur logika dan validasi data tanpa perlu melakukan perubahan kode."
+      },
+      "metadata": {
+        "name": "Metadata Registry",
+        "desc": "Standarisasi taksonomi dan parameter lintas sektor untuk integritas data."
+      },
+      "archiving": {
+        "name": "Cold Archiving",
+        "desc": "Manajemen siklus hidup data untuk efisiensi penyimpanan jangka panjang."
+      },
+      "security": {
+        "name": "Security Audit",
+        "desc": "Kepatuhan keamanan tingkat tinggi dan monitoring akses data secara ketat."
+      },
+      "logic": {
+        "name": "Prescriptive Logic",
+        "desc": "Rekomendasi solusi otomatis berbasis optimasi hasil dan skenario nyata."
+      },
+      "orchestration": {
+        "name": "Agentic Orchestration",
+        "desc": "Eksekusi tugas mandiri oleh AI Agents berbasis TypeScript secara asinkron."
+      },
+      "knowledge_graph": {
+        "name": "Semantic Knowledge Graph",
+        "desc": "Pemetaan hubungan antar entitas dengan konteks nyata untuk pemahaman sistem."
+      },
+      "feedback_loop": {
+        "name": "Adaptive Feedback Loop",
+        "desc": "Evolusi sistem secara mandiri melalui pembelajaran hasil tindakan sebelumnya."
+      }
+    }
+  },
+  "workflow": {
+    "title": "Alur Otonomi Berkelanjutan",
+    "desc": "Dari deteksi anomali hingga pembelajaran sistem.",
+    "steps": {
+      "sensing": "Ingesti API ke Event Ledger.",
+      "processing": "Evaluasi Dynamic Rule asinkron.",
+      "synthesizing": "Kontekstualisasi AI Agent.",
+      "acting": "Orkestrasi tindakan otonom.",
+      "learning": "Optimasi model kelanjutan."
+    }
+  },
+  "tech": {
+    "title": "Didukung Teknologi Modern",
+    "desc": "Performa tinggi dengan keamanan Enterprise.",
+    "categories": {
+      "framework": "Framework",
+      "infrastructure": "Infrastruktur",
+      "db": "Basis Data Utama",
+      "queue": "Antrean & Worker",
+      "ai": "Kecerdasan Buatan",
+      "frontend": "Antarmuka"
+    }
+  },
+  "footer": {
+    "architecture": "Arsitektur",
+    "engine": "Autonomous Engine",
+    "privacy": "Privasi & Keamanan",
+    "rights": "AION Platform. All rights reserved.",
+    "features": "Fitur"
+  }
+}
