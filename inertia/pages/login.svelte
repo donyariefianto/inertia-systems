@@ -37,8 +37,14 @@
     </div>
 
     <div class="relative z-10 max-w-md">
-      <h2 class="text-3xl font-bold leading-tight">Next-Generation Autonomous Intelligence System</h2>
-      <p class="mt-4 text-lg opacity-80">A universal intelligence ecosystem that orchestrates data, predicts risks, and executes solutions autonomously. Built with cutting-edge technology to transcend traditional monitoring boundaries.</p>
+      <h2 class="text-3xl font-bold leading-tight">
+        Next-Generation Autonomous Intelligence System
+      </h2>
+      <p class="mt-4 text-lg opacity-80">
+        A universal intelligence ecosystem that orchestrates data, predicts risks, and executes
+        solutions autonomously. Built with cutting-edge technology to transcend traditional
+        monitoring boundaries.
+      </p>
     </div>
 
     <div class="relative z-10 text-sm opacity-60">&copy; 2026 AION. All rights reserved.</div>

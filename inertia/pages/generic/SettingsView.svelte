@@ -1,6 +1,6 @@
 <script>
   import { fade, fly } from 'svelte/transition'
-
+  import { router } from '@inertiajs/svelte'
   import GeneralTab from '~/pages/generic/settingtabs/GeneralTab.svelte'
   import DashboardTab from '~/pages/generic/settingtabs/DashboardTab.svelte'
   import MenuTab from '~/pages/generic/settingtabs/MenuTab.svelte'
@@ -10,6 +10,7 @@
 
   let activeTabId = $state(null)
   let isSaving = $state(false)
+  let myMenu = $state([]) // Data utama
 
   const tabs = [
     {
@@ -62,9 +63,33 @@
 
   function handleSave() {
     isSaving = true
-    setTimeout(() => {
-      isSaving = false
-    }, 1000)
+    if (activeTab.id == 'menu') {
+      handleMenuUpdate(myMenu)
+    }
+  }
+
+  function handleMenuUpdate(updatedMenu) {
+    const dataToSave = updatedMenu.filter((node) => !node.locked)
+    const payload = {
+      id: 'fixed_menu',
+      sidemenu: dataToSave,
+    }
+    router.patch('/api/menu', payload, {
+      preserveScroll: true,
+      onStart: () => {
+        console.log('Starting save operation...')
+      },
+      onSuccess: () => {
+        alert('Success: Perubahan berhasil disimpan.')
+      },
+      onError: (errors) => {
+        console.error('Save failed:', errors)
+        alert('Error: Gagal menyimpan data. Periksa kembali input Anda.')
+      },
+      onFinish: () => {
+        isSaving = false
+      },
+    })
   }
 </script>
 
@@ -122,29 +147,34 @@
       class="absolute inset-0 flex flex-col bg-background"
     >
       <header
-        class="flex h-[72px] shrink-0 items-center justify-between border-b border-border bg-card px-6 shadow-sm z-10"
+        class="flex min-h-[64px] md:h-[72px] shrink-0 items-center justify-between border-b border-border bg-card px-4 md:px-6 shadow-sm z-10 gap-2"
       >
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 md:gap-4 min-w-0">
           <button
             onclick={closeTab}
-            class="group flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted/50 text-foreground transition-all hover:bg-primary hover:text-white active:scale-90"
+            class="group flex h-9 w-9 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/50 text-foreground transition-all hover:bg-primary hover:text-white active:scale-90"
             title="Kembali ke Menu"
           >
-            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+            <i
+              class="fas fa-arrow-left text-xs md:text-sm transition-transform group-hover:-translate-x-1"
+            ></i>
           </button>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 md:gap-3 min-w-0">
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg {activeTab.bg} {activeTab.color}"
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {activeTab.bg} {activeTab.color}"
             >
-              <i class={activeTab.icon}></i>
+              <i class="{activeTab.icon} text-xs md:text-sm"></i>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col min-w-0">
               <span
-                class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-none"
-                >Workspace</span
+                class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-none truncate"
               >
-              <h2 class="text-sm font-black uppercase tracking-tight text-foreground mt-1">
+                Workspace
+              </span>
+              <h2
+                class="text-xs md:text-sm font-black uppercase tracking-tight text-foreground mt-0.5 md:mt-1 truncate"
+              >
                 {activeTab.label}
               </h2>
             </div>
@@ -154,15 +184,16 @@
         <button
           onclick={handleSave}
           disabled={isSaving}
-          class="inline-flex min-w-[140px] items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-black uppercase text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
+          class="inline-flex min-w-fit md:min-w-[140px] shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
         >
           <i class="fas {isSaving ? 'fa-spinner fa-spin' : 'fa-save'}"></i>
-          {isSaving ? 'Menyimpan...' : 'Simpan Data'}
+          <span class="hidden xs:inline-block">{isSaving ? 'Menyimpan...' : 'Simpan Data'}</span>
+          <span class="xs:hidden">{isSaving ? '...' : 'Simpan'}</span>
         </button>
       </header>
 
       <main class="flex-3 overflow-hidden relative bg-muted/10">
-        <ActiveComponent {config} {closeTab} />
+        <ActiveComponent bind:menuTree={myMenu} {config} {closeTab} />
       </main>
     </div>
   {/if}
@@ -177,7 +208,7 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
+    background: hsl(var(--color-muted-foreground) / 0.2);
     border-radius: 10px;
   }
 </style>

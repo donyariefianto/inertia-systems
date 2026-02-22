@@ -1018,17 +1018,4 @@
   :global(#drawflow-canvas.is-readonly .drawflow-node) {
     cursor: not-allowed !important;
   }
-  /* =========================================================
-     6. SCROLLBAR THEME
-     ========================================================= */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
-    border-radius: 10px;
-  }
 </style>

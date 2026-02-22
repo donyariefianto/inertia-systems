@@ -14,12 +14,7 @@ export default class FrontendsController {
       // 🛡️ Murni hanya mengambil data konten Dashboard
       // Data sidebar sudah otomatis dikirim oleh Middleware global
 
-      const stats = {
-        total_users: 150,
-        active_sessions: 12,
-        revenue: 45231.89,
-        server_load: 34,
-      }
+      const stats = {}
 
       return inertia.render('homes', {
         stats,

@@ -28,7 +28,8 @@ export class EncryptionService {
     }
   }
 
-  static decrypt(nonceHex: string, ciphertextHex: string): string | null {
+  static decrypt(nonceHex: string | null, ciphertextHex: string | null): string | null {
+    if (!nonceHex || !ciphertextHex) return null
     try {
       const key = this.getKey()
       const nonce = hexToBytes(nonceHex)

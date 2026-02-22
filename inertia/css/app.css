@@ -354,3 +354,58 @@
     color: var(--color-primary-foreground);
   }
 }
+
+/* 1. STANDAR MODEREN (Firefox & Mobile) */
+.custom-scrollbar {
+  /* Ukuran tipis untuk browser yang mendukung standar */
+  scrollbar-width: thin;
+  /* Warna Thumb & Track (color-mix memastikan mengikuti tema --primary) */
+  scrollbar-color: color-mix(in srgb, var(--color-primary), transparent 80%) transparent;
+
+  /* Smooth scrolling untuk feel mobile yang premium */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 2. WEBKIT (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  /* Di Mobile kita buat lebih tipis (4px), di Desktop (6px) */
+  width: 4px;
+  height: 4px;
+}
+
+/* Query untuk Desktop: Ukuran sedikit lebih besar agar mudah diklik mouse */
+@media (min-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  /* Mengikuti variabel theme --color-primary Anda */
+  background: color-mix(in srgb, var(--color-primary), transparent 85%);
+  border-radius: 100px;
+
+  /* Trik agar scrollbar terlihat melayang (floating) */
+  border: 1px solid transparent;
+  background-clip: content-box;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect hanya aktif di desktop (media hover:hover) */
+@media (hover: hover) {
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-primary), transparent 60%);
+    background-clip: content-box;
+  }
+}
+
+/* 3. KHUSUS MOBILE: Menampilkan scrollbar saat scrolling di iOS/Android */
+/* Opsional: Jika ingin scrollbar tetap terlihat tipis saat disentuh */
+.custom-scrollbar:active::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-primary), transparent 40%);
+}

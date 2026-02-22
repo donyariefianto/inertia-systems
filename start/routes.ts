@@ -24,6 +24,13 @@ router
   .use(middleware.inertiaShare())
   .prefix('systems')
 
+router
+  .group(() => {
+    router.patch('/menu', '#controllers/backends_controller.patchMenu')
+  })
+  .prefix('api')
+  .use(middleware.auth())
+
 router.post('/language', ({ session, response, request }) => {
   const { locale } = request.only(['locale'])
   session.put('locale', locale)

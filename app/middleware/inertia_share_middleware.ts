@@ -20,13 +20,14 @@ export default class InertiaShareMiddleware {
           id: 'fixed_dashboard',
           name: 'Dashboard',
           icon: 'fas fa-home',
+          type: 'group',
           sub_sidemenu: [
             {
-              id: '1.1',
+              id: 'fixed_dashboard_1',
               name: 'Dashboard',
               icon: 'fas fa-chart-line',
               type: 'chartview',
-              path: 'systems/dashboard',
+              path: 'dashboard',
               permissions: ['admin', 'user'],
               config: {
                 endpoint: '/api/dashboard/stats',
@@ -42,9 +43,10 @@ export default class InertiaShareMiddleware {
           name: 'Settings',
           icon: 'fas fa-cogs',
           permissions: ['admin'],
+          type: 'group',
           sub_sidemenu: [
             {
-              id: '8.1',
+              id: 'fixed_settings_1',
               name: 'User Management',
               icon: 'fas fa-users-cog',
               type: 'tableview',
@@ -98,7 +100,7 @@ export default class InertiaShareMiddleware {
               },
             },
             {
-              id: '8.2',
+              id: 'fixed_settings_2',
               name: 'App Config',
               icon: 'fas fa-sliders-h',
               type: 'settings',

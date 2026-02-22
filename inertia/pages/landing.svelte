@@ -430,7 +430,9 @@
           ><i class="fab fa-github text-xl"></i></a
         >
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <a href="https://id.linkedin.com/in/dony-ariefianto-09a470210" class="text-muted-foreground hover:text-foreground"
+        <a
+          href="https://id.linkedin.com/in/dony-ariefianto-09a470210"
+          class="text-muted-foreground hover:text-foreground"
           ><i class="fab fa-linkedin text-xl"></i></a
         >
       </div>
