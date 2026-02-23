@@ -1,216 +1,216 @@
 <script>
- import { fade, fly } from 'svelte/transition'
- import { router } from '@inertiajs/svelte'
- import GeneralTab from '~/pages/generic/settingtabs/GeneralTab.svelte'
- import DashboardTab from '~/pages/generic/settingtabs/DashboardTab.svelte'
- import MenuTab from '~/pages/generic/settingtabs/MenuTab.svelte'
- import RuleTab from '~/pages/generic/settingtabs/RuleTab.svelte'
+  import { fade, fly } from 'svelte/transition'
+  import { router } from '@inertiajs/svelte'
+  import GeneralTab from '~/pages/generic/settingtabs/GeneralTab.svelte'
+  import DashboardTab from '~/pages/generic/settingtabs/DashboardTab.svelte'
+  import MenuTab from '~/pages/generic/settingtabs/MenuTab.svelte'
+  import RuleTab from '~/pages/generic/settingtabs/RuleTab.svelte'
 
- let { config, title } = $props()
+  let { config, title } = $props()
 
- let activeTabId = $state(null)
- let isSaving = $state(false)
- let myMenu = $state([]) // Data utama
+  let activeTabId = $state(null)
+  let isSaving = $state(false)
+  let myMenu = $state([]) // Data utama
 
- const tabs = [
-  {
-   id: 'general',
-   label: 'General System',
-   icon: 'fas fa-sliders-h',
-   component: GeneralTab,
-   color: 'text-zinc-500',
-   bg: 'bg-zinc-500/10',
-   desc: 'Identitas, zona waktu, dan parameter global',
-  },
-  {
-   id: 'dashboard',
-   label: 'Dashboard Builder',
-   icon: 'fas fa-chart-pie',
-   component: DashboardTab,
-   color: 'text-blue-500',
-   bg: 'bg-blue-500/10',
-   desc: 'Desain layout widget dan analitik visual',
-  },
-  {
-   id: 'menu',
-   label: 'Menu Orchestrator',
-   icon: 'fas fa-sitemap',
-   component: MenuTab,
-   color: 'text-emerald-500',
-   bg: 'bg-emerald-500/10',
-   desc: 'Manajemen hierarki navigasi dan role akses',
-  },
-  {
-   id: 'rules',
-   label: 'Dynamic Rule Engine',
-   icon: 'fas fa-project-diagram',
-   component: RuleTab,
-   color: 'text-amber-500',
-   bg: 'bg-amber-500/10',
-   desc: 'Logika otomasi, validasi, dan alur webhook',
-  },
- ]
+  const tabs = [
+    {
+      id: 'general',
+      label: 'General System',
+      icon: 'fas fa-sliders-h',
+      component: GeneralTab,
+      color: 'text-zinc-500',
+      bg: 'bg-zinc-500/10',
+      desc: 'Identitas, zona waktu, dan parameter global',
+    },
+    {
+      id: 'dashboard',
+      label: 'Dashboard Builder',
+      icon: 'fas fa-chart-pie',
+      component: DashboardTab,
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10',
+      desc: 'Desain layout widget dan analitik visual',
+    },
+    {
+      id: 'menu',
+      label: 'Menu Orchestrator',
+      icon: 'fas fa-sitemap',
+      component: MenuTab,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      desc: 'Manajemen hierarki navigasi dan role akses',
+    },
+    {
+      id: 'rules',
+      label: 'Dynamic Rule Engine',
+      icon: 'fas fa-project-diagram',
+      component: RuleTab,
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10',
+      desc: 'Logika otomasi, validasi, dan alur webhook',
+    },
+  ]
 
- const activeTab = $derived(tabs.find((t) => t.id === activeTabId))
- const ActiveComponent = $derived(activeTab?.component)
+  const activeTab = $derived(tabs.find((t) => t.id === activeTabId))
+  const ActiveComponent = $derived(activeTab?.component)
 
- function openTab(id) {
-  activeTabId = id
- }
- function closeTab() {
-  activeTabId = null
- }
-
- function handleSave() {
-  isSaving = true
-  if (activeTab.id == 'menu') {
-   handleMenuUpdate(myMenu)
+  function openTab(id) {
+    activeTabId = id
   }
- }
-
- function handleMenuUpdate(updatedMenu) {
-  const dataToSave = updatedMenu.filter((node) => !node.locked)
-  const payload = {
-   id: 'fixed_menu',
-   sidemenu: dataToSave,
+  function closeTab() {
+    activeTabId = null
   }
-  router.patch('/api/menu', payload, {
-   preserveScroll: true,
-   onStart: () => {
-    console.log('Starting save operation...')
-   },
-   onSuccess: () => {
-    alert('Success: Perubahan berhasil disimpan.')
-   },
-   onError: (errors) => {
-    console.error('Save failed:', errors)
-    alert('Error: Gagal menyimpan data. Periksa kembali input Anda.')
-   },
-   onFinish: () => {
-    isSaving = false
-   },
-  })
- }
+
+  function handleSave() {
+    isSaving = true
+    if (activeTab.id == 'menu') {
+      handleMenuUpdate(myMenu)
+    }
+  }
+
+  function handleMenuUpdate(updatedMenu) {
+    const dataToSave = updatedMenu.filter((node) => !node.locked)
+    const payload = {
+      id: 'fixed_menu',
+      sidemenu: dataToSave,
+    }
+    router.patch('/api/menu', payload, {
+      preserveScroll: true,
+      onStart: () => {
+        console.log('Starting save operation...')
+      },
+      onSuccess: () => {
+        alert('Success: Perubahan berhasil disimpan.')
+      },
+      onError: (errors) => {
+        console.error('Save failed:', errors)
+        alert('Error: Gagal menyimpan data. Periksa kembali input Anda.')
+      },
+      onFinish: () => {
+        isSaving = false
+      },
+    })
+  }
 </script>
 
 <div
- class="relative h-full w-full overflow-hidden rounded-3xl border border-border bg-background shadow-sm"
+  class="relative h-full w-full overflow-hidden rounded-3xl border border-border bg-background shadow-sm"
 >
- {#if !activeTabId}
-  <div
-   in:fade={{ duration: 200, delay: 150 }}
-   out:fade={{ duration: 150 }}
-   class="absolute inset-0 flex flex-col overflow-y-auto p-8 lg:p-12 custom-scrollbar"
-  >
-   <div class="mb-10 max-w-2xl">
-    <h1 class="text-3xl font-black tracking-tight text-foreground lg:text-4xl">
-     {title || 'Settings & Config'}
-    </h1>
-    <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
-     Pusat kendali arsitektur sistem. Pilih modul di bawah ini untuk mengonfigurasi parameter
-     operasional, mendesain tampilan, atau mengatur logika bisnis secara visual.
-    </p>
-   </div>
-
-   <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
-    {#each tabs as tab}
-     <button
-      onclick={() => openTab(tab.id)}
-      class="group flex h-full flex-col items-start gap-2 rounded-3xl border border-border bg-card p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-     >
-      <div
-       class="flex h-14 w-14 items-center justify-center rounded-2xl {tab.bg} {tab.color} shadow-inner transition-transform duration-300 group-hover:scale-110"
-      >
-       <i class="{tab.icon} text-2xl"></i>
-      </div>
-      <div>
-       <h3
-        class="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors"
-       >
-        {tab.label}
-       </h3>
-       <p class="mt-2 text-xs text-muted-foreground leading-relaxed">
-        {tab.desc}
-       </p>
-      </div>
-      <div
-       class="mt-auto pt-4 flex items-center text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all"
-      >
-       Buka Modul <i class="fas fa-arrow-right ml-2"></i>
-      </div>
-     </button>
-    {/each}
-   </div>
-  </div>
- {:else if activeTab}
-  <div
-   in:fly={{ x: 30, duration: 300, delay: 150 }}
-   out:fly={{ x: 30, duration: 200 }}
-   class="absolute inset-0 flex flex-col bg-background"
-  >
-   <header
-    class="flex min-h-[64px] md:h-[72px] shrink-0 items-center justify-between border-b border-border bg-card px-4 md:px-6 shadow-sm z-10 gap-2"
-   >
-    <div class="flex items-center gap-2 md:gap-4 min-w-0">
-     <button
-      onclick={closeTab}
-      class="group flex h-9 w-9 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/50 text-foreground transition-all hover:bg-primary hover:text-white active:scale-90"
-      title="Kembali ke Menu"
-     >
-      <i
-       class="fas fa-arrow-left text-xs md:text-sm transition-transform group-hover:-translate-x-1"
-      ></i>
-     </button>
-
-     <div class="flex items-center gap-2 md:gap-3 min-w-0">
-      <div
-       class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {activeTab.bg} {activeTab.color}"
-      >
-       <i class="{activeTab.icon} text-xs md:text-sm"></i>
-      </div>
-      <div class="flex flex-col min-w-0">
-       <span
-        class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-none truncate"
-       >
-        Workspace
-       </span>
-       <h2
-        class="text-xs md:text-sm font-black uppercase tracking-tight text-foreground mt-0.5 md:mt-1 truncate"
-       >
-        {activeTab.label}
-       </h2>
-      </div>
-     </div>
-    </div>
-
-    <button
-     onclick={handleSave}
-     disabled={isSaving}
-     class="inline-flex min-w-fit md:min-w-[140px] shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
+  {#if !activeTabId}
+    <div
+      in:fade={{ duration: 200, delay: 150 }}
+      out:fade={{ duration: 150 }}
+      class="absolute inset-0 flex flex-col overflow-y-auto p-8 lg:p-12 custom-scrollbar"
     >
-     <i class="fas {isSaving ? 'fa-spinner fa-spin' : 'fa-save'}"></i>
-     <span class="hidden xs:inline-block">{isSaving ? 'Menyimpan...' : 'Simpan Data'}</span>
-     <span class="xs:hidden">{isSaving ? '...' : 'Simpan'}</span>
-    </button>
-   </header>
+      <div class="mb-10 max-w-2xl">
+        <h1 class="text-3xl font-black tracking-tight text-foreground lg:text-4xl">
+          {title || 'Settings & Config'}
+        </h1>
+        <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
+          Pusat kendali arsitektur sistem. Pilih modul di bawah ini untuk mengonfigurasi parameter
+          operasional, mendesain tampilan, atau mengatur logika bisnis secara visual.
+        </p>
+      </div>
 
-   <main class="flex-3 overflow-hidden relative bg-muted/10">
-    <ActiveComponent bind:menuTree={myMenu} {config} {closeTab} />
-   </main>
-  </div>
- {/if}
+      <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+        {#each tabs as tab}
+          <button
+            onclick={() => openTab(tab.id)}
+            class="group flex h-full flex-col items-start gap-2 rounded-3xl border border-border bg-card p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            <div
+              class="flex h-14 w-14 items-center justify-center rounded-2xl {tab.bg} {tab.color} shadow-inner transition-transform duration-300 group-hover:scale-110"
+            >
+              <i class="{tab.icon} text-2xl"></i>
+            </div>
+            <div>
+              <h3
+                class="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors"
+              >
+                {tab.label}
+              </h3>
+              <p class="mt-2 text-xs text-muted-foreground leading-relaxed">
+                {tab.desc}
+              </p>
+            </div>
+            <div
+              class="mt-auto pt-4 flex items-center text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all"
+            >
+              Buka Modul <i class="fas fa-arrow-right ml-2"></i>
+            </div>
+          </button>
+        {/each}
+      </div>
+    </div>
+  {:else if activeTab}
+    <div
+      in:fly={{ x: 30, duration: 300, delay: 150 }}
+      out:fly={{ x: 30, duration: 200 }}
+      class="absolute inset-0 flex flex-col bg-background"
+    >
+      <header
+        class="flex min-h-[64px] md:h-[72px] shrink-0 items-center justify-between border-b border-border bg-card px-4 md:px-6 shadow-sm z-10 gap-2"
+      >
+        <div class="flex items-center gap-2 md:gap-4 min-w-0">
+          <button
+            onclick={closeTab}
+            class="group flex h-9 w-9 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/50 text-foreground transition-all hover:bg-primary hover:text-white active:scale-90"
+            title="Kembali ke Menu"
+          >
+            <i
+              class="fas fa-arrow-left text-xs md:text-sm transition-transform group-hover:-translate-x-1"
+            ></i>
+          </button>
+
+          <div class="flex items-center gap-2 md:gap-3 min-w-0">
+            <div
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {activeTab.bg} {activeTab.color}"
+            >
+              <i class="{activeTab.icon} text-xs md:text-sm"></i>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span
+                class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-none truncate"
+              >
+                Workspace
+              </span>
+              <h2
+                class="text-xs md:text-sm font-black uppercase tracking-tight text-foreground mt-0.5 md:mt-1 truncate"
+              >
+                {activeTab.label}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick={handleSave}
+          disabled={isSaving}
+          class="inline-flex min-w-fit md:min-w-[140px] shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
+        >
+          <i class="fas {isSaving ? 'fa-spinner fa-spin' : 'fa-save'}"></i>
+          <span class="hidden xs:inline-block">{isSaving ? 'Menyimpan...' : 'Simpan Data'}</span>
+          <span class="xs:hidden">{isSaving ? '...' : 'Simpan'}</span>
+        </button>
+      </header>
+
+      <main class="flex-3 overflow-hidden relative bg-muted/10">
+        <ActiveComponent bind:menuTree={myMenu} {config} {closeTab} />
+      </main>
+    </div>
+  {/if}
 </div>
 
 <style>
- .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
- }
- .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
- }
- .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--color-muted-foreground) / 0.2);
-  border-radius: 10px;
- }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--color-muted-foreground) / 0.2);
+    border-radius: 10px;
+  }
 </style>

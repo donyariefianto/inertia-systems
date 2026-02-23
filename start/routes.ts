@@ -16,25 +16,25 @@ router.post('/login', '#controllers/backends_controller.login')
 router.delete('/logout', '#controllers/backends_controller.logout')
 
 router
- .group(() => {
-  router.get('/', '#controllers/frontends_controller.home')
-  router.get('/*', '#controllers/backends_controller.navigation_handler')
- })
- .use(middleware.auth())
- .use(middleware.inertiaShare())
- .prefix('systems')
+  .group(() => {
+    router.get('/', '#controllers/frontends_controller.home')
+    router.get('/*', '#controllers/backends_controller.navigation_handler')
+  })
+  .use(middleware.auth())
+  .use(middleware.inertiaShare())
+  .prefix('systems')
 
 router
- .group(() => {
-  router.patch('/menu', '#controllers/backends_controller.patchMenu')
- })
- .prefix('api')
- .use(middleware.auth())
+  .group(() => {
+    router.patch('/menu', '#controllers/backends_controller.patchMenu')
+  })
+  .prefix('api')
+  .use(middleware.auth())
 
 router.post('/language', ({ session, response, request }) => {
- const { locale } = request.only(['locale'])
- session.put('locale', locale)
- return response.redirect().back()
+  const { locale } = request.only(['locale'])
+  session.put('locale', locale)
+  return response.redirect().back()
 })
 
 router.ws('/ws/:channels', '#controllers/websockets_controller.onMessage')
