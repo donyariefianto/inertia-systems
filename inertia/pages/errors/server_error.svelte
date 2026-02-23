@@ -1,11 +1,11 @@
 <script>
-  export let error
+ export let error
 </script>
 
 <div>
-  <div class="container">
-    <div class="title">Server Error</div>
+ <div class="container">
+  <div class="title">Server Error</div>
 
-    <span>{error.message}</span>
-  </div>
+  <span>{error.message}</span>
+ </div>
 </div>

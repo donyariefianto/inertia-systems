@@ -3,26 +3,26 @@ import { EncryptionService } from '#services/encryption_service'
 import MongoService from '#services/mongo_service'
 
 export default class FrontendsController {
-  async login({ inertia, session, response }: HttpContext) {
-    if (session.get('user_id')) {
-      return response.redirect().toPath('/systems')
-    }
-    return inertia.render('login')
+ async login({ inertia, session, response }: HttpContext) {
+  if (session.get('user_id')) {
+   return response.redirect().toPath('/systems')
   }
-  async home({ inertia, session }: HttpContext) {
-    try {
-      // 🛡️ Murni hanya mengambil data konten Dashboard
-      // Data sidebar sudah otomatis dikirim oleh Middleware global
+  return inertia.render('login')
+ }
+ async home({ inertia, session }: HttpContext) {
+  try {
+   // 🛡️ Murni hanya mengambil data konten Dashboard
+   // Data sidebar sudah otomatis dikirim oleh Middleware global
 
-      const stats = {}
+   const stats = {}
 
-      return inertia.render('homes', {
-        stats,
-        // Kita tidak perlu mengirim 'sidebar' di sini lagi
-      })
-    } catch (error) {
-      console.error('🔥 [HomeController Error]:', error)
-      return inertia.render('errors/server_error')
-    }
+   return inertia.render('homes', {
+    stats,
+    // Kita tidak perlu mengirim 'sidebar' di sini lagi
+   })
+  } catch (error) {
+   console.error('🔥 [HomeController Error]:', error)
+   return inertia.render('errors/server_error')
   }
+ }
 }

@@ -1,11 +1,22 @@
 {
-  "plugins": ["prettier-plugin-svelte"],
-  "overrides": [
-    {
-      "files": "*.svelte",
-      "options": {
-        "parser": "svelte"
-      }
-    }
-  ]
+ "plugins": ["prettier-plugin-svelte"],
+ "overrides": [
+  {
+   "files": "*.svelte",
+   "options": {
+    "tabWidth": 1,
+    "parser": "svelte",
+    "singleAttributePerLine": true,
+    "bracketSameLine": true,
+    "trailingComma": "es5",
+    "semi": false,
+    "singleQuote": true,
+    "useTabs": false,
+    "quoteProps": "consistent",
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "printWidth": 80
+   }
+  }
+ ]
 }
