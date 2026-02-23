@@ -246,9 +246,6 @@
     <span class="text-xs font-bold uppercase opacity-50 flex items-center gap-2"
      ><i class="fas fa-sliders-h"> </i> Node Properties</span
     >
-    <label for="" class="text-[10px] font-black uppercase opacity-40">
-     {#if activeItem && activeItem.locked}(System Restricted){/if}
-    </label>
     {#if activeItem && !activeItem.locked}
      <button
       onclick={() => deleteNode(activeItem.id)}
@@ -418,7 +415,10 @@
    </div>
 
    <div class="flex-1 min-h-0 p-1 md:p-10 bg-background/50 custom-scrollbar">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-32">
+    <!-- <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-32"> -->
+    <div
+     class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 px-4 md:px-0 pb-20 md:pb-32"
+    >
      {#each activeItem.config.fields || [] as field, idx}
       <div
        class="bg-card border {field.type === 'repeater'

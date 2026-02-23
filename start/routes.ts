@@ -36,3 +36,5 @@ router.post('/language', ({ session, response, request }) => {
  session.put('locale', locale)
  return response.redirect().back()
 })
+
+router.ws('/ws/:channels', '#controllers/websockets_controller.onMessage')
