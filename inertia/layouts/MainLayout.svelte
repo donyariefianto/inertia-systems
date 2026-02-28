@@ -83,7 +83,7 @@
 
   <div class="flex flex-1 flex-col overflow-hidden relative">
     <header
-      class="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-6 backdrop-blur-md lg:px-8"
+      class="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-6 backdrop-blur-md lg:px-8"
     >
       <button
         type="button"

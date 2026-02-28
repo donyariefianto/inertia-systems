@@ -5,7 +5,13 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { hydrate, mount } from 'svelte'
 
 createInertiaApp({
-  progress: { color: 'transparent', delay: 0 },
+  progress: {
+    includeCSS: true,
+    trickle: true,
+    trickleSpeed: 800,
+    color: 'transparent',
+    delay: 0,
+  },
 
   resolve: (name) => {
     return resolvePageComponent<ResolvedComponent>(

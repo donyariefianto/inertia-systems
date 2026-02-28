@@ -7,7 +7,7 @@
   import RuleTab from '~/pages/generic/settingtabs/RuleTab.svelte'
 
   let { config, title } = $props()
-
+  let dashboardRef = $state()
   let activeTabId = $state(null)
   let isSaving = $state(false)
   let myMenu = $state([]) // Data utama
@@ -63,11 +63,38 @@
 
   function handleSave() {
     isSaving = true
-    if (activeTab.id == 'menu') {
-      handleMenuUpdate(myMenu)
+    try {
+      if (activeTabId === 'dashboard' && dashboardRef?.getDashboardJSON) {
+        const finalData = dashboardRef.getDashboardJSON()
+        console.log('Pre-Save API Payload:', finalData)
+        console.log('JSON Stringified:', JSON.stringify(finalData, null, 2))
+
+        // Di sini Anda lanjutkan proses hit ke API
+        // await router.post('/api/dashboard/save', finalData);
+      }
+      if (activeTabId == 'menu') {
+        handleMenuUpdate(myMenu)
+      }
+    } catch (error) {
+      console.error('Save failed:', error)
+    } finally {
+      isSaving = false
+    }
+
+    // if (activeTab.id == 'dashboard') {
+    //   console.log("SINI");
+
+    //   handleDashboardUpdate()
+    // }
+  }
+  function handleDashboardUpdate() {
+    const dashboardData = dashboardRef.getDashboardJSON()
+    if (!dashboardData) {
+      alert('Error: Tidak ada data dashboard yang valid untuk disimpan.')
+      isSaving = false
+      return
     }
   }
-
   function handleMenuUpdate(updatedMenu) {
     const dataToSave = updatedMenu.filter((node) => !node.locked)
     const payload = {
@@ -195,7 +222,7 @@
       </header>
 
       <main class="flex-3 overflow-hidden relative bg-muted/10">
-        <ActiveComponent bind:menuTree={myMenu} {config} {closeTab} />
+        <ActiveComponent bind:this={dashboardRef} bind:menuTree={myMenu} {config} {closeTab} />
       </main>
     </div>
   {/if}
