@@ -101,7 +101,7 @@ export default class InertiaShareMiddleware {
             },
             {
               id: 'fixed_settings_2',
-              name: 'App Config',
+              name: 'Settings & Config',
               icon: 'fas fa-sliders-h',
               type: 'settings',
               path: 'settings/config',

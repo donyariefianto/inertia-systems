@@ -376,7 +376,9 @@
 
         <div class="p-6">
           <div class="space-y-2">
-            <label for="dashboard-name" class="text-xs font-black text-muted-foreground uppercase tracking-widest"
+            <label
+              for="dashboard-name"
+              class="text-xs font-black text-muted-foreground uppercase tracking-widest"
               >Dashboard Name <span class="text-destructive">*</span></label
             >
             <input
@@ -678,7 +680,7 @@
                   <div in:fade={{ duration: 150 }} class="space-y-6">
                     <div class="space-y-3 bg-muted/20 p-4 rounded-xl border border-border">
                       <label
-                      for="Component Type"
+                        for="Component Type"
                         class="text-[10px] font-black text-muted-foreground uppercase tracking-widest block"
                         >Component Type</label
                       >
@@ -724,13 +726,14 @@
 
                     <div class="space-y-4">
                       <label
-                      for="layout-meta"
+                        for="layout-meta"
                         class="text-[10px] font-black text-muted-foreground uppercase tracking-widest block border-b border-border pb-2"
                         >Layout & Meta</label
                       >
 
                       <div class="space-y-1.5">
-                        <label for="icon-class" class="text-[10px] font-bold text-muted-foreground">Icon Class</label
+                        <label for="icon-class" class="text-[10px] font-bold text-muted-foreground"
+                          >Icon Class</label
                         >
                         <input
                           type="text"
@@ -742,8 +745,9 @@
 
                       <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                          <label for="width-layout" class="text-[10px] font-bold text-muted-foreground"
-                            >Width Layout</label
+                          <label
+                            for="width-layout"
+                            class="text-[10px] font-bold text-muted-foreground">Width Layout</label
                           >
                           <select
                             id="width-layout"
@@ -756,8 +760,9 @@
                           </select>
                         </div>
                         <div class="space-y-1.5">
-                          <label for="auto-refresh" class="text-[10px] font-bold text-muted-foreground"
-                            >Auto Refresh</label
+                          <label
+                            for="auto-refresh"
+                            class="text-[10px] font-bold text-muted-foreground">Auto Refresh</label
                           >
                           <select
                             id="auto-refresh"
@@ -937,7 +942,9 @@
                           ><i class="fas fa-robot mr-1"></i> Semantic AI (P11)</span
                         >
                       </div>
-                      <label for="ai-narrative-persona" class="text-[10px] font-bold text-muted-foreground mb-1.5 block"
+                      <label
+                        for="ai-narrative-persona"
+                        class="text-[10px] font-bold text-muted-foreground mb-1.5 block"
                         >AI Narrative Persona</label
                       >
                       <select

@@ -27,6 +27,24 @@ router
 router
   .group(() => {
     router.patch('/menu', '#controllers/backends_controller.patchMenu')
+
+    router.get(
+      'collections-aggregation/:col',
+      '#controllers/backends_controller.aggreateCollectionData'
+    )
+    router.post(
+      'collections-aggregation/:col',
+      '#controllers/backends_controller.aggregateCollectionData'
+    )
+    router.get('collections/:col', '#controllers/backends_controller.getCollectionData')
+    router.get('collections/:col/:id', '#controllers/backends_controller.getCollectionDataDetail')
+    router.post('collections/:col/', '#controllers/backends_controller.createCollectionData')
+    // .use(middleware.speDispatcher())
+    router.put('collections/:col/:id', '#controllers/backends_controller.updateCollectionData')
+    // .use(middleware.speDispatcher())
+    router.delete('collections/:col/:id', '#controllers/backends_controller.deleteCollectionData')
+    // .use(middleware.speDispatcher())
+    router.delete('collections/:col', '#controllers/backends_controller.deleteCollection')
   })
   .prefix('api')
   .use(middleware.auth())

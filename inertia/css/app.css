@@ -177,16 +177,16 @@
   --color-secondary-muted: #ecfeff;
 
   /* Aksen - Vivid Emerald (Hanya untuk elemen kecil/status) */
-  --color-accent: #10b981; 
+  --color-accent: #10b981;
   --color-accent-foreground: #ffffff;
   --color-accent-muted: #f0fdfa;
 
   /* Background & Canvas - Warm Neutral (Stone) agar mata rileks */
   --color-background: #fafaf9; /* Stone 50 */
   --color-foreground: #1c1917; /* Stone 900 */
-  --color-muted: #f5f5f4;      /* Stone 100 */
+  --color-muted: #f5f5f4; /* Stone 100 */
   --color-muted-foreground: #78716c; /* Stone 500 */
-  --color-border: #e7e5e4;     /* Stone 200 */
+  --color-border: #e7e5e4; /* Stone 200 */
   --color-ring: #15803d;
 
   /* Card - Putih dengan Border Halus */
@@ -211,12 +211,12 @@
   /* Dark Background - Deep Stone Charcoal (Bukan hitam pekat) */
   --color-background: #0c0a09; /* Stone 950 */
   --color-foreground: #f5f5f4; /* Stone 100 */
-  --color-muted: #1c1917;      /* Stone 900 */
+  --color-muted: #1c1917; /* Stone 900 */
   --color-muted-foreground: #a8a29e; /* Stone 400 */
-  --color-border: #292524;     /* Stone 800 */
+  --color-border: #292524; /* Stone 800 */
   --color-ring: #4ade80;
 
-  --color-card: #141211;       /* Sedikit lebih terang dari background */
+  --color-card: #141211; /* Sedikit lebih terang dari background */
   --color-card-foreground: #f5f5f4;
 }
 

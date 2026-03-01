@@ -5,6 +5,7 @@
   import DashboardTab from '~/pages/generic/settingtabs/DashboardTab.svelte'
   import MenuTab from '~/pages/generic/settingtabs/MenuTab.svelte'
   import RuleTab from '~/pages/generic/settingtabs/RuleTab.svelte'
+  import { prepareMenuPayload } from '~/utils/MenuSanitize'
 
   let { config, title } = $props()
   let dashboardRef = $state()
@@ -73,7 +74,8 @@
         // await router.post('/api/dashboard/save', finalData);
       }
       if (activeTabId == 'menu') {
-        handleMenuUpdate(myMenu)
+        const cleanMenu = prepareMenuPayload(myMenu)
+        handleMenuUpdate(cleanMenu)
       }
     } catch (error) {
       console.error('Save failed:', error)
@@ -87,6 +89,7 @@
     //   handleDashboardUpdate()
     // }
   }
+
   function handleDashboardUpdate() {
     const dashboardData = dashboardRef.getDashboardJSON()
     if (!dashboardData) {
@@ -121,7 +124,7 @@
 </script>
 
 <div
-  class="relative h-full w-full overflow-hidden rounded-3xl border border-border bg-background shadow-sm"
+  class="relative h-full w-full overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
 >
   {#if !activeTabId}
     <div
