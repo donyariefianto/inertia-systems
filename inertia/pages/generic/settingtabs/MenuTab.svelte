@@ -718,6 +718,7 @@
                         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                           <div class="space-y-2">
                             <label
+                              for="regional-locale"
                               class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground/80"
                             >
                               <i class="fas fa-globe"></i> Regional Locale
@@ -734,6 +735,7 @@
 
                           <div class="space-y-2">
                             <label
+                              for="display-format"
                               class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground/80"
                             >
                               <i class="fas fa-coins"></i> Display Format
@@ -802,6 +804,7 @@
                             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                               <div class="space-y-2">
                                 <label
+                                  for="operation-mode"
                                   class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground/80"
                                 >
                                   <i class="fas fa-microchip"></i> Mode Operasi
@@ -828,6 +831,7 @@
 
                               <div class="space-y-2">
                                 <label
+                                  for="target-keys"
                                   class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground/80"
                                 >
                                   <i class="fas fa-key"></i> Target Keys
@@ -1114,6 +1118,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div class="space-y-1.5">
                                         <label
+                                          for="regional-locale"
                                           class="text-[8px] font-black uppercase text-muted-foreground/80 tracking-widest"
                                           >Regional Locale</label
                                         >
@@ -1130,6 +1135,7 @@
 
                                       <div class="space-y-1.5">
                                         <label
+                                          for="regional-format"
                                           class="text-[8px] font-black uppercase text-muted-foreground/80 tracking-widest"
                                           >Display Format</label
                                         >
@@ -1184,6 +1190,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div class="space-y-1.5">
                                         <label
+                                          for="operation-mode"
                                           class="text-[8px] font-black uppercase text-muted-foreground/80 tracking-widest"
                                           >Operation Mode</label
                                         >
@@ -1207,6 +1214,7 @@
 
                                       <div class="space-y-1.5">
                                         <label
+                                          for="target-keys"
                                           class="text-[8px] font-black uppercase text-muted-foreground/80 tracking-widest"
                                           >Target Keys</label
                                         >
