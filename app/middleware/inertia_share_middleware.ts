@@ -7,15 +7,13 @@ export default class InertiaShareMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const userSession = ctx.session.get('user_id')
     const locale = ctx.session.get('locale', 'en')
-    let encryptedSidebar = null
+    let encryptedSidebar = null, users = null
 
     if (userSession) {
       try {
-        // 1. Ambil Data Menu dari MongoDB
         const collections = MongoService.collection('systems')
         const data = await collections.findOne({ id: 'fixed_menu' })
 
-        // 2. Definisi Menu Statis
         const FIXED_DASHBOARD = {
           id: 'fixed_dashboard',
           name: 'Dashboard',
@@ -140,23 +138,50 @@ export default class InertiaShareMiddleware {
           ],
         }
 
-        // 3. Penggabungan (Merge)
         const sidemenu = data
           ? [FIXED_DASHBOARD, ...data.sidemenu, FIXED_SETTINGS]
           : [FIXED_DASHBOARD, FIXED_SETTINGS]
 
-        // 4. Enkripsi Data
         encryptedSidebar = EncryptionService.encrypt(JSON.stringify({ name: 'menu', sidemenu }))
       } catch (error) {
         console.error('❌ Middleware Sidebar Error:', error)
       }
+      if (userSession === "0") {
+        users ={
+          email:'donyariefianto98@gmail.com',
+          roles:"SU",
+          mfa_type:'email',
+          mfa_enabled:true
+        }
+      }else{
+        const collections = MongoService.collection('users')
+        users = await collections.findOne({"$or": [{id:userSession},{_id:userSession}] })
+        if (!users) {
+          return ctx.response.redirect('/login')
+        }
+      }
     }
 
-    // 5. Bagikan secara Global
     ctx.inertia.share({
-      user: userSession || null,
+      user: users,
       sidebar: encryptedSidebar,
       flash: ctx.session.flashMessages.all(),
+      mfaMethods: [
+        { 
+          type: 'email', 
+          label: 'Email Verification', 
+          icon: 'fas fa-envelope-open-text', 
+          desc: 'Kode OTP dikirim ke email terdaftar.',
+          setupRequired: false 
+        },
+        { 
+          type: 'totp', 
+          label: 'Authenticator App', 
+          icon: 'fas fa-mobile-android', 
+          desc: 'Gunakan Google Authenticator atau Authy.',
+          setupRequired: true 
+        }
+      ]
     })
 
     return next()

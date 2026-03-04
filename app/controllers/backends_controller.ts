@@ -4,6 +4,10 @@ import hash from '@adonisjs/core/services/hash'
 import { DateService } from '#services/date_service'
 import { EncryptionService } from '#services/encryption_service'
 import { ObjectId } from 'mongodb'
+import { generateURI, generateSecret, generate, verify } from 'otplib'
+import qrcode from 'qrcode'
+import encryption from '@adonisjs/core/services/encryption'
+import env from '#start/env'
 
 export default class BackendsController {
   async login({ request, response, session }: HttpContext) {
@@ -220,5 +224,60 @@ export default class BackendsController {
     } catch (error) {
       return response.status(500).send({ message: 'Error deleting data', error })
     }
+  }
+  async setupAuth({ auth, session, response }: HttpContext) {
+    const user = {
+      email:"root",
+      twoFactorSecret:"twoFactorSecret"
+    }
+    let secret = session.get('totp_setup_secret')
+    
+    if (!secret) {
+      secret = generateSecret()
+      session.put('totp_setup_secret', secret)
+    }
+
+    const otpauth = generateURI({
+      issuer: env.get('APP_NAME', 'AION Systems'),
+      label: user.email,
+      secret,
+    });
+
+    const qrCodeUrl = await qrcode.toDataURL(otpauth)
+
+    return response.json({
+      qrCode: qrCodeUrl,
+      secretKey: secret,
+      otpauth
+    })
+  }
+  async confirmAuth({ request, auth, session, response }: HttpContext) {
+    const code = request.input('code')
+    const user = {
+      email:"root",
+      twoFactorSecret:"twoFactorSecret"
+    }
+    const secret = session.get('totp_setup_secret')
+
+    if (!secret) {
+      return response.status(400).json({ message: 'Sesi setup telah berakhir. Silakan ulangi.' })
+    }
+
+    const isValid = verify({ token: code, secret })
+
+    if (isValid) {
+      // Simpan secara terenkripsi ke database
+      // user.twoFactorSecret = encryption.encrypt(secret)
+      // user.mfaType = 'totp'
+      // user.twoFactorConfirmedAt = DateTime.now()
+      // await user.save()
+
+      // Bersihkan sesi setup
+      session.forget('totp_setup_secret')
+
+      return response.json({ message: 'Google Authenticator berhasil diaktifkan.' })
+    }
+
+    return response.status(422).json({ message: 'Kode verifikasi tidak cocok.' })
   }
 }

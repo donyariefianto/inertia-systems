@@ -26,6 +26,8 @@ router
 
 router
   .group(() => {
+    router.get('/security/setup', '#controllers/backends_controller.setupAuth')
+    router.post('/security/confirm', '#controllers/backends_controller.confirmAuth')
     router.patch('/menu', '#controllers/backends_controller.patchMenu')
 
     router.get(
