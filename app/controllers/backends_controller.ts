@@ -227,11 +227,11 @@ export default class BackendsController {
   }
   async setupAuth({ auth, session, response }: HttpContext) {
     const user = {
-      email:"root",
-      twoFactorSecret:"twoFactorSecret"
+      email: 'root',
+      twoFactorSecret: 'twoFactorSecret',
     }
     let secret = session.get('totp_setup_secret')
-    
+
     if (!secret) {
       secret = generateSecret()
       session.put('totp_setup_secret', secret)
@@ -241,21 +241,21 @@ export default class BackendsController {
       issuer: env.get('APP_NAME', 'AION Systems'),
       label: user.email,
       secret,
-    });
+    })
 
     const qrCodeUrl = await qrcode.toDataURL(otpauth)
 
     return response.json({
       qrCode: qrCodeUrl,
       secretKey: secret,
-      otpauth
+      otpauth,
     })
   }
   async confirmAuth({ request, auth, session, response }: HttpContext) {
     const code = request.input('code')
     const user = {
-      email:"root",
-      twoFactorSecret:"twoFactorSecret"
+      email: 'root',
+      twoFactorSecret: 'twoFactorSecret',
     }
     const secret = session.get('totp_setup_secret')
 
