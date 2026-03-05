@@ -661,7 +661,7 @@
                               >Textarea</option
                             ><option value="boolean">Boolean</option><option value="datetime"
                               >Datetime</option
-                            ></optgroup
+                            ><option value="email">Email</option></optgroup
                           >
                           <optgroup label="Numerik"
                             ><option value="number">Number</option><option value="currency"
@@ -671,7 +671,8 @@
                           <optgroup label="Kompleks"
                             ><option value="select">Select</option><option value="relation"
                               >Relation</option
-                            ><option value="repeater">Repeater (Tabel)</option></optgroup
+                            ><option value="repeater">Repeater (Tabel)</option>
+                            <option value="password">Password</option></optgroup
                           >
                           <optgroup label="Media"
                             ><option value="image">Image Upload</option></optgroup

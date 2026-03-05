@@ -11,6 +11,7 @@
   import TableView from '~/pages/generic/TableView.svelte'
   import ChartView from '~/pages/generic/ChartView.svelte'
   import SettingsView from '~/pages/generic/SettingsView.svelte'
+  import { toastStore } from '~/utils/toast.svelte'
 
   let isProfileOpen = $state(false)
   let show2FASetup = $state(false)
@@ -39,7 +40,6 @@
       const confirmDisable = confirm(
         'PERINGATAN: Mematikan MFA akan menghapus konfigurasi saat data disimpan. Lanjutkan?'
       )
-
       if (!confirmDisable) {
         input.checked = true
         return
@@ -53,7 +53,9 @@
     }
   }
 
-  async function handleMethodToggle(method, isChecked) {
+  async function handleMethodToggle(method, e) {
+    const isChecked = e.currentTarget.checked
+    const input = e.currentTarget
     if (isProcessing) return
     if (!isChecked) {
       if (activeMfaType === method.type) {
@@ -63,15 +65,15 @@
 
         if (confirmDisable) {
           activeMfaType = 'none'
-
           pendingMfaType = null
+          input.checked = false
         } else {
+          input.checked = true
           return
         }
       } else {
         pendingMfaType = null
       }
-
       return
     }
 
@@ -81,33 +83,20 @@
           `Anda saat ini menggunakan ${activeMfaType.toUpperCase()}. Mengaktifkan ${method.label} akan menggantikan metode sebelumnya. Lanjutkan?`
         )
         if (!confirmSwitch) {
+          input.checked = false
           return
         }
       }
       pendingMfaType = method.type
       verificationCode = ''
       if (method.type === 'totp') {
-        // activeMfaType = method.type
+        activeMfaType = 'none'
         await initiate2FASetup()
       } else if (method.type === 'email') {
-        console.log("SINI");
-        
         activeMfaType = method.type
         // await requestEmailOtp();
       }
     }
-  }
-
-  async function updateMfaType(type) {
-    isProcessing = true
-    // router.post('/systems/security/update-mfa', { type }, {
-    //   onSuccess: () => {
-    activeMfaType = type
-    pendingMfaType = null
-    isMfaEnabled = type !== 'none'
-    //   },
-    //   onFinish: () => isProcessing = false
-    // });
   }
 
   async function initiate2FASetup() {
@@ -135,15 +124,16 @@
         alert('Google Authenticator Aktif!')
         show2FASetup = false
         activeMfaType = 'totp'
-        // mfaMethods = 'totp'
+        pendingMfaType = null
       } else {
         const err = await res.json()
         alert(err.message || 'Kode verifikasi salah!')
-        mfaMethods = 'none'
+        // mfaMethods = 'totp'
+        // pendingMfaType = 'totp'
+        show2FASetup = true
       }
     } finally {
       isSubmitting = false
-      // show2FASetup = false
     }
   }
 
@@ -215,6 +205,18 @@
       }, 1700)
       return () => clearTimeout(timer)
     }
+    const flash = $page.props.flash
+    if (flash && Object.values(flash).some((v) => v !== null)) {
+      console.log(flash)
+    }
+    if (flash?.success) toastStore.add(flash.success, 'success')
+    if (flash?.error) toastStore.add(flash.error, 'error')
+    if (flash?.warning) toastStore.add(flash.warning, 'warning')
+    if (flash?.info) toastStore.add(flash.info, 'info')
+  })
+  // Svelte 5 akan memantau props.flash secara otomatis
+  $inspect($page.props.flash).with((type, value) => {
+    console.log(`[Reactivity Test] Type: ${type}`, value)
   })
 </script>
 
@@ -357,7 +359,9 @@
 
         <div class="space-y-4">
           <div class="space-y-1.5">
-            <label class="text-[10px] font-black uppercase text-muted-foreground/70 tracking-widest"
+            <label
+              for="user"
+              class="text-[10px] font-black uppercase text-muted-foreground/70 tracking-widest"
               >Username</label
             >
             <input
@@ -367,7 +371,9 @@
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-[10px] font-black uppercase text-muted-foreground/70 tracking-widest"
+            <label
+              for="email"
+              class="text-[10px] font-black uppercase text-muted-foreground/70 tracking-widest"
               >Alamat Email</label
             >
             <input
@@ -379,6 +385,7 @@
           <div class="pt-4 border-t border-border/50">
             <div class="space-y-1.5">
               <label
+                for="password"
                 class="text-[10px] font-black uppercase text-muted-foreground/70 tracking-widest"
                 >Ganti Password</label
               >
@@ -450,9 +457,9 @@
                                 >
                                   <i class="fas fa-check-circle text-[7px]"></i>
                                   {#if $page.props.user?.mfa_type === method.type}
-                                    Aktif Saat Ini
+                                    Terverifikasi
                                   {:else}
-                                    Siap Disimpan
+                                    Terverifikasi dan Siap Disimpan
                                   {/if}
                                 </span>
                               </div>
@@ -486,7 +493,7 @@
                           type="checkbox"
                           disabled={isProcessing}
                           checked={activeMfaType === method.type || pendingMfaType === method.type}
-                          onchange={(e) => handleMethodToggle(method, e.currentTarget.checked)}
+                          onchange={(e) => handleMethodToggle(method, e)}
                           class="sr-only peer"
                         />
                         <div
@@ -569,3 +576,36 @@
     </div>
   </div>
 {/if}
+
+<div
+  class="fixed z-[9999] pointer-events-none flex flex-col gap-3 w-full max-w-sm p-4 bottom-0 right-0 sm:bottom-auto sm:top-0"
+>
+  {#each toastStore.items as toast (toast.id)}
+    <div
+      in:fly={{ x: 100, duration: 400 }}
+      out:fade={{ duration: 200 }}
+      class="pointer-events-auto relative overflow-hidden flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/90 backdrop-blur-md border border-zinc-800 shadow-2xl"
+    >
+      <div class="absolute bottom-0 left-0 h-1 bg-zinc-700 w-full opacity-30"></div>
+
+      <i class="fas {icons[toast.type]} text-lg"></i>
+
+      <div class="flex-1 min-w-0">
+        <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">
+          {toast.type}
+        </p>
+        <p class="text-xs font-medium text-zinc-100 leading-relaxed truncate">
+          {toast.message}
+        </p>
+      </div>
+
+      <button
+        aria-label="toast"
+        onclick={() => toastStore.remove(toast.id)}
+        class="text-zinc-500 hover:text-zinc-200 transition-colors"
+      >
+        <i class="fas fa-times text-xs"></i>
+      </button>
+    </div>
+  {/each}
+</div>

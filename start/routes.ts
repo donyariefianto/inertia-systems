@@ -58,3 +58,11 @@ router.post('/language', ({ session, response, request }) => {
 })
 
 router.ws('/ws/:channels', '#controllers/websockets_controller.onMessage')
+router.get('/test-toast', async ({ session, response }) => {
+  session.flash('success', 'Data berhasil disimpan ke database!')
+  session.flash('error', 'Gagal memproses permintaan, silakan coba lagi.')
+  session.flash('warning', 'Sesi Anda akan segera berakhir.')
+  session.flash('info', 'Sistem akan melakukan maintenance malam ini.')
+
+  return response.ok({ status: true })
+})
