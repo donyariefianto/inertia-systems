@@ -20,6 +20,7 @@ export default class InertiaShareMiddleware {
       }
       if (userSession === '0') {
         users = {
+          id: '0',
           email: 'donyariefianto98@gmail.com',
           roles: 'SU',
           mfa_type: 'email',

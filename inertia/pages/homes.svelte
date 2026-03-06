@@ -2,6 +2,7 @@
   import { useForm, page, Link } from '@inertiajs/svelte'
   import MainLayout from '~/layouts/MainLayout.svelte'
   import { fade, fly } from 'svelte/transition'
+  import { toast } from '~/utils/toast.svelte'
 
   const form = useForm({})
 
@@ -61,7 +62,7 @@
 
       <button
         type="button"
-        on:click={handleLogout}
+        onclick={handleLogout}
         class="group inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-medium text-destructive shadow-sm transition-all hover:bg-destructive/10 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 active:scale-[0.98]"
         aria-label="Logout dari sistem"
         disabled={form.processing}

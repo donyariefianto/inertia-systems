@@ -9,6 +9,13 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import transmit from '@adonisjs/transmit/services/main'
+import { UtilService } from '#services/util_service'
+
+// transmit.authorize('user/:id', (ctx, id) => {
+//   return ctx.auth.user?.id === Number(id)
+// })
+transmit.registerRoutes()
 
 router.on('/').renderInertia('landing')
 router.get('/login', '#controllers/frontends_controller.login')
@@ -59,10 +66,6 @@ router.post('/language', ({ session, response, request }) => {
 
 router.ws('/ws/:channels', '#controllers/websockets_controller.onMessage')
 router.get('/test-toast', async ({ session, response }) => {
-  session.flash('success', 'Data berhasil disimpan ke database!')
-  session.flash('error', 'Gagal memproses permintaan, silakan coba lagi.')
-  session.flash('warning', 'Sesi Anda akan segera berakhir.')
-  session.flash('info', 'Sistem akan melakukan maintenance malam ini.')
-
-  return response.ok({ status: true })
+  UtilService.sendNotifications('0', 'Sistem Proyeksi Berhasil Diperbarui!', 'success')
+  return response.json({ message: 'Notification sent via Transmit' })
 })

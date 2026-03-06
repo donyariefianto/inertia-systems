@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, untrack } from 'svelte'
   import { page, router } from '@inertiajs/svelte'
   import { EncryptionService } from '~/stores/encryption.ts'
   import { initTheme } from '~/stores/theme.svelte.ts'
@@ -11,7 +11,11 @@
   import TableView from '~/pages/generic/TableView.svelte'
   import ChartView from '~/pages/generic/ChartView.svelte'
   import SettingsView from '~/pages/generic/SettingsView.svelte'
-  import { toastStore } from '~/utils/toast.svelte'
+  import Toast from '~/components/Toast.svelte'
+  import ConfirmDialog from '~/components/ConfirmDialog.svelte'
+  import { realtime } from '~/stores/realtime.svelte'
+  import { Confirm } from '~/utils/confirm.svelte'
+  import { toast } from '~/utils/toast.svelte'
 
   let isProfileOpen = $state(false)
   let show2FASetup = $state(false)
@@ -37,9 +41,14 @@
     const input = e.currentTarget
     const targetChecked = input.checked
     if (!targetChecked) {
-      const confirmDisable = confirm(
-        'PERINGATAN: Mematikan MFA akan menghapus konfigurasi saat data disimpan. Lanjutkan?'
-      )
+      const confirmDisable = await Confirm.show({
+        title: 'Matikan MFA?',
+        message:
+          'PERINGATAN: Mematikan MFA akan menghapus konfigurasi saat data disimpan. Lanjutkan?',
+        confirmText: 'Ya, Hapus',
+        type: 'destructive',
+      })
+
       if (!confirmDisable) {
         input.checked = true
         return
@@ -59,9 +68,12 @@
     if (isProcessing) return
     if (!isChecked) {
       if (activeMfaType === method.type) {
-        const confirmDisable = confirm(
-          `Apakah Anda yakin ingin menonaktifkan ${method.label}? Konfigurasi ini akan dihapus saat Anda menekan tombol Simpan.`
-        )
+        const confirmDisable = await Confirm.show({
+          title: `Nonaktifkan ${method.label} !!!`,
+          message: `Apakah Anda yakin ingin menonaktifkan ${method.label}? Konfigurasi ini akan dihapus saat Anda menekan tombol Simpan.`,
+          confirmText: 'Ya, Nonaktifkan',
+          type: 'destructive',
+        })
 
         if (confirmDisable) {
           activeMfaType = 'none'
@@ -79,9 +91,13 @@
 
     if (isChecked) {
       if (activeMfaType !== 'none' && activeMfaType !== method.type) {
-        const confirmSwitch = confirm(
-          `Anda saat ini menggunakan ${activeMfaType.toUpperCase()}. Mengaktifkan ${method.label} akan menggantikan metode sebelumnya. Lanjutkan?`
-        )
+        const confirmSwitch = await Confirm.show({
+          title: `Mengaktifkan ${method.label} ?`,
+          message: `Anda saat ini menggunakan ${activeMfaType.toUpperCase()}. Mengaktifkan ${method.label} akan menggantikan metode sebelumnya. Lanjutkan?`,
+          confirmText: 'Ya, Hapus',
+          type: 'destructive',
+        })
+
         if (!confirmSwitch) {
           input.checked = false
           return
@@ -121,13 +137,13 @@
       })
 
       if (res.ok) {
-        alert('Google Authenticator Aktif!')
+        toast.add('Google Authenticator Aktif!', 'success')
         show2FASetup = false
         activeMfaType = 'totp'
         pendingMfaType = null
       } else {
         const err = await res.json()
-        alert(err.message || 'Kode verifikasi salah!')
+        toast.add(err.message || 'Kode verifikasi salah!', 'error')
         // mfaMethods = 'totp'
         // pendingMfaType = 'totp'
         show2FASetup = true
@@ -139,7 +155,7 @@
 
   function handleUpdateProfile() {
     // profileForm.post('/update-profile', { ... })
-    alert('Profil diperbarui!')
+    toast.add('Profil diperbarui!', 'success')
     isProfileOpen = false
   }
 
@@ -198,25 +214,19 @@
 
   $effect(() => {
     const _ = $page.url
-    isMobileOpen = false
-    if (isOrchestrating) {
-      const timer = setTimeout(() => {
-        isOrchestrating = false
-      }, 1700)
-      return () => clearTimeout(timer)
-    }
-    const flash = $page.props.flash
-    if (flash && Object.values(flash).some((v) => v !== null)) {
-      console.log(flash)
-    }
-    if (flash?.success) toastStore.add(flash.success, 'success')
-    if (flash?.error) toastStore.add(flash.error, 'error')
-    if (flash?.warning) toastStore.add(flash.warning, 'warning')
-    if (flash?.info) toastStore.add(flash.info, 'info')
-  })
-  // Svelte 5 akan memantau props.flash secara otomatis
-  $inspect($page.props.flash).with((type, value) => {
-    console.log(`[Reactivity Test] Type: ${type}`, value)
+    const user = $page.props.user
+    untrack(() => {
+      isMobileOpen = false
+      if (isOrchestrating) {
+        const timer = setTimeout(() => {
+          isOrchestrating = false
+        }, 1700)
+        return () => clearTimeout(timer)
+      }
+
+      if (user?.id) realtime.init(user.id)
+      // return () => realtime.stop()
+    })
   })
 </script>
 
@@ -577,35 +587,5 @@
   </div>
 {/if}
 
-<div
-  class="fixed z-[9999] pointer-events-none flex flex-col gap-3 w-full max-w-sm p-4 bottom-0 right-0 sm:bottom-auto sm:top-0"
->
-  {#each toastStore.items as toast (toast.id)}
-    <div
-      in:fly={{ x: 100, duration: 400 }}
-      out:fade={{ duration: 200 }}
-      class="pointer-events-auto relative overflow-hidden flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/90 backdrop-blur-md border border-zinc-800 shadow-2xl"
-    >
-      <div class="absolute bottom-0 left-0 h-1 bg-zinc-700 w-full opacity-30"></div>
-
-      <i class="fas {icons[toast.type]} text-lg"></i>
-
-      <div class="flex-1 min-w-0">
-        <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">
-          {toast.type}
-        </p>
-        <p class="text-xs font-medium text-zinc-100 leading-relaxed truncate">
-          {toast.message}
-        </p>
-      </div>
-
-      <button
-        aria-label="toast"
-        onclick={() => toastStore.remove(toast.id)}
-        class="text-zinc-500 hover:text-zinc-200 transition-colors"
-      >
-        <i class="fas fa-times text-xs"></i>
-      </button>
-    </div>
-  {/each}
-</div>
+<Toast />
+<ConfirmDialog />

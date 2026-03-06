@@ -56,6 +56,7 @@ export default defineConfig({
     () => import('@adonisjs/cache/cache_provider'),
     () => import('@adonisjs/redis/redis_provider'),
     () => import('adonisjs-websocket/websocket_provider'),
+    () => import('@adonisjs/transmit/transmit_provider'),
   ],
 
   /*

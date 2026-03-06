@@ -1,5 +1,6 @@
 import MongoService from '#services/mongo_service'
 import hash from '@adonisjs/core/services/hash'
+import transmit from '@adonisjs/transmit/services/main'
 
 interface FieldConfig {
   name: string
@@ -177,7 +178,6 @@ export class UtilService {
       ? [FIXED_DASHBOARD, ...data.sidemenu, FIXED_SETTINGS]
       : [FIXED_DASHBOARD, FIXED_SETTINGS]
   }
-
   static async getFieldsMenu(collection) {
     const menu = await this.sideMenu()
     for (const group of menu) {
@@ -192,7 +192,6 @@ export class UtilService {
     }
     return null
   }
-
   static async castValue(value: any, field: FieldConfig): Promise<any> {
     if (value === undefined || value === null) {
       if (field.type === 'number' || field.type === 'currency') return 0
@@ -242,7 +241,6 @@ export class UtilService {
         return typeof value === 'string' ? value.trim() : value
     }
   }
-
   static async sterilizePayload(body: Record<string, any>, fields: FieldConfig[]) {
     const sanitized: Record<string, any> = {}
 
@@ -251,5 +249,12 @@ export class UtilService {
     }
 
     return sanitized
+  }
+  static sendNotifications(
+    userId: number,
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info' = 'info'
+  ) {
+    transmit.broadcast(`user/${userId}`, { message, type })
   }
 }

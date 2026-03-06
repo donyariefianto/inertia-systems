@@ -3,7 +3,9 @@
   import type { MenuConfig, FieldConfig } from '~/types/menu'
   import { EncryptionService } from '~/stores/encryption'
   import { getCsrfToken } from '~/utils/getCrsfToken'
-  let { config = {} as MenuConfig, title = 'Data Master' } = $props<{
+  import { Confirm } from '~/utils/confirm.svelte'
+  import { toast } from '~/utils/toast.svelte'
+  let { config = {} as MenuConfig, title = '' } = $props<{
     config: MenuConfig
     title?: string
   }>()
@@ -51,13 +53,9 @@
   )
 
   function formatValue(value: any, field: FieldConfig) {
-    // 1. Guarding: Jika data kosong, tampilkan placeholder profesional
     if (value === null || value === undefined || value === '') return '-'
-
     const type = field.type
-    // Ambil locale dari config, fallback ke id-ID jika belum diatur
     const locale = field.locale || 'id-ID'
-    // Ambil format, atau tentukan default berdasarkan tipe
     const format = field.format || (type === 'currency' ? 'IDR' : 'decimal')
     const precision = field.precision ?? 0
 
@@ -66,21 +64,19 @@
         case 'currency':
           return new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency: format, // 'IDR', 'USD', dll
+            currency: format,
             minimumFractionDigits: precision,
             maximumFractionDigits: precision,
           }).format(value)
 
         case 'number':
-          // Jika format adalah persentase
           if (format === 'percent') {
             return new Intl.NumberFormat(locale, {
               style: 'percent',
               minimumFractionDigits: precision,
-            }).format(value / 100) // Asumsi 100 diinput sebagai 100%
+            }).format(value / 100)
           }
 
-          // Jika format ringkas (1.2M, 10K)
           if (format === 'compact') {
             return new Intl.NumberFormat(locale, {
               notation: 'compact',
@@ -88,7 +84,6 @@
             }).format(value)
           }
 
-          // Standar Desimal
           return new Intl.NumberFormat(locale, {
             style: 'decimal',
             minimumFractionDigits: precision,
@@ -108,7 +103,6 @@
           return String(value)
       }
     } catch (e) {
-      // Fallback jika ada error formatting (misal locale tidak valid)
       return String(value)
     }
   }
@@ -132,8 +126,10 @@
     if (!config.endpoint) return
     const missingFields = config.fields?.filter((f: FieldConfig) => f.required && !formData[f.name])
     if (missingFields?.length) {
-      alert(`Mohon isi: ${missingFields.map((f: FieldConfig) => f.label).join(', ')}`)
-      return
+      return toast.add(
+        `Mohon isi: ${missingFields.map((f: FieldConfig) => f.label).join(', ')}`,
+        'warning'
+      )
     }
 
     isSaving = true
@@ -158,18 +154,20 @@
       formData = {}
       fetchData()
     } catch (error) {
-      alert('Error: ' + error.message)
+      toast.add('Error: ' + error.message, 'error')
     } finally {
       isSaving = false
     }
   }
 
   async function handleDelete(id: string | number) {
-    if (
-      !confirm('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')
-    )
-      return
-
+    const ok = await Confirm.show({
+      title: 'Hapus Proyeksi?',
+      message: 'Tindakan ini tidak dapat dibatalkan. Semua data engine akan ikut terhapus.',
+      confirmText: 'Ya, Hapus',
+      type: 'destructive',
+    })
+    if (!ok) return
     isLoading = true
     try {
       const response = await fetch(`/api/collections/${config.endpoint}/${id}`, {
@@ -181,10 +179,11 @@
       })
 
       if (!response.ok) throw new Error('Gagal menghapus data.')
+      toast.add('Data berhasil dihapus', 'success')
 
       await fetchData()
     } catch (error: any) {
-      alert(error.message)
+      toast.add('Error: ' + error.message, 'error')
     } finally {
       isLoading = false
     }
@@ -226,19 +225,18 @@
     isAddFormOpen = true
   }
 
-  // Fungsi untuk memetakan lebar ke sistem grid 12 kolom
   const getGridWidth = (width: string | number | undefined): string => {
     const w = String(width)
     switch (w) {
       case '33':
-        return 'md:col-span-3' // 1/4 baris
+        return 'md:col-span-3'
       case '50':
-        return 'md:col-span-4' // 1/3 baris
+        return 'md:col-span-4'
       case '66':
-        return 'md:col-span-6' // 1/2 baris
+        return 'md:col-span-6'
       case '100':
       default:
-        return 'md:col-span-12' // baris penuh
+        return 'md:col-span-12'
     }
   }
 
@@ -248,7 +246,7 @@
 </script>
 
 <div
-  class="absolute inset-0 flex flex-col bg-background animate-in fade-in duration-500 overflow-hidden"
+  class="flex h-full w-full w-full bg-background border border-border/80 rounded-2xl inset-0 flex flex-col animate-in fade-in duration-500 overflow-hidden shadow-2xl"
 >
   <div
     class="flex flex-col gap-5 sm:flex-row sm:items-end justify-between p-4 md:p-6 lg:px-8 shrink-0"
@@ -349,9 +347,9 @@
     </div>
   </div>
 
-  <div class="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-4 relative z-0">
+  <div class="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-4 relative">
     <div
-      class="flex-1 bg-card border border-border/80 rounded-3xl shadow-sm overflow-hidden flex flex-col relative"
+      class="flex-1 bg-background border border-border/80 rounded-2xl shadow-sm overflow-hidden flex flex-col relative"
     >
       {#if isLoading}
         <div
@@ -651,7 +649,8 @@
                       readonly
                       placeholder="Cari {field.label}..."
                       class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-bold focus:border-primary outline-none transition-all shadow-inner cursor-pointer"
-                      onclick={() => alert(`Buka Lookup untuk: ${field.relation_collection}`)}
+                      onclick={() =>
+                        toast.add(`Buka Lookup untuk: ${field.relation_collection}`, 'info')}
                     />
                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
                       <i class="fas fa-search text-[10px]"></i>
@@ -817,7 +816,8 @@
                                           readonly
                                           placeholder="Cari..."
                                           class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-bold focus:border-primary focus:bg-background outline-none transition-all cursor-pointer"
-                                          onclick={() => alert(`Lookup: ${sf.relation_collection}`)}
+                                          onclick={() =>
+                                            toast.add(`Lookup: ${sf.relation_collection}`, 'info')}
                                         />
                                         <i
                                           class="fas fa-search absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] text-primary"

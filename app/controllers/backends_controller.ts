@@ -9,7 +9,6 @@ import { generateURI, generateSecret, generate, verify } from 'otplib'
 import qrcode from 'qrcode'
 import encryption from '@adonisjs/core/services/encryption'
 import env from '#start/env'
-
 export default class BackendsController {
   async login({ request, response, session }: HttpContext) {
     const { username, email, password } = request.all()

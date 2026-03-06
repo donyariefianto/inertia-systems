@@ -11,8 +11,7 @@
   let dashboardRef = $state()
   let activeTabId = $state(null)
   let isSaving = $state(false)
-  let myMenu = $state([]) // Data utama
-
+  let myMenu = $state([])
   const tabs = [
     {
       id: 'general',
@@ -69,9 +68,6 @@
         const finalData = dashboardRef.getDashboardJSON()
         console.log('Pre-Save API Payload:', finalData)
         console.log('JSON Stringified:', JSON.stringify(finalData, null, 2))
-
-        // Di sini Anda lanjutkan proses hit ke API
-        // await router.post('/api/dashboard/save', finalData);
       }
       if (activeTabId == 'menu') {
         const cleanMenu = prepareMenuPayload(myMenu)
@@ -82,12 +78,6 @@
     } finally {
       isSaving = false
     }
-
-    // if (activeTab.id == 'dashboard') {
-    //   console.log("SINI");
-
-    //   handleDashboardUpdate()
-    // }
   }
 
   function handleDashboardUpdate() {
