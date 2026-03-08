@@ -672,7 +672,9 @@
                             ><option value="select">Select</option><option value="relation"
                               >Relation</option
                             ><option value="repeater">Repeater (Tabel)</option>
-                            <option value="password">Password</option></optgroup
+                            <option value="object_group">Single Group </option>
+                            <option value="password">Password</option>
+                            <option value="any">Any (JSON & Array)</option></optgroup
                           >
                           <optgroup label="Media"
                             ><option value="image">Image Upload</option></optgroup
@@ -1013,7 +1015,7 @@
                   </div>
                 {/if}
 
-                {#if field.type === 'repeater'}
+                {#if field.type === 'repeater' || field.type === 'object_group'}
                   <div
                     class="bg-card border-2 border-dashed border-primary/30 rounded-2xl p-4 md:p-6 shadow-sm overflow-hidden"
                     transition:slide

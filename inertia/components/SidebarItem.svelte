@@ -6,14 +6,12 @@
   let { item, depth = 0, isCollapsed = false } = $props()
   let isOpen = $state(false)
 
-  // 1. NORMALISASI PATH SECARA PRESISI
   const safePath = $derived.by(() => {
     if (!item.path) return null
     const cleanPath = item.path.replace(/^\//, '')
     return cleanPath.startsWith('systems/') ? `/${cleanPath}` : `/systems/${cleanPath}`
   })
 
-  // 2. DETEKSI STATUS AKTIF (SUPPORT PARENT/CHILD)
   const isActive = $derived.by(() => {
     const currentUrl = $page.url.split('?')[0]
     if (safePath === currentUrl) return true
@@ -28,7 +26,6 @@
     return false
   })
 
-  // 3. AUTO-EXPAND JIKA CHILD AKTIF
   $effect(() => {
     if (isActive && item.sub_sidemenu) isOpen = true
   })

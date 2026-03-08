@@ -4,14 +4,12 @@ export type SelectOption = {
 }
 
 export type CalculationOperation =
-  // --- Mathematics (Row Level) ---
   | 'ADD'
   | 'SUBTRACT'
   | 'MULTIPLY'
   | 'DIVIDE'
   | 'MODULO'
   | 'PERCENTAGE'
-  // --- Aggregation (Collection/Repeater Level) ---
   | 'SUM'
   | 'AVG'
   | 'MIN'
@@ -22,15 +20,15 @@ export type CalculationOperation =
 export type CalculationConfig = {
   enable_calc: boolean
   operation: CalculationOperation
-  fields: string // Nama field target (misal: "price,qty")
-  precision?: number // Level Enterprise wajib menangani pembulatan desimal
+  fields: string
+  precision?: number
 }
 
 export type FieldConfig = {
   name: string
   label: string
-  type: string // Perbaikan: Sebelumnya 'export type: string' (Sintaks Error)
-  export?: boolean // Tambahkan '?' agar opsional dan tidak error saat init
+  type: string
+  export?: boolean
   required?: boolean
   unique?: boolean
   readonly?: boolean
@@ -62,7 +60,7 @@ export type MenuNode = {
   icon: string
   type?: 'group' | 'tableview'
   path?: string
-  export?: boolean // Tambahkan di sini juga jika ingin toggle export per menu
+  export?: boolean
   locked?: boolean
   permissions?: string[]
   sub_sidemenu?: MenuNode[]

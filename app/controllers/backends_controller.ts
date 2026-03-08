@@ -9,31 +9,161 @@ import { generateURI, generateSecret, generate, verify } from 'otplib'
 import qrcode from 'qrcode'
 import encryption from '@adonisjs/core/services/encryption'
 import env from '#start/env'
+
 export default class BackendsController {
   async login({ request, response, session }: HttpContext) {
-    const { username, email, password } = request.all()
-    if ((username == 'root' || email == 'root') && password == 'secret_services') {
-      session.put('user_id', '0')
-      session.put('user_name', 'super-users')
-      session.put('user_role', 'super-users')
-      return response.redirect().toPath('/systems')
+    const { login, password } = request.all()
+    try {
+      if (!login || !password) {
+        return response.badRequest({
+          status: false,
+          message: 'Login dan Password di wajibkan.',
+        })
+      }
+      const users = MongoService.collection('users')
+      const user = await users.findOne({ $or: [{ email: login }, { username: login }] })
+      if (!user) {
+        return response.notFound({
+          status: false,
+          message: 'Email atau Username tidak di temukan.',
+        })
+      }
+
+      if (!(await hash.verify(user.password, password))) {
+        session.flash('error', 'Email atau kata sandi salah.')
+        return response.unauthorized({
+          status: false,
+          message: 'Email atau kata sandi salah.',
+        })
+      }
+      if (user.mfa_enabled && user.mfa_type && user.mfa_type !== 'none') {
+        session.put('mfa_pending_user_id', user._id.toString())
+        session.put('mfa_pending_type', user.mfa_type)
+
+        if (user.mfa_type === 'email') {
+        }
+
+        return response.ok({
+          status: true,
+          mfa_required: true,
+          mfa_type: user.mfa_type,
+          message: `MFA diperlukan. Silakan cek ${user.mfa_type === 'email' ? 'email' : 'aplikasi Authenticator'} Anda.`,
+        })
+      }
+      session.put('user_id', user._id.toString())
+      session.put('user_name', user.username.toString())
+      session.put('user_role', user.role || 'staff')
+      await users.updateOne({ _id: user._id }, { $set: { last_login: DateService.now() } })
+      return response.ok({
+        status: true,
+        mfa_required: false,
+        message: 'Login berhasil.',
+      })
+    } catch (error) {
+      return response.internalServerError({
+        status: false,
+        message: error.message,
+      })
     }
-    const users = MongoService.collection('users')
-    const user = await users.findOne({ $or: [{ email: email }, { username: username }] })
-    if (!user || !(await hash.verify(user.password, password))) {
-      session.flash('error', 'Email atau kata sandi salah.')
-      return response.redirect().back()
-    }
-    session.put('user_id', user._id.toString())
-    session.put('user_name', user.name.toString())
-    session.put('user_role', user.role || 'staff')
-    return response.redirect().toPath('/systems')
   }
   async logout({ response, session }: HttpContext) {
     session.forget('user_id')
     session.forget('user_name')
     session.forget('user_role')
     return response.redirect().toPath('/login')
+  }
+  async profileUpdate({ request, response, session }: HttpContext) {
+    const colName = 'users'
+    const uid = session.get('user_id')
+    const body = request.all()
+    const fields = await UtilService.getFieldsMenu(colName)
+    let cleanData = await UtilService.sterilizePayload(body, fields)
+    const collections = MongoService.collection(colName)
+    for (let key in cleanData) {
+      if (cleanData[key] === null) {
+        delete cleanData[key]
+      }
+    }
+    const updateData: any = { ...cleanData, updated_at: DateService.now() }
+    const result = await collections?.findOneAndUpdate(
+      { _id: new ObjectId(uid) },
+      { $set: updateData }
+    )
+    return response.ok({
+      status: true,
+    })
+  }
+  async verifyMfaLogin({ request, response, session }: HttpContext) {
+    const { code } = request.only(['code'])
+    const pendingUserId = session.get('mfa_pending_user_id')
+    const pendingType = session.get('mfa_pending_type')
+    try {
+      if (!code || code.toString().length !== 6) {
+        return response.badRequest({
+          status: false,
+          message: 'Invalid request code',
+        })
+      }
+      if (!pendingUserId || !pendingType) {
+        return response.unauthorized({
+          status: false,
+          message: 'Sesi login tidak valid atau sudah kedaluwarsa.',
+        })
+      }
+      const users = MongoService.collection('users')
+      const user = await users.findOne({ _id: new ObjectId(pendingUserId) })
+      if (!user) {
+        return response.unauthorized({ status: false, message: 'Pengguna tidak ditemukan.' })
+      }
+      if (pendingType === 'totp') {
+        if (!user.totp_secret_key) {
+          return response.badRequest({
+            status: false,
+            message: 'Konfigurasi TOTP rusak. Hubungi administrator.',
+          })
+        }
+        const secret = user.totp_secret_key
+        const isValid = await verify({ token: code, secret: secret as string })
+        if (!isValid.valid) {
+          return response.badRequest({
+            status: false,
+            message: 'Kode Authenticator salah atau kedaluwarsa.',
+          })
+        }
+      } else if (pendingType === 'email') {
+        const storedOtp = session.get('mfa_login_otp')
+        if (!storedOtp)
+          return response.badRequest({
+            status: false,
+            message: 'OTP tidak ditemukan. Silakan kirim ulang.',
+          })
+        if (Date.now() > storedOtp.expiresAt) {
+          session.forget('mfa_login_otp')
+          return response.badRequest({ status: false, message: 'Kode OTP sudah kedaluwarsa.' })
+        }
+        if (storedOtp.code !== code) {
+          return response.badRequest({ status: false, message: 'Kode OTP salah.' })
+        }
+        session.forget('mfa_login_otp')
+      }
+
+      session.forget('mfa_pending_user_id')
+      session.forget('mfa_pending_type')
+
+      session.put('user_id', user._id.toString())
+      session.put('user_name', user.username.toString())
+      session.put('user_role', user.role || 'staff')
+      await users.updateOne({ _id: user._id }, { $set: { last_login: DateService.now() } })
+      return response.ok({
+        status: true,
+        message: 'Login dan verifikasi MFA berhasil.',
+      })
+    } catch (error) {
+      return response.internalServerError({
+        status: false,
+        message: error.message,
+      })
+    }
   }
   async navigation_handler({ inertia, session, request, response }: HttpContext) {
     const currentPath = request.url().replace(/^\//, '')
@@ -174,23 +304,25 @@ export default class BackendsController {
     try {
       const fields = await UtilService.getFieldsMenu(colName)
       const cleanData = await UtilService.sterilizePayload(body, fields)
-      const payload = { ...body, created_at: DateService.now(), updated_at: DateService.now() }
+      const payload = { ...cleanData, created_at: DateService.now(), updated_at: DateService.now() }
       const collections = MongoService.collection(colName)
       const result = await collections?.insertOne(payload)
       return response.status(201).send(result)
     } catch (error) {
-      return response.status(500).send({ message: 'Error creating data', error })
+      console.log(error)
+
+      return response.status(500).send({ message: 'Error creating data: ' + error.message })
     }
   }
   async updateCollectionData({ params, request, response }: HttpContext) {
     try {
       const colName = params.col
       const id = params.id
-      console.log('ID', id)
-
       let body = request.all()
+      const fields = await UtilService.getFieldsMenu(colName)
+      const cleanData = await UtilService.sterilizePayload(body, fields)
       const collections = MongoService.collection(colName)
-      const updateData: any = { ...body, updated_at: DateService.now() }
+      const updateData: any = { ...cleanData, updated_at: DateService.now() }
       delete updateData._id
       const result = await collections?.findOneAndUpdate(
         { _id: new ObjectId(id) },
@@ -228,60 +360,61 @@ export default class BackendsController {
     }
   }
   async setupAuth({ auth, session, response }: HttpContext) {
-    const user = {
-      email: 'root',
-      twoFactorSecret: 'twoFactorSecret',
-    }
-    let secret = session.get('totp_setup_secret')
-
-    if (!secret) {
-      secret = generateSecret()
-      session.put('totp_setup_secret', secret)
-    }
-
+    const uid = session.get('user_id')
+    const collections = MongoService.collection('users')
+    const user = await UtilService.getProfiles(uid)
+    let secret = generateSecret()
     const otpauth = generateURI({
       issuer: env.get('APP_NAME', 'AION Systems'),
       label: user.email,
       secret,
     })
-
     const qrCodeUrl = await qrcode.toDataURL(otpauth)
-
+    session.put('temp_mfa_secret', secret)
     return response.json({
       qrCode: qrCodeUrl,
       secretKey: secret,
       otpauth,
     })
   }
-  async confirmAuth({ request, auth, session, response }: HttpContext) {
-    const code = request.input('code')
+  async confirmAuth({ request, session, response }: HttpContext) {
+    const { code, type } = request.only(['code', 'type'])
     const uid = session.get('user_id')
     const collections = MongoService.collection('users')
-    const result = await collections?.drop()
-    const user = {
-      email: 'root',
-      twoFactorSecret: 'twoFactorSecret',
+    const user = await UtilService.getProfiles(uid)
+    if (type === 'totp') {
+      const tempSecret = session.get('temp_mfa_secret')
+      if (!tempSecret) {
+        return response.badRequest({ message: 'Sesi kedaluwarsa. Silakan ulangi setup MFA.' })
+      }
+      const isValid = await verify({ token: code, secret: tempSecret })
+      if (isValid.valid) {
+        session.forget('temp_mfa_secret')
+        return response.ok({ message: 'TOTP berhasil diverifikasi. Jangan lupa klik Simpan.' })
+      } else {
+        return response.badRequest({
+          message: 'Kode Authenticator tidak valid atau sudah kedaluwarsa.',
+        })
+      }
     }
-    const secret = session.get('totp_setup_secret')
+    if (type === 'email') {
+      const storedOtp = session.get('mfa_otp')
 
-    if (!secret) {
-      return response.status(400).json({ message: 'Sesi setup telah berakhir. Silakan ulangi.' })
+      if (!storedOtp || storedOtp.type !== 'email') {
+        return response.badRequest({ message: 'Kode OTP tidak ditemukan. Silakan kirim ulang.' })
+      }
+      if (Date.now() > storedOtp.expiresAt) {
+        session.forget('mfa_otp')
+        return response.badRequest({ message: 'Kode OTP sudah kedaluwarsa.' })
+      }
+      if (storedOtp.code !== code) {
+        return response.badRequest({ message: 'Kode OTP salah.' })
+      }
+
+      session.forget('mfa_otp')
+      session.put('mfa_verified', true)
+      return response.ok({ message: 'Email berhasil diverifikasi. Jangan lupa klik Simpan.' })
     }
-
-    const isValid = await verify({ token: code, secret })
-    if (isValid.valid) {
-      // Simpan secara terenkripsi ke database
-      // user.twoFactorSecret = encryption.encrypt(secsret)
-      // user.mfaType = 'totp'
-      // user.twoFactorConfirmedAt = DateTime.now()
-      // await user.save()
-
-      // Bersihkan sesi setup
-      session.forget('totp_setup_secret')
-
-      return response.json({ message: 'Google Authenticator berhasil diaktifkan.' })
-    }
-
     return response.status(422).json({ message: 'Kode verifikasi tidak cocok.' })
   }
 }

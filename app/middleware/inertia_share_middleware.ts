@@ -3,35 +3,20 @@ import type { NextFn } from '@adonisjs/core/types/http'
 import { EncryptionService } from '#services/encryption_service'
 import MongoService from '#services/mongo_service'
 import { UtilService } from '#services/util_service'
+import { ObjectId } from 'mongodb'
 
 export default class InertiaShareMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const userSession = ctx.session.get('user_id')
     const locale = ctx.session.get('locale', 'en')
     let encryptedSidebar = null,
-      users = null
-
+      users = await UtilService.getProfiles(userSession)
     if (userSession) {
       try {
         const sidemenu = await UtilService.sideMenu()
         encryptedSidebar = EncryptionService.encrypt(JSON.stringify({ name: 'menu', sidemenu }))
       } catch (error) {
         console.error('❌ Middleware Sidebar Error:', error)
-      }
-      if (userSession === '0') {
-        users = {
-          id: '0',
-          email: 'donyariefianto98@gmail.com',
-          roles: 'SU',
-          mfa_type: 'email',
-          mfa_enabled: true,
-        }
-      } else {
-        const collections = MongoService.collection('users')
-        users = await collections.findOne({ $or: [{ id: userSession }, { _id: userSession }] })
-        if (!users) {
-          return ctx.response.redirect('/login')
-        }
       }
     }
 

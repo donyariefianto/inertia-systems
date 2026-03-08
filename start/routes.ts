@@ -35,6 +35,8 @@ router
   .group(() => {
     router.get('/security/setup', '#controllers/backends_controller.setupAuth')
     router.post('/security/confirm', '#controllers/backends_controller.confirmAuth')
+    router.post('/verify-mfa-login', '#controllers/backends_controller.verifyMfaLogin')
+    router.post('/profile-update', '#controllers/backends_controller.profileUpdate')
     router.patch('/menu', '#controllers/backends_controller.patchMenu')
 
     router.get(

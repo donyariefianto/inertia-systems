@@ -4,7 +4,6 @@
   import ThemeSwitcher from '~/components/ThemeSwitcher.svelte'
   import { fade } from 'svelte/transition'
 
-  // Terima props dari MainLayout
   let { isDesktopCollapsed, menuData, isOpen, onClose } = $props()
 </script>
 

@@ -42,6 +42,7 @@ export const sanitizeField = (field: any): any => {
       }
       break
 
+    case 'object_group':
     case 'repeater':
       clean.sub_fields = (field.sub_fields || []).map((sf: any) => sanitizeField(sf))
       break
@@ -71,4 +72,22 @@ export const prepareMenuPayload = (nodes: any[]): any[] => {
 
     return cleanNode
   })
+}
+
+export const formatJsonUtility = (rawInput) => {
+  try {
+    if (!rawInput) return { data: '', error: false }
+    const obj = typeof rawInput === 'string' ? JSON.parse(rawInput) : rawInput
+    return {
+      data: JSON.stringify(obj, null, 2),
+      error: false,
+      msg: 'JSON Valid',
+    }
+  } catch (err) {
+    return {
+      data: rawInput,
+      error: true,
+      msg: err.message,
+    }
+  }
 }

@@ -11,15 +11,7 @@ export default class FrontendsController {
   }
   async home({ inertia, session }: HttpContext) {
     try {
-      // 🛡️ Murni hanya mengambil data konten Dashboard
-      // Data sidebar sudah otomatis dikirim oleh Middleware global
-
-      const stats = {}
-
-      return inertia.render('homes', {
-        stats,
-        // Kita tidak perlu mengirim 'sidebar' di sini lagi
-      })
+      return inertia.render('homes')
     } catch (error) {
       console.error('🔥 [HomeController Error]:', error)
       return inertia.render('errors/server_error')

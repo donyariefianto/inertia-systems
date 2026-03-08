@@ -1,6 +1,7 @@
 import MongoService from '#services/mongo_service'
 import hash from '@adonisjs/core/services/hash'
 import transmit from '@adonisjs/transmit/services/main'
+import { ObjectId } from 'mongodb'
 
 interface FieldConfig {
   name: string
@@ -28,9 +29,27 @@ export class UtilService {
           path: 'dashboard',
           permissions: ['admin', 'user'],
           config: {
-            endpoint: '/api/dashboard/stats',
-            charts: ['overview', 'performance'],
-            refreshInterval: 30000,
+            collectionName: 'dashboard_settings',
+            endpoint: '/api/collections/dashboard_settings',
+            fields: [
+              {
+                name: 'name',
+                label: 'Name',
+                type: 'text',
+                required: true,
+                readonly: false,
+                width: '50',
+                show_up: true,
+              },
+              {
+                name: 'widgets',
+                label: 'Widgets',
+                type: 'any',
+                required: true,
+                width: '50',
+                show_up: true,
+              },
+            ],
           },
         },
       ],
@@ -58,50 +77,33 @@ export class UtilService {
                 label: 'Username',
                 type: 'text',
                 required: true,
-                unique: true,
+                readonly: false,
+                width: '50',
+                show_up: true,
+              },
+              {
+                name: 'password',
+                label: 'Password',
+                type: 'password',
+                required: true,
+                width: '50',
+                show_up: true,
               },
               {
                 name: 'email',
                 label: 'Email',
                 type: 'email',
                 required: true,
-                unique: true,
-              },
-              {
-                name: 'role',
-                label: 'Role',
-                type: 'select',
-                required: true,
-                readonly: false,
-                width: '100',
-                show_up: false,
-                options: [
-                  {
-                    label: 'Admin',
-                    value: 'admin',
-                  },
-                  {
-                    label: 'Staff',
-                    value: 'staff',
-                  },
-                  {
-                    label: 'Finance',
-                    value: 'finance',
-                  },
-                  {
-                    label: 'User',
-                    value: 'user',
-                  },
-                ],
+                width: '50',
+                show_up: true,
               },
               {
                 name: 'status',
                 label: 'Status Akun',
                 type: 'select',
                 required: true,
-                readonly: false,
-                width: '100',
-                show_up: false,
+                width: '50',
+                show_up: true,
                 options: [
                   {
                     label: 'Active',
@@ -118,19 +120,75 @@ export class UtilService {
                 ],
               },
               {
+                name: 'role',
+                label: 'Role',
+                type: 'select',
+                required: true,
+                width: '50',
+                show_up: true,
+                options: [
+                  {
+                    label: 'Admin',
+                    value: 'admin',
+                  },
+                  {
+                    label: 'User',
+                    value: 'user',
+                  },
+                  {
+                    label: 'Moderator',
+                    value: 'moderator',
+                  },
+                  {
+                    label: 'Operator',
+                    value: 'operator',
+                  },
+                ],
+              },
+              {
                 name: 'last_login',
                 label: 'Terakhir Login',
                 type: 'datetime',
                 readonly: true,
+                width: '50',
+                show_up: true,
+              },
+              {
+                name: 'mfa_enabled',
+                label: 'MFA',
+                type: 'boolean',
+                required: false,
+                readonly: false,
+                width: '50',
+                show_up: false,
+              },
+              {
+                name: 'mfa_type',
+                label: 'MFA Type',
+                type: 'select',
+                show_up: false,
+                width: '50',
+                options: [
+                  {
+                    label: 'Google Authenticator',
+                    value: 'totp',
+                  },
+                  {
+                    label: 'Email OTP Verification',
+                    value: 'email',
+                  },
+                ],
+              },
+              {
+                name: 'totp_secret_key',
+                label: 'TOTP code',
+                type: 'text',
+                required: false,
+                readonly: true,
+                width: '100',
+                show_up: false,
               },
             ],
-            operations: {
-              create: true,
-              read: true,
-              update: true,
-              delete: true,
-              reset_password: true,
-            },
           },
         },
         {
@@ -178,6 +236,13 @@ export class UtilService {
       ? [FIXED_DASHBOARD, ...data.sidemenu, FIXED_SETTINGS]
       : [FIXED_DASHBOARD, FIXED_SETTINGS]
   }
+  static async getProfiles(uid) {
+    const collections = MongoService.collection('users')
+    const user = await collections?.findOne({
+      $or: [{ _id: new ObjectId(uid) }, { id: uid }],
+    })
+    return user
+  }
   static async getFieldsMenu(collection) {
     const menu = await this.sideMenu()
     for (const group of menu) {
@@ -197,6 +262,7 @@ export class UtilService {
       if (field.type === 'number' || field.type === 'currency') return 0
       if (field.type === 'boolean') return false
       if (field.type === 'repeater') return []
+      if (field.type === 'object_group') return []
       return null
     }
 
@@ -215,12 +281,33 @@ export class UtilService {
       case 'password':
         return await hash.make(value)
 
+      case 'any':
+        if (typeof value === 'string') {
+          try {
+            return JSON.parse(value) // Parse jika dikirim sebagai string dari editor
+          } catch (e) {
+            return value // Return string asli jika bukan valid JSON
+          }
+        }
+        return value
+
       case 'date':
       case 'datetime':
         return value ? value : null
 
       case 'relation':
         return isNaN(Number(value)) ? value : Number(value)
+
+      case 'object_group':
+        const cleanedObj: any = {}
+        const sourceObj = typeof value === 'object' && !Array.isArray(value) ? value : {}
+
+        if (field.sub_fields) {
+          for (const sf of field.sub_fields) {
+            cleanedObj[sf.name] = await this.castValue(sourceObj[sf.name], sf)
+          }
+        }
+        return cleanedObj
 
       case 'repeater':
         if (!Array.isArray(value)) return []

@@ -189,6 +189,62 @@
     }
   }
 
+  function initGroupData(_node: HTMLElement, config: { fieldName: string; subFields: any[] }) {
+    const { fieldName, subFields } = config
+
+    // Pastikan formData sudah ada dan fieldName valid
+    if (formData && fieldName) {
+      const currentData = formData[fieldName]
+
+      // Jalankan inisialisasi hanya jika data kosong atau bertipe Array (salah struktur)
+      if (!currentData || Array.isArray(currentData)) {
+        const initialObj: Record<string, any> = {}
+
+        if (subFields && Array.isArray(subFields)) {
+          subFields.forEach((sf) => {
+            // Tentukan nilai default berdasarkan tipe field
+            if (sf.type === 'boolean') {
+              initialObj[sf.name] = false
+            } else if (sf.type === 'number' || sf.type === 'currency') {
+              initialObj[sf.name] = 0
+            } else {
+              initialObj[sf.name] = ''
+            }
+          })
+        }
+
+        // Simpan ke state
+        formData[fieldName] = initialObj
+      }
+    }
+  }
+
+  // Fungsi untuk memvalidasi dan merapikan JSON
+  function formatJsonData(fieldName: any) {
+    const rawValue = formData[fieldName]
+
+    // Jika kosong, berikan array kosong atau abaikan
+    if (!rawValue || rawValue.trim() === '') {
+      formData[fieldName] = '[\n  \n]'
+      return
+    }
+
+    try {
+      // 1. Coba parse data (Bisa dari string, atau jika tiba-tiba sudah jadi objek)
+      const parsedData = typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue
+
+      // 2. Format ulang menjadi string dengan indentasi 2 spasi agar cantik
+      formData[fieldName] = JSON.stringify(parsedData, null, 2)
+
+      // 3. Beri notifikasi sukses
+      toast.add('JSON Valid dan berhasil dirapikan.', 'success')
+    } catch (error) {
+      // Jika format JSON salah (ada koma lebih, kurang kutip, dll)
+      console.error('[JSON Parse Error]:', error.message)
+      toast.add(`Format JSON Tidak Valid: ${error.message}`, 'error')
+    }
+  }
+
   async function fetchData() {
     if (!config.endpoint) return
     isLoading = true
@@ -229,14 +285,14 @@
     const w = String(width)
     switch (w) {
       case '33':
-        return 'md:col-span-3'
+        return 'md:col-span-4' // 4 dari 12 = 33.3%
       case '50':
-        return 'md:col-span-4'
+        return 'md:col-span-6' // 6 dari 12 = 50%
       case '66':
-        return 'md:col-span-6'
+        return 'md:col-span-8' // 8 dari 12 = 66.6%
       case '100':
       default:
-        return 'md:col-span-12'
+        return 'md:col-span-12' // Penuh
     }
   }
 
@@ -347,112 +403,120 @@
     </div>
   </div>
 
-  <div class="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-4 relative">
+  <div class="flex-1 min-h-0 flex flex-col px-3 md:px-6 lg:px-8 pb-4 md:pb-6 relative">
     <div
-      class="flex-1 bg-background border border-border/80 rounded-2xl shadow-sm overflow-hidden flex flex-col relative"
+      class="flex-1 border border-border/40 overflow-hidden flex flex-col relative ring-1 ring-black/[0.02] dark:ring-white/[0.02]"
     >
       {#if isLoading}
         <div
-          class="absolute inset-0 z-20 bg-background/40 backdrop-blur-sm flex items-center justify-center"
-          in:fade
+          class="absolute inset-0 z-30 bg-background/50 backdrop-blur-md flex items-center justify-center"
+          in:fade={{ duration: 200 }}
         >
           <div
-            class="bg-card px-6 py-4 rounded-2xl shadow-xl border border-border/50 flex items-center gap-4"
+            class="bg-card px-8 py-5 rounded-2xl shadow-2xl border border-border/50 flex items-center gap-5 ring-1 ring-black/5"
           >
-            <i class="fas fa-circle-notch fa-spin text-primary text-2xl"></i>
+            <div class="relative flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full blur-md bg-primary/30 animate-pulse"></div>
+              <i class="fas fa-circle-notch fa-spin text-primary text-2xl relative z-10"></i>
+            </div>
             <div>
-              <p class="text-sm font-black text-foreground">Menyinkronkan...</p>
+              <p class="text-sm font-bold text-foreground tracking-tight">Menyinkronkan Data</p>
               <p
-                class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5"
+                class="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest mt-1"
               >
-                Menarik Data Server
+                Menghubungkan ke Server
               </p>
             </div>
           </div>
         </div>
       {/if}
 
-      <div class="flex-1 overflow-auto custom-scrollbar relative">
+      <div class="relative flex-1 overflow-auto custom-scrollbar">
         {#if !config.endpoint}
           <div
-            class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-60"
+            class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-80"
           >
             <div
-              class="w-20 h-20 rounded-3xl bg-muted/50 flex items-center justify-center mb-5 border border-border shadow-inner"
+              class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner relative group"
             >
-              <i class="fas fa-link text-3xl text-muted-foreground/50"></i>
+              <div
+                class="absolute inset-0 rounded-full bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-500"
+              ></div>
+              <i class="fas fa-link text-3xl text-muted-foreground/40"></i>
             </div>
-            <h3 class="text-base font-black text-foreground">Endpoint Terputus</h3>
-            <p class="text-xs font-medium text-muted-foreground mt-2 max-w-sm">
-              Tautkan tabel ini ke endpoint API melalui Schema Builder.
+            <h3 class="text-lg font-bold text-foreground tracking-tight">Endpoint Terputus</h3>
+            <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
+              Tautkan tabel ini ke endpoint API melalui Schema Builder untuk mulai mengelola data.
             </p>
           </div>
         {:else if dataList.length === 0 && !isLoading}
           <div
             class="absolute inset-0 flex flex-col items-center justify-center text-center p-8"
-            in:fade
+            in:fade={{ duration: 200 }}
           >
             <div
-              class="w-20 h-20 rounded-3xl bg-muted/50 flex items-center justify-center mb-5 border border-border shadow-inner"
+              class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner"
             >
-              <i class="fas fa-inbox text-3xl text-muted-foreground/50"></i>
+              <i class="fas fa-inbox text-3xl text-muted-foreground/40"></i>
             </div>
-            <h3 class="text-base font-black text-foreground">Koleksi Kosong</h3>
-            <p class="text-xs font-medium text-muted-foreground mt-2 max-w-sm">
-              Tidak ada entri data yang ditemukan.
+            <h3 class="text-lg font-bold text-foreground tracking-tight">Koleksi Kosong</h3>
+            <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
+              Belum ada entri data yang ditemukan untuk koleksi ini.
             </p>
           </div>
         {:else}
-          <table class="w-full text-left border-collapse min-w-[800px]">
-            <thead class="bg-muted/30 sticky top-0 z-10 backdrop-blur-md">
+          <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-full">
+            <thead class="bg-card/95 sticky top-0 z-20 backdrop-blur-xl shadow-sm">
               <tr>
                 <th
-                  class="px-5 py-4 border-b border-border/80 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-12 text-center"
-                  >No</th
+                  class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 w-14 text-center"
                 >
+                  No
+                </th>
                 {#each visibleFields as field}
                   <th
-                    class="px-5 py-4 border-b border-border/80 text-[10px] font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap"
+                    class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 whitespace-nowrap"
                   >
                     {field.label}
                   </th>
                 {/each}
                 <th
-                  class="px-5 py-4 border-b border-border/80 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right sticky right-0 bg-muted/90 backdrop-blur-md w-28 border-l border-border/50"
-                  >Aksi</th
+                  class="px-6 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 text-right sticky right-0 bg-card/95 backdrop-blur-xl w-32 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
                 >
+                  Aksi
+                </th>
               </tr>
             </thead>
 
-            <tbody class="divide-y divide-border/60">
-              {#each dataList as row, idx (row.id || idx)}
-                <tr class="hover:bg-muted/10 transition-colors group">
-                  <td class="px-5 py-4 text-[11px] font-bold text-muted-foreground/60 text-center">
+            <tbody class="divide-y divide-border/40">
+              {#each dataList as row, idx (row.id || row._id || idx)}
+                <tr class="hover:bg-muted/30 transition-colors duration-200 group">
+                  <td class="px-5 py-4 text-[11px] font-bold text-muted-foreground/50 text-center">
                     {(currentPage - 1) * itemsPerPage + idx + 1}
                   </td>
 
                   {#each visibleFields as field}
-                    <td class="px-5 py-4 text-xs text-foreground whitespace-nowrap">
+                    <td class="px-5 py-4 text-[13px] text-foreground/90 whitespace-nowrap">
                       {#if field.type === 'boolean'}
                         <span
-                          class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest {row[
+                          class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm {row[
                             field.name
                           ]
                             ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
-                            : 'bg-red-500/10 text-red-600 border border-red-500/20'}"
+                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'}"
                         >
                           {formatValue(row[field.name], field)}
                         </span>
                       {:else if field.type === 'select'}
                         <span
-                          class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-muted/50 border border-border/80 text-foreground"
+                          class="px-2.5 py-1.5 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm"
                         >
                           {formatValue(row[field.name], field)}
                         </span>
                       {:else}
                         <span
                           class={field.type === 'number' || field.type === 'currency'
-                            ? 'font-mono font-semibold tracking-tight'
+                            ? 'font-mono font-medium tracking-tight text-foreground'
                             : 'font-medium'}
                         >
                           {formatValue(row[field.name], field)}
@@ -462,22 +526,22 @@
                   {/each}
 
                   <td
-                    class="px-5 py-3 text-right sticky right-0 bg-card group-hover:bg-muted/5 transition-colors border-l border-border/50"
+                    class="px-6 py-3 text-right sticky right-0 bg-card group-hover:bg-muted/10 transition-colors duration-200 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
                   >
-                    <div class="flex items-center justify-end gap-1.5">
+                    <div class="flex items-center justify-end gap-2">
                       <button
-                        class="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-blue-500/10 hover:text-blue-600 transition-all touch-manipulation"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
                         title="Edit Data"
                         onclick={() => openEditForm(row)}
                       >
-                        <i class="fas fa-pen text-[10px]"></i>
+                        <i class="fas fa-pen text-xs"></i>
                       </button>
                       <button
                         onclick={() => handleDelete(row.id || row._id)}
-                        class="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-red-500/10 hover:text-red-600 transition-all touch-manipulation"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-rose-500/10 hover:text-rose-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
                         title="Hapus Data"
                       >
-                        <i class="fas fa-trash-alt text-[10px]"></i>
+                        <i class="fas fa-trash-alt text-xs"></i>
                       </button>
                     </div>
                   </td>
@@ -489,9 +553,9 @@
       </div>
 
       <div
-        class="shrink-0 border-t border-border/80 bg-muted/20 px-5 md:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 z-10"
+        class="shrink-0 border-t border-border/40 bg-background/80 backdrop-blur-xl px-5 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-20"
       >
-        <span class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
           Menampilkan <span class="text-foreground"
             >{totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span
           >
@@ -499,18 +563,18 @@
           dari <span class="text-primary">{totalItems}</span>
         </span>
 
-        <div class="flex gap-1.5">
+        <div class="flex gap-2 items-center">
           <button
             aria-label="prev"
             disabled={currentPage === 1 || isLoading}
             onclick={() => currentPage--}
-            class="w-9 h-9 rounded-xl border border-border/80 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40 disabled:hover:bg-card transition-all shadow-sm active:scale-95 touch-manipulation"
+            class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
           >
             <i class="fas fa-chevron-left text-[10px]"></i>
           </button>
 
           <div
-            class="flex items-center justify-center min-w-[36px] px-2 text-xs font-black text-foreground bg-card border border-border/80 rounded-xl shadow-sm"
+            class="flex items-center justify-center min-w-[36px] h-9 px-3 text-[13px] font-bold text-foreground bg-muted/30 border border-border/40 rounded-lg shadow-inner"
           >
             {currentPage}
           </div>
@@ -519,7 +583,7 @@
             aria-label="next"
             disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) || isLoading}
             onclick={() => currentPage++}
-            class="w-9 h-9 rounded-xl border border-border/80 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40 disabled:hover:bg-card transition-all shadow-sm active:scale-95 touch-manipulation"
+            class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
           >
             <i class="fas fa-chevron-right text-[10px]"></i>
           </button>
@@ -565,7 +629,9 @@
           </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+        <div
+          class="flex-1 overflow-y-auto custom-scrollbar p-6 grid grid-cols-1 md:grid-cols-12 gap-6 content-start"
+        >
           {#each config.fields || [] as field}
             {#if field.name !== 'id'}
               <div
@@ -605,21 +671,76 @@
                     id="field-{field.name}"
                     bind:value={formData[field.name]}
                     placeholder="Masukkan {field.label.toLowerCase()}..."
-                    class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner min-h-[120px] custom-scrollbar resize-none"
+                    readonly={field.readonly}
+                    class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner min-h-[120px] custom-scrollbar resize-none read-only:bg-muted/50 read-only:text-muted-foreground read-only:cursor-not-allowed read-only:border-dashed"
                   ></textarea>
+                {:else if field.type === 'any'}
+                  <div
+                    class="group relative rounded-xl overflow-hidden border border-border/80 bg-[#0f172a] focus-within:border-orange-500/50 focus-within:ring-2 focus-within:ring-orange-500/10 transition-all shadow-inner {field.readonly
+                      ? 'opacity-80'
+                      : ''}"
+                  >
+                    <div
+                      class="flex items-center justify-between px-3 py-2 bg-[#1e293b] border-b border-slate-700/50"
+                    >
+                      <div class="flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                          <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                          <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                        </div>
+                        <span
+                          class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1"
+                        >
+                          JSON Payload <span class="text-orange-400/70 lowercase font-mono"
+                            >({field.name})</span
+                          >
+                        </span>
+                      </div>
+
+                      {#if !field.readonly}
+                        <button
+                          type="button"
+                          onclick={() => formatJsonData(field.name)}
+                          class="flex items-center gap-1.5 text-[9px] font-bold bg-[#0f172a] border border-slate-700 text-slate-300 px-2.5 py-1 rounded-md shadow-sm hover:border-orange-500/50 hover:text-orange-400 transition-all active:scale-95"
+                        >
+                          <i class="fas fa-magic"></i> Format & Validasi
+                        </button>
+                      {/if}
+                    </div>
+
+                    <textarea
+                      id="field-{field.name}"
+                      bind:value={formData[field.name]}
+                      placeholder=""
+                      readonly={field.readonly}
+                      spellcheck="false"
+                      class="w-full px-4 py-3 bg-transparent text-orange-300 border-none text-[11px] font-mono leading-relaxed focus:outline-none focus:ring-0 min-h-[160px] custom-scrollbar resize-none read-only:cursor-not-allowed placeholder:text-slate-700"
+                    ></textarea>
+                  </div>
                 {:else if field.type === 'boolean'}
                   <label
                     class="flex items-center justify-between p-3.5 border border-border/80 rounded-xl bg-muted/10 hover:bg-muted/20 hover:border-primary/30 transition-all cursor-pointer shadow-sm"
                   >
                     <span class="text-xs font-bold text-foreground/80">Aktifkan {field.label}</span>
-                    <div class="relative inline-flex items-center cursor-pointer">
+                    <div
+                      class="relative inline-flex items-center {field.readonly
+                        ? 'cursor-not-allowed opacity-60'
+                        : 'cursor-pointer'}"
+                    >
                       <input
                         type="checkbox"
+                        disabled={field.readonly}
                         bind:checked={formData[field.name]}
                         class="sr-only peer"
                       />
                       <div
-                        class="w-9 h-5 bg-muted-foreground/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"
+                        class="w-9 h-5 bg-muted-foreground/20 peer-focus:outline-none rounded-full peer
+                              peer-checked:bg-primary
+                              peer-checked:after:translate-x-full peer-checked:after:border-white
+                              after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                              after:bg-white after:border-gray-300 after:border after:rounded-full
+                              after:h-4 after:w-4 after:transition-all
+                              peer-disabled:bg-muted-foreground/10 peer-disabled:cursor-not-allowed"
                       ></div>
                     </div>
                   </label>
@@ -628,7 +749,9 @@
                     <select
                       id="field-{field.name}"
                       bind:value={formData[field.name]}
-                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner cursor-pointer appearance-none"
+                      disabled={field.readonly}
+                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner appearance-none peer
+                            disabled:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground/70 disabled:border-dashed"
                     >
                       <option value="" disabled selected>Pilih {field.label}...</option>
                       {#each field.options || [] as opt}
@@ -636,7 +759,7 @@
                       {/each}
                     </select>
                     <div
-                      class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/50"
+                      class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/50 transition-opacity peer-disabled:opacity-40"
                     >
                       <i class="fas fa-chevron-down text-[10px]"></i>
                     </div>
@@ -647,26 +770,41 @@
                       id="field-{field.name}"
                       type="text"
                       readonly
+                      disabled={field.readonly}
                       placeholder="Cari {field.label}..."
-                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-bold focus:border-primary outline-none transition-all shadow-inner cursor-pointer"
+                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-bold focus:border-primary outline-none transition-all shadow-inner peer
+                            {field.readonly
+                        ? 'cursor-not-allowed bg-muted/50 text-muted-foreground/70 border-dashed'
+                        : 'cursor-pointer'}"
                       onclick={() =>
+                        !field.readonly &&
                         toast.add(`Buka Lookup untuk: ${field.relation_collection}`, 'info')}
                     />
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
+                    <div
+                      class="absolute right-4 top-1/2 -translate-y-1/2 transition-colors {field.readonly
+                        ? 'text-muted-foreground/40'
+                        : 'text-primary'}"
+                    >
                       <i class="fas fa-search text-[10px]"></i>
                     </div>
                   </div>
-                {:else if field.type === 'repeater'}
-                  <div class="p-1 rounded-2xl bg-gradient-to-b from-border/50 to-transparent">
+                {:else if field.type === 'repeater' || field.type === 'object_group'}
+                  <div
+                    class="p-1 rounded-2xl bg-gradient-to-b from-border/50 to-transparent transition-all duration-500"
+                  >
                     <div
-                      class="p-4 md:p-5 border border-border/80 rounded-[15px] bg-card/50 backdrop-blur-sm space-y-4"
+                      class="p-4 md:p-5 border border-border/80 rounded-[15px] bg-card/50 backdrop-blur-sm space-y-4 md:space-y-5"
                     >
                       <div class="flex items-center justify-between border-b border-border/60 pb-4">
                         <div class="flex items-center gap-3">
                           <div
-                            class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner"
+                            class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner"
                           >
-                            <i class="fas fa-layer-group text-[11px]"></i>
+                            <i
+                              class="fas {field.type === 'repeater'
+                                ? 'fa-table-cells-large'
+                                : 'fa-layer-group'} text-[13px]"
+                            ></i>
                           </div>
                           <div>
                             <span
@@ -674,177 +812,247 @@
                             >
                               {field.label}
                             </span>
-                            <span
-                              class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 block"
-                            >
-                              Total: {formData[field.name]?.length || 0} Baris
-                            </span>
+                            {#if field.type === 'repeater'}
+                              <span
+                                class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 block"
+                              >
+                                Total: {formData[field.name]?.length || 0} Baris
+                              </span>
+                            {:else}
+                              <div class="flex items-center gap-1.5 mt-1">
+                                <div
+                                  class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"
+                                ></div>
+                                <span
+                                  class="text-[8px] font-black text-blue-500 uppercase tracking-tighter"
+                                >
+                                  Single Object Structure
+                                </span>
+                              </div>
+                            {/if}
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onclick={() => {
-                            if (!formData[field.name]) formData[field.name] = []
-                            formData[field.name] = [...formData[field.name], {}]
-                          }}
-                          class="text-[10px] font-bold bg-primary text-primary-foreground px-3.5 py-2 rounded-xl hover:bg-primary/90 hover:shadow-md hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-1.5"
-                        >
-                          <i class="fas fa-plus"></i>
-                          <span class="hidden sm:inline">Tambah Baris</span>
-                        </button>
+
+                        {#if field.type === 'repeater'}
+                          <button
+                            type="button"
+                            onclick={() => {
+                              if (!formData[field.name] || !Array.isArray(formData[field.name]))
+                                formData[field.name] = []
+                              formData[field.name] = [...formData[field.name], {}]
+                            }}
+                            class="text-[10px] font-bold bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 hover:shadow-md hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-1.5"
+                          >
+                            <i class="fas fa-plus"></i>
+                            <span class="hidden sm:inline">Tambah Baris</span>
+                          </button>
+                        {/if}
                       </div>
 
-                      {#if !formData[field.name] || formData[field.name].length === 0}
-                        <div
-                          class="flex flex-col items-center justify-center py-8 px-4 text-center border-2 border-dashed border-border/50 rounded-xl bg-muted/10"
-                        >
+                      {#if field.type === 'repeater'}
+                        {#if !formData[field.name] || !Array.isArray(formData[field.name]) || formData[field.name].length === 0}
                           <div
-                            class="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3"
+                            class="flex flex-col items-center justify-center py-8 px-4 text-center border-2 border-dashed border-border/50 rounded-xl bg-muted/10"
                           >
-                            <i class="fas fa-stream text-muted-foreground/50 text-lg"></i>
-                          </div>
-                          <p class="text-[11px] font-bold text-foreground">Belum ada baris data</p>
-                          <p class="text-[10px] text-muted-foreground mt-1 max-w-[200px]">
-                            Klik tombol tambah di atas untuk menyisipkan data baru.
-                          </p>
-                        </div>
-                      {:else}
-                        <div class="space-y-4">
-                          {#each formData[field.name] as row, rowIndex}
                             <div
-                              class="relative p-4 md:p-5 bg-background border border-border/80 rounded-xl shadow-sm hover:shadow-md hover:border-border transition-all group/row"
-                              transition:slide={{ duration: 250 }}
+                              class="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3"
                             >
+                              <i class="fas fa-stream text-muted-foreground/50 text-lg"></i>
+                            </div>
+                            <p class="text-[11px] font-bold text-foreground">
+                              Belum ada baris data
+                            </p>
+                            <p class="text-[10px] text-muted-foreground mt-1 max-w-[200px]">
+                              Klik tombol tambah di atas untuk menyisipkan data baru.
+                            </p>
+                          </div>
+                        {:else}
+                          <div class="space-y-4">
+                            {#each formData[field.name] as row, rowIndex}
                               <div
-                                class="flex items-center justify-between mb-4 pb-3 border-b border-border/40"
+                                class="relative p-4 md:p-5 bg-background border border-border/80 rounded-xl shadow-sm hover:shadow-md hover:border-border transition-all group/row"
+                                transition:slide={{ duration: 250 }}
                               >
-                                <span
-                                  class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest flex items-center gap-2"
+                                <div
+                                  class="flex items-center justify-between mb-4 pb-3 border-b border-border/40"
                                 >
-                                  <i class="fas fa-hashtag text-[8px]"></i> Baris {rowIndex + 1}
-                                </span>
-                                <button
-                                  aria-label="Hapus Baris"
-                                  type="button"
-                                  onclick={() => {
-                                    formData[field.name] = formData[field.name].filter(
-                                      (_: any, i: number) => i !== rowIndex
-                                    )
-                                  }}
-                                  class="text-destructive/70 hover:text-destructive hover:bg-destructive/10 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
-                                >
-                                  <i class="fas fa-trash-alt text-[10px]"></i>
-                                </button>
-                              </div>
+                                  <span
+                                    class="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest flex items-center gap-2"
+                                  >
+                                    <i class="fas fa-hashtag text-[8px]"></i> Baris {rowIndex + 1}
+                                  </span>
+                                  <button
+                                    aria-label="Hapus Baris"
+                                    type="button"
+                                    onclick={() => {
+                                      formData[field.name] = formData[field.name].filter(
+                                        (_: any, i: number) => i !== rowIndex
+                                      )
+                                    }}
+                                    class="text-destructive/70 hover:text-destructive hover:bg-destructive/10 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
+                                  >
+                                    <i class="fas fa-trash-alt text-[10px]"></i>
+                                  </button>
+                                </div>
 
-                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                                {#each field.sub_fields || [] as sf}
-                                  <div class="space-y-1.5 {getGridWidth(sf.width)}">
-                                    <label
-                                      for="field-{field.name}-{rowIndex}-{sf.name}"
-                                      class="text-[9px] font-bold uppercase text-muted-foreground/80 tracking-wider flex items-center justify-between cursor-pointer"
-                                    >
-                                      <span
-                                        >{sf.label}
-                                        {#if sf.required}<span class="text-destructive">*</span
-                                          >{/if}</span
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                                  {#each field.sub_fields || [] as sf}
+                                    <div class="space-y-1.5 {getGridWidth(sf.width)}">
+                                      <label
+                                        for="field-{field.name}-{rowIndex}-{sf.name}"
+                                        class="text-[9px] font-bold uppercase text-muted-foreground/80 tracking-wider flex items-center justify-between"
                                       >
+                                        <span
+                                          >{sf.label}
+                                          {#if sf.required}<span class="text-destructive">*</span
+                                            >{/if}</span
+                                        >
+                                      </label>
 
-                                      {#if sf.type === 'currency' || sf.type === 'number'}
-                                        <div class="flex gap-1">
-                                          {#if sf.locale}
-                                            <span
-                                              class="text-[7px] bg-muted px-1 py-0.5 rounded text-muted-foreground font-black uppercase"
-                                              >{sf.locale}</span
-                                            >
-                                          {/if}
-                                          <span
-                                            class="text-[7px] bg-primary/10 px-1 py-0.5 rounded text-primary font-black uppercase"
+                                      {#if sf.type === 'textarea'}
+                                        <textarea
+                                          bind:value={row[sf.name]}
+                                          placeholder="Detail {sf.label.toLowerCase()}..."
+                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary outline-none transition-all resize-none min-h-[80px] custom-scrollbar"
+                                        ></textarea>
+                                      {:else if sf.type === 'boolean'}
+                                        <label
+                                          class="flex items-center justify-between px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg cursor-pointer hover:bg-muted/20 transition-colors"
+                                        >
+                                          <span class="text-[10px] font-bold text-foreground/80"
+                                            >Aktifkan</span
                                           >
-                                            {sf.format || (sf.type === 'currency' ? 'IDR' : 'DEC')}
-                                          </span>
-                                        </div>
+                                          <input
+                                            type="checkbox"
+                                            bind:checked={row[sf.name]}
+                                            class="w-4 h-4 rounded text-primary focus:ring-0 border-border/60"
+                                          />
+                                        </label>
+                                      {:else if sf.type === 'select'}
+                                        <select
+                                          bind:value={row[sf.name]}
+                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-bold focus:border-primary outline-none transition-all"
+                                        >
+                                          <option value="" disabled selected>Pilih...</option>
+                                          {#each sf.options || [] as opt}<option value={opt.value}
+                                              >{opt.label}</option
+                                            >{/each}
+                                        </select>
+                                      {:else if sf.type === 'number' || sf.type === 'currency'}
+                                        <input
+                                          type="number"
+                                          bind:value={row[sf.name]}
+                                          placeholder="0"
+                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-mono font-bold focus:border-primary outline-none transition-all"
+                                        />
+                                      {:else}
+                                        <input
+                                          type={sf.type === 'datetime' ? 'datetime-local' : 'text'}
+                                          bind:value={row[sf.name]}
+                                          placeholder="Masukkan {sf.label.toLowerCase()}..."
+                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary outline-none transition-all"
+                                        />
                                       {/if}
-                                    </label>
+                                    </div>
+                                  {/each}
+                                </div>
+                              </div>
+                            {/each}
+                          </div>
+                        {/if}
+                      {:else}
+                        <div
+                          class="p-4 md:p-6 bg-background/50 border border-border/50 rounded-xl shadow-sm"
+                          use:initGroupData={{ fieldName: field.name, subFields: field.sub_fields }}
+                        >
+                          {#if formData[field.name] && !Array.isArray(formData[field.name])}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                              {#each field.sub_fields || [] as sf}
+                                <div class="space-y-1.5 {getGridWidth(sf.width)}">
+                                  <label
+                                    for="group-{field.name}-{sf.name}"
+                                    class="text-[9px] font-bold uppercase text-muted-foreground/80 tracking-wider flex items-center justify-between"
+                                  >
+                                    <span
+                                      >{sf.label}
+                                      {#if sf.required}<span class="text-destructive">*</span
+                                        >{/if}</span
+                                    >
+                                    {#if sf.type === 'currency' || sf.type === 'number'}
+                                      <span
+                                        class="text-[7px] bg-primary/10 px-1 py-0.5 rounded text-primary font-black uppercase"
+                                      >
+                                        {sf.format || (sf.type === 'currency' ? 'IDR' : 'DEC')}
+                                      </span>
+                                    {/if}
+                                  </label>
 
+                                  <div class="relative group">
                                     {#if sf.type === 'textarea'}
                                       <textarea
-                                        id="field-{field.name}-{rowIndex}-{sf.name}"
-                                        bind:value={row[sf.name]}
+                                        bind:value={formData[field.name][sf.name]}
                                         placeholder="Detail {sf.label.toLowerCase()}..."
-                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary focus:bg-background outline-none transition-all resize-none min-h-[80px] custom-scrollbar"
+                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary outline-none transition-all resize-none min-h-[80px] custom-scrollbar"
                                       ></textarea>
                                     {:else if sf.type === 'boolean'}
                                       <label
                                         class="flex items-center justify-between px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg cursor-pointer hover:bg-muted/20 transition-colors"
                                       >
                                         <span class="text-[10px] font-bold text-foreground/80"
-                                          >Aktifkan</span
+                                          >Aktifkan Status</span
                                         >
-                                        <div class="relative inline-flex items-center">
-                                          <input
-                                            type="checkbox"
-                                            bind:checked={row[sf.name]}
-                                            class="sr-only peer"
-                                          />
-                                          <div
-                                            class="w-7 h-4 bg-muted-foreground/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"
-                                          ></div>
-                                        </div>
+                                        <input
+                                          type="checkbox"
+                                          bind:checked={formData[field.name][sf.name]}
+                                          class="sr-only peer"
+                                        />
+                                        <div
+                                          class="relative w-7 h-4 bg-muted-foreground/30 rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"
+                                        ></div>
                                       </label>
                                     {:else if sf.type === 'select'}
                                       <div class="relative">
                                         <select
-                                          id="field-{field.name}-{rowIndex}-{sf.name}"
-                                          bind:value={row[sf.name]}
-                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-bold focus:border-primary focus:bg-background outline-none transition-all appearance-none cursor-pointer"
+                                          bind:value={formData[field.name][sf.name]}
+                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-bold focus:border-primary outline-none transition-all appearance-none cursor-pointer"
                                         >
                                           <option value="" disabled selected>Pilih...</option>
-                                          {#each sf.options || [] as opt}
-                                            <option value={opt.value}>{opt.label}</option>
-                                          {/each}
+                                          {#each sf.options || [] as opt}<option value={opt.value}
+                                              >{opt.label}</option
+                                            >{/each}
                                         </select>
                                         <i
                                           class="fas fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground/50 pointer-events-none"
                                         ></i>
                                       </div>
-                                    {:else if sf.type === 'relation'}
-                                      <div class="relative">
-                                        <input
-                                          id="field-{field.name}-{rowIndex}-{sf.name}"
-                                          type="text"
-                                          readonly
-                                          placeholder="Cari..."
-                                          class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-bold focus:border-primary focus:bg-background outline-none transition-all cursor-pointer"
-                                          onclick={() =>
-                                            toast.add(`Lookup: ${sf.relation_collection}`, 'info')}
-                                        />
-                                        <i
-                                          class="fas fa-search absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] text-primary"
-                                        ></i>
-                                      </div>
                                     {:else if sf.type === 'number' || sf.type === 'currency'}
                                       <input
-                                        id="field-{field.name}-{rowIndex}-{sf.name}"
                                         type="number"
-                                        bind:value={row[sf.name]}
+                                        bind:value={formData[field.name][sf.name]}
                                         placeholder="0"
-                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-mono font-bold focus:border-primary focus:bg-background outline-none transition-all"
+                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-mono font-bold focus:border-primary outline-none transition-all"
                                       />
                                     {:else}
                                       <input
-                                        id="field-{field.name}-{rowIndex}-{sf.name}"
                                         type={sf.type === 'datetime' ? 'datetime-local' : 'text'}
-                                        bind:value={row[sf.name]}
+                                        bind:value={formData[field.name][sf.name]}
                                         placeholder="Masukkan {sf.label.toLowerCase()}..."
-                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary focus:bg-background outline-none transition-all"
+                                        class="w-full px-3.5 py-2.5 bg-muted/10 border border-border/60 rounded-lg text-xs font-medium focus:border-primary outline-none transition-all"
                                       />
                                     {/if}
                                   </div>
-                                {/each}
-                              </div>
+
+                                  {#if sf.description}
+                                    <p
+                                      class="text-[8px] text-muted-foreground/60 italic px-1 pt-0.5"
+                                    >
+                                      * {sf.description}
+                                    </p>
+                                  {/if}
+                                </div>
+                              {/each}
                             </div>
-                          {/each}
+                          {/if}
                         </div>
                       {/if}
                     </div>
@@ -855,6 +1063,7 @@
                     type="number"
                     bind:value={formData[field.name]}
                     placeholder="0"
+                    readonly={field.readonly}
                     class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-mono font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner"
                   />
                 {:else if field.type === 'password'}
@@ -864,6 +1073,7 @@
                       type={visiblePasswordFields[field.name] ? 'text' : 'password'}
                       bind:value={formData[field.name]}
                       placeholder="Masukkan {field.label.toLowerCase()}..."
+                      readonly={field.readonly}
                       class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
                     />
                     <button
@@ -889,6 +1099,7 @@
                     inputmode="email"
                     autocomplete="email"
                     spellcheck="false"
+                    readonly={field.readonly}
                     class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
                   />
                 {:else}
@@ -897,7 +1108,8 @@
                     type={field.type === 'datetime' ? 'datetime-local' : 'text'}
                     bind:value={formData[field.name]}
                     placeholder="Masukkan {field.label.toLowerCase()}..."
-                    class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
+                    readonly={field.readonly}
+                    class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner read-only:bg-muted/50 read-only:text-muted-foreground read-only:cursor-not-allowed read-only:border-dashed"
                   />
                 {/if}
               </div>

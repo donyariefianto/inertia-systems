@@ -1,9 +1,7 @@
-// app/services/date_service.ts
 import moment from 'moment-timezone'
 import env from '#start/env'
 
 export class DateService {
-  // Mengambil default timezone dari ENV (contoh: Asia/Jakarta)
   private static get TZ() {
     return env.get('APP_TIMEZONE', 'UTC')
   }

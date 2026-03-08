@@ -18,7 +18,6 @@ class MongoService {
     return this.db
   }
 
-  // Helper untuk akses koleksi dengan cepat
   public collection(name: string) {
     if (!this.db) throw new Error('Database not connected')
     return this.db.collection(name)

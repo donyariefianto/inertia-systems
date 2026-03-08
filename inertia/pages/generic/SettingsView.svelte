@@ -6,6 +6,8 @@
   import MenuTab from '~/pages/generic/settingtabs/MenuTab.svelte'
   import RuleTab from '~/pages/generic/settingtabs/RuleTab.svelte'
   import { prepareMenuPayload } from '~/utils/MenuSanitize'
+  import { toast } from '~/utils/toast.svelte'
+  import { getCsrfToken } from '~/utils/getCrsfToken'
 
   let { config, title } = $props()
   let dashboardRef = $state()
@@ -65,9 +67,7 @@
     isSaving = true
     try {
       if (activeTabId === 'dashboard' && dashboardRef?.getDashboardJSON) {
-        const finalData = dashboardRef.getDashboardJSON()
-        console.log('Pre-Save API Payload:', finalData)
-        console.log('JSON Stringified:', JSON.stringify(finalData, null, 2))
+        handleDashboardUpdate()
       }
       if (activeTabId == 'menu') {
         const cleanMenu = prepareMenuPayload(myMenu)
@@ -80,13 +80,30 @@
     }
   }
 
-  function handleDashboardUpdate() {
-    const dashboardData = dashboardRef.getDashboardJSON()
-    if (!dashboardData) {
-      alert('Error: Tidak ada data dashboard yang valid untuk disimpan.')
+  async function handleDashboardUpdate() {
+    const finalData = dashboardRef.getDashboardJSON()
+    if (!finalData) {
+      toast.add('Error: Tidak ada data dashboard yang valid untuk disimpan.', 'warning')
       isSaving = false
       return
     }
+    const res = await fetch('/api/collections/dashboard_settings/' + finalData._id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-XSRF-TOKEN': getCsrfToken(),
+      },
+      body: JSON.stringify(finalData),
+    })
+
+    const result = await res.json()
+
+    if (!res.ok) {
+      toast.add(result.message, 'error')
+      throw new Error(result.message || 'Gagal menyimpan dashboard.')
+    }
+    toast.add('Dashboard berhasil disimpan.', 'success')
   }
   function handleMenuUpdate(updatedMenu) {
     const dataToSave = updatedMenu.filter((node) => !node.locked)

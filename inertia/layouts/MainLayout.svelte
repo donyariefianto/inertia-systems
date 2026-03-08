@@ -20,13 +20,14 @@
   let isProfileOpen = $state(false)
   let show2FASetup = $state(false)
   let qrData = $state({ qrCode: '', secretKey: '' })
+  let secretKeyVerified = $state(null)
   let verificationCode = $state('')
   let isSubmitting = $state(false)
 
   let mfaMethods = $derived($page.props.mfaMethods || [])
   let currentUser = $derived($page.props.user)
 
-  let activeMfaType = $derived(currentUser?.mfa_type)
+  let activeMfaType = $derived(currentUser?.mfa_type || 'none')
   let isMfaEnabled = $state($page.props.user?.mfa_enabled)
   let pendingMfaType = $state(null)
   let isProcessing = $state(false)
@@ -65,6 +66,7 @@
   async function handleMethodToggle(method, e) {
     const isChecked = e.currentTarget.checked
     const input = e.currentTarget
+
     if (isProcessing) return
     if (!isChecked) {
       if (activeMfaType === method.type) {
@@ -105,13 +107,28 @@
       }
       pendingMfaType = method.type
       verificationCode = ''
+
       if (method.type === 'totp') {
         activeMfaType = 'none'
         await initiate2FASetup()
       } else if (method.type === 'email') {
-        activeMfaType = method.type
-        // await requestEmailOtp();
+        activeMfaType = 'none'
+        pendingMfaType = 'email'
+
+        await requestEmailOtp()
+        toast.add('Kode OTP telah dikirim ke email Anda.', 'success')
       }
+    }
+  }
+
+  async function requestEmailOtp() {
+    try {
+      isProcessing = true
+    } catch (error) {
+      toast.add('Terjadi kesalahan koneksi saat meminta OTP.', 'error')
+      pendingMfaType = null
+    } finally {
+      isProcessing = false
     }
   }
 
@@ -133,7 +150,7 @@
       const res = await fetch('/api/security/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken() },
-        body: JSON.stringify({ code: verificationCode }),
+        body: JSON.stringify({ type: 'totp', code: verificationCode }),
       })
 
       if (res.ok) {
@@ -141,11 +158,10 @@
         show2FASetup = false
         activeMfaType = 'totp'
         pendingMfaType = null
+        secretKeyVerified = qrData.secretKey
       } else {
         const err = await res.json()
         toast.add(err.message || 'Kode verifikasi salah!', 'error')
-        // mfaMethods = 'totp'
-        // pendingMfaType = 'totp'
         show2FASetup = true
       }
     } finally {
@@ -153,15 +169,68 @@
     }
   }
 
-  function handleUpdateProfile() {
-    // profileForm.post('/update-profile', { ... })
-    toast.add('Profil diperbarui!', 'success')
-    isProfileOpen = false
+  async function handleUpdateProfile() {
+    if (isSubmitting) return
+
+    if (pendingMfaType !== null) {
+      toast.add('Silakan selesaikan verifikasi MFA terlebih dahulu.', 'warning')
+      return
+    }
+
+    try {
+      isSubmitting = true
+      const originalUser = $page.props.user
+      const payload = {}
+      const newMfaType = isMfaEnabled ? activeMfaType : 'none'
+      if (isMfaEnabled !== originalUser.mfa_enabled) {
+        payload.mfa_enabled = isMfaEnabled && newMfaType != 'none'
+        if (secretKeyVerified && newMfaType === 'totp' && isMfaEnabled) {
+          payload.totp_secret_key = secretKeyVerified
+        }
+      }
+      if (newMfaType !== originalUser.mfa_type) {
+        payload.mfa_type = newMfaType
+      }
+      console.log(activeMfaType)
+
+      if (Object.keys(payload).length === 0) {
+        toast.add('Tidak ada perubahan yang perlu disimpan.', 'info')
+        isProfileOpen = false
+        return
+      }
+
+      const res = await fetch('/api/profile-update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': getCsrfToken(),
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const result = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        throw new Error(result.message || 'Terjadi kesalahan saat memperbarui profil.')
+      }
+
+      toast.add(result.message || 'Profil berhasil diperbarui!', 'success')
+      isProfileOpen = false
+      secretKeyVerified = null
+
+      router.reload({ only: ['user'] })
+    } catch (err) {
+      console.error('[Profile Update Error]:', err)
+      toast.add(err.message || 'Gagal terhubung ke server.', 'error')
+    } finally {
+      syncStateWithDatabase()
+      isSubmitting = false
+    }
   }
 
   function syncStateWithDatabase() {
     const user = $page.props.user
-
     isMfaEnabled = user?.mfa_enabled ?? false
     activeMfaType = user?.mfa_type || 'none'
 
@@ -225,7 +294,6 @@
       }
 
       if (user?.id) realtime.init(user.id)
-      // return () => realtime.stop()
     })
   })
 </script>
@@ -274,8 +342,8 @@
         <div
           role="button"
           tabindex="0"
-          onclick={() => (isProfileOpen = true)}
-          onkeydown={() => (isProfileOpen = true)}
+          onclick={() => ((isProfileOpen = true), syncStateWithDatabase())}
+          onkeydown={() => ((isProfileOpen = true), syncStateWithDatabase())}
           class="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary font-bold shadow-sm"
         >
           {($page.props.user?.username || 'A').charAt(0).toUpperCase()}
@@ -316,6 +384,7 @@
     </main>
   </div>
 </div>
+
 {#if isProfileOpen}
   <div class="fixed inset-0 z-[100] flex justify-end overflow-hidden">
     <div
@@ -518,42 +587,80 @@
                         transition:slide
                       >
                         <div
-                          class="p-4 bg-background rounded-xl border border-dashed border-primary/30 shadow-inner"
+                          class="p-5 bg-background rounded-xl border border-primary/20 shadow-inner relative overflow-hidden"
                         >
                           {#if method.type === 'totp'}
-                            <div class="flex flex-col items-center gap-3 mb-4">
-                              <div class="p-2 bg-white rounded-xl shadow-md border">
+                            <div class="flex flex-col items-center gap-3 mb-5">
+                              <div
+                                class="p-2 bg-white rounded-xl shadow-md border border-border/50"
+                              >
                                 <img src={qrData.qrCode} alt="QR Code" class="w-28 h-28" />
                               </div>
-                              <code
-                                class="text-[9px] font-black text-primary bg-muted px-2 py-0.5 rounded select-all tracking-wider"
-                                >{qrData.secretKey}</code
-                              >
+                              <div class="flex flex-col items-center w-full mt-1">
+                                <span
+                                  class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-1"
+                                  >Atau gunakan kode rahasia</span
+                                >
+                                <code
+                                  class="text-[10px] font-mono font-black text-primary bg-primary/5 border border-primary/10 px-3 py-1 rounded-lg select-all w-full text-center truncate"
+                                  >{qrData.secretKey}</code
+                                >
+                              </div>
                             </div>
                           {/if}
 
-                          <div class="space-y-2">
+                          {#if method.type === 'email'}
+                            <div class="flex flex-col items-center gap-2 mb-5 text-center">
+                              <div
+                                class="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-1"
+                              >
+                                <i class="fas fa-envelope-open-text text-lg"></i>
+                              </div>
+                              <h4 class="text-[12px] font-bold text-foreground">
+                                Cek Kotak Masuk Anda
+                              </h4>
+                              <p class="text-[10px] text-muted-foreground px-2">
+                                Kami telah mengirimkan 6-digit kode OTP ke email terdaftar.
+                              </p>
+                            </div>
+                          {/if}
+
+                          <div class="space-y-3 border-t border-border/50 pt-4">
                             <label
-                              for="Kode Verifikasi"
-                              class="text-[9px] font-black text-primary uppercase tracking-widest"
-                              >Masukkan Kode Verifikasi</label
+                              for="verificationCode"
+                              class="text-[10px] font-black text-foreground uppercase tracking-widest block text-center"
                             >
-                            <div class="flex gap-2">
+                              Masukkan 6-Digit Kode
+                            </label>
+                            <div class="flex flex-col gap-3">
                               <input
                                 type="text"
                                 bind:value={verificationCode}
                                 maxlength="6"
                                 disabled={isProcessing}
-                                placeholder="000 000"
-                                class="flex-1 bg-muted/20 border border-border rounded-xl px-4 py-2 text-xs font-mono font-black text-center tracking-[0.5em] focus:border-primary outline-none shadow-inner"
+                                placeholder="••••••"
+                                class="w-full bg-muted/20 border border-border/60 rounded-xl px-4 py-3 text-lg font-mono font-black text-center tracking-[0.75em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:tracking-normal placeholder:text-muted-foreground/30 shadow-inner"
                               />
-                              <button
-                                onclick={confirm2FA}
-                                disabled={isProcessing || verificationCode.length < 6}
-                                class="bg-primary text-white px-4 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all"
-                              >
-                                {isProcessing ? '...' : 'Verifikasi'}
-                              </button>
+
+                              <div class="flex gap-2 w-full">
+                                {#if method.type === 'email'}
+                                  <button
+                                    type="button"
+                                    disabled={isProcessing}
+                                    onclick={() => toast.add('Kode OTP baru dikirim!', 'info')}
+                                    class="flex-1 bg-muted/50 border border-border/50 text-foreground px-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider hover:bg-muted active:scale-95 transition-all"
+                                  >
+                                    Kirim Ulang
+                                  </button>
+                                {/if}
+                                <button
+                                  onclick={confirm2FA}
+                                  disabled={isProcessing || verificationCode.length < 6}
+                                  class="flex-[2] bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider shadow-md hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none"
+                                >
+                                  {isProcessing ? 'Memproses...' : 'Verifikasi'}
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
