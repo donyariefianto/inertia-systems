@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '@inertiajs/svelte'
-  import { slide, fade } from 'svelte/transition'
+  import { slide, fade, scale } from 'svelte/transition'
+  import { backOut } from 'svelte/easing'
   import { EncryptionService } from '~/stores/encryption'
   import type { MenuNode, MenuConfig } from '~/types/menu'
 
@@ -224,95 +225,139 @@
 
       <div class="flex-1 overflow-y-auto p-5 md:p-8 lg:p-10 custom-scrollbar">
         {#if activeItem}
-          <div class="space-y-6 md:space-y-8 max-w-4xl mx-auto" in:fade={{ duration: 200 }}>
-            <div class="bg-card border border-border/80 rounded-3xl p-6 md:p-8 shadow-sm">
-              <div class="flex items-center gap-3 mb-6 pb-5 border-b border-border/50">
+          <div
+            class="space-y-6 md:space-y-8 max-w-4xl mx-auto w-full"
+            in:fade={{ duration: 300, easing: backOut }}
+          >
+            <div
+              class="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden flex flex-col"
+            >
+              <div class="bg-muted/10 px-5 py-4 border-b border-border/50 flex items-center gap-4">
                 <div
-                  class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
+                  class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"
                 >
-                  <i class="fas fa-info-circle text-lg"></i>
+                  <i class="fas fa-cube text-lg"></i>
                 </div>
                 <div>
-                  <h3 class="text-sm font-black text-foreground leading-none">Informasi Node</h3>
-                  <p class="text-[11px] text-muted-foreground mt-1.5">
-                    Pengaturan identitas visual dan rute navigasi.
+                  <h3 class="text-sm font-bold text-foreground tracking-tight">Node Identity</h3>
+                  <p class="text-[11px] text-muted-foreground mt-0.5">
+                    Konfigurasi visual dan routing navigasi
                   </p>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-                <div class="space-y-2 {activeItem.type === 'group' ? 'md:col-span-2' : ''}">
+              <div class="p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                <div class="space-y-1.5 {activeItem.type === 'group' ? 'md:col-span-2' : ''}">
                   <label
                     for="label-name"
-                    class="block text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                    class="block text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground ml-1"
                   >
-                    Label Name
+                    Menu Label
                   </label>
-                  <input
-                    type="text"
-                    disabled={activeItem.locked}
-                    bind:value={activeItem.name}
-                    oninput={() => (isDirty = true)}
-                    placeholder="Contoh: Data Karyawan"
-                    class="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm font-bold focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed shadow-sm"
-                  />
+                  <div class="relative group">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
+                    >
+                      <i
+                        class="fas fa-heading text-[11px] text-muted-foreground/40 group-focus-within:text-primary transition-colors"
+                      ></i>
+                    </div>
+                    <input
+                      id="label-name"
+                      type="text"
+                      disabled={activeItem.locked}
+                      bind:value={activeItem.name}
+                      oninput={() => (isDirty = true)}
+                      placeholder="e.g. Master Karyawan"
+                      class="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-xl text-sm font-semibold focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/30 disabled:text-muted-foreground/50 hover:border-border/80 shadow-sm placeholder:font-normal placeholder:opacity-50"
+                    />
+                  </div>
                 </div>
 
                 {#if activeItem.type !== 'group'}
-                  <div class="space-y-2 animate-in fade-in slide-in-from-left-2 duration-300">
-                    <label
-                      for="path"
-                      class="block text-[10px] font-black uppercase tracking-widest text-muted-foreground"
-                    >
-                      Path / Slug URL
-                    </label>
-                    <input
-                      type="text"
-                      disabled={activeItem.locked}
-                      bind:value={activeItem.path}
-                      oninput={() => (isDirty = true)}
-                      placeholder="data-karyawan"
-                      class="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm font-mono focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed shadow-sm"
-                    />
+                  <div class="space-y-1.5 animate-in fade-in slide-in-from-left-2 duration-300">
+                    <div class="flex items-center justify-between ml-1">
+                      <label
+                        for="path-url"
+                        class="block text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground"
+                      >
+                        Route Path
+                      </label>
+                      <span
+                        class="text-[9px] font-mono text-primary/70 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10"
+                        >URL Slug</span
+                      >
+                    </div>
+                    <div class="relative group flex items-stretch">
+                      <span
+                        class="flex items-center justify-center px-3 bg-muted/30 border border-r-0 border-border rounded-l-xl text-muted-foreground/50 text-[11px] font-mono"
+                      >
+                        /
+                      </span>
+                      <input
+                        id="path-url"
+                        type="text"
+                        disabled={activeItem.locked}
+                        bind:value={activeItem.path}
+                        oninput={() => (isDirty = true)}
+                        placeholder="data-karyawan"
+                        class="w-full px-3 py-2.5 bg-background border border-border rounded-r-xl text-sm font-mono focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/30 disabled:text-muted-foreground/50 hover:border-border/80 shadow-sm placeholder:opacity-40"
+                      />
+                    </div>
                   </div>
                 {/if}
 
-                <div class="space-y-2">
+                <div class="space-y-1.5">
                   <label
                     for="icon-identity"
-                    class="block text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                    class="block text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground ml-1"
                   >
-                    Icon Identity
+                    Visual Icon
                   </label>
                   <div class="flex items-center gap-3">
-                    <div
-                      class="w-11 h-11 rounded-xl bg-muted/50 flex items-center justify-center border border-border shrink-0 shadow-inner"
-                    >
-                      <i class="{activeItem.icon} text-lg text-foreground/80"></i>
+                    <div class="relative group flex-1">
+                      <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                      >
+                        <i
+                          class="fab fa-font-awesome-flag text-[10px] text-muted-foreground/40 group-focus-within:text-primary transition-colors"
+                        ></i>
+                      </div>
+                      <input
+                        id="icon-identity"
+                        type="text"
+                        disabled={activeItem.locked}
+                        bind:value={activeItem.icon}
+                        oninput={() => (isDirty = true)}
+                        placeholder="fas fa-users"
+                        class="w-full pl-8 pr-4 py-2.5 bg-background border border-border rounded-xl text-xs font-mono focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/30 disabled:text-muted-foreground/50 shadow-sm placeholder:opacity-40"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      disabled={activeItem.locked}
-                      bind:value={activeItem.icon}
-                      oninput={() => (isDirty = true)}
-                      placeholder="fas fa-cube"
-                      class="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-sm font-mono focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed shadow-sm"
-                    />
                   </div>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-1.5">
                   <label
-                    for="Type Identifier"
-                    class="block text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                    for=""
+                    class="block text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground ml-1"
                   >
-                    Type Identifier
+                    Component Type
                   </label>
                   <div
-                    class="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center h-[46px] shadow-inner select-none cursor-default"
+                    class="w-full px-4 py-2.5 bg-muted/20 border border-border/50 rounded-xl flex items-center h-[42px] shadow-inner select-none cursor-not-allowed"
                   >
-                    <i class="fas fa-tag mr-2 opacity-50"></i>
-                    {activeItem.type || 'Undefined'}
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-2 h-2 rounded-full {activeItem.type
+                          ? 'bg-emerald-500'
+                          : 'bg-slate-500'}"
+                      ></div>
+                      <span
+                        class="text-[11px] font-black uppercase tracking-widest text-muted-foreground"
+                      >
+                        {activeItem.type || 'Undefined'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -320,31 +365,51 @@
 
             {#if activeItem.type === 'tableview'}
               <div
-                class="p-8 md:p-10 border-2 border-dashed border-primary/30 rounded-3xl bg-primary/[0.03] text-center transition-all hover:bg-primary/[0.05] animate-in fade-in slide-in-from-bottom-4"
+                class="relative overflow-hidden bg-[#0f172a] border border-slate-800 rounded-2xl shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
               >
                 <div
-                  class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 shadow-inner"
+                  class="absolute right-0 top-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"
+                ></div>
+
+                <div
+                  class="relative p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left"
                 >
-                  <i class="fas fa-database text-3xl text-primary"></i>
+                  <div
+                    class="w-16 h-16 rounded-2xl bg-[#1e293b] border border-slate-700/50 flex items-center justify-center shrink-0 shadow-inner"
+                  >
+                    <i class="fas fa-database text-2xl text-blue-400"></i>
+                  </div>
+
+                  <div class="flex-1 space-y-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <h3 class="text-lg md:text-xl font-bold text-white tracking-tight">
+                        Schema Configurator
+                      </h3>
+                      <span
+                        class="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-widest self-center sm:self-auto hidden sm:inline-block"
+                      >
+                        Advanced
+                      </span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-400 leading-relaxed max-w-lg">
+                      Desain struktur koleksi database, kelola relasi antar tabel, dan atur formulir
+                      data secara visual tanpa menulis kode.
+                    </p>
+                  </div>
+
+                  <button
+                    disabled={activeItem.locked}
+                    onclick={() => {
+                      if (!activeItem.config)
+                        activeItem.config = { endpoint: '', collectionName: '', fields: [] }
+                      isTableConfigOpen = true
+                    }}
+                    class="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-[12px] whitespace-nowrap disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none active:scale-95 border border-primary/20 shrink-0"
+                  >
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Launch Editor</span>
+                  </button>
                 </div>
-                <h3 class="text-lg md:text-xl font-black text-foreground mb-2">
-                  Schema Configurator
-                </h3>
-                <p class="text-xs text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
-                  Kelola struktur koleksi database, relasi tabel tingkat lanjut, dan formulir
-                  tampilan secara dinamis.
-                </p>
-                <button
-                  disabled={activeItem.locked}
-                  onclick={() => {
-                    if (!activeItem.config)
-                      activeItem.config = { endpoint: '', collectionName: '', fields: [] }
-                    isTableConfigOpen = true
-                  }}
-                  class="w-full sm:w-auto px-8 py-3.5 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 mx-auto text-sm disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none touch-manipulation active:scale-95"
-                >
-                  <i class="fas fa-code-branch"></i> Buka Editor Schema
-                </button>
               </div>
             {/if}
           </div>
@@ -1388,54 +1453,85 @@
                 {/if}
 
                 <div
-                  class="bg-card border border-border/80 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5"
+                  in:slide={{ duration: 300 }}
+                  class="bg-card border border-border/50 rounded-lg p-3 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4"
                 >
-                  <div class="flex items-center gap-6">
-                    <label class="flex items-center gap-3 cursor-pointer"
-                      ><input
-                        type="checkbox"
-                        bind:checked={field.required}
-                        onchange={() => (isDirty = true)}
-                        class="w-4 h-4 text-primary rounded bg-background border-border focus:ring-primary/30"
-                      /><span class="text-[10px] font-black uppercase text-muted-foreground"
-                        >Wajib Diisi</span
-                      ></label
-                    >
-                    <label class="flex items-center gap-3 cursor-pointer"
-                      ><input
-                        type="checkbox"
-                        bind:checked={field.readonly}
-                        onchange={() => (isDirty = true)}
-                        class="w-4 h-4 text-primary rounded bg-background border-border focus:ring-primary/30"
-                      /><span class="text-[10px] font-black uppercase text-muted-foreground"
-                        >Hanya Baca</span
-                      ></label
-                    >
-                    <label class="flex items-center gap-3 cursor-pointer"
-                      ><input
-                        type="checkbox"
-                        bind:checked={field.show_up}
-                        onchange={() => (isDirty = true)}
-                        class="w-4 h-4 text-primary rounded bg-background border-border focus:ring-primary/30"
-                      /><span class="text-[10px] font-black uppercase text-muted-foreground"
-                        >Tampilkan</span
-                      ></label
-                    >
-                  </div>
                   <div
-                    class="flex items-center gap-3 bg-muted/10 border border-border/70 rounded-xl px-3 py-2"
+                    class="grid grid-cols-4 xl:flex items-center gap-1.5 bg-muted/20 p-1.5 rounded-lg border border-border/40 w-full xl:w-auto"
                   >
-                    <span class="text-[9px] font-black uppercase text-muted-foreground"
-                      >Lebar UI</span
+                    {#each [{ key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt', active: 'peer-checked:bg-purple-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-purple-500' }, { key: 'required', label: 'Required', icon: 'fa-asterisk', active: 'peer-checked:bg-amber-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-amber-500' }, { key: 'readonly', label: 'Readonly', icon: 'fa-lock', active: 'peer-checked:bg-blue-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-blue-500' }, { key: 'show_up', label: 'Visible', icon: 'fa-eye', active: 'peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-emerald-500' }] as opt}
+                      <label class="relative cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          bind:checked={field[opt.key as keyof typeof field]}
+                          onchange={() => (isDirty = true)}
+                          class="peer sr-only"
+                        />
+
+                        <div
+                          class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 px-2 py-2.5 sm:px-4 sm:py-2 rounded-md transition-all duration-200
+                                    bg-transparent text-muted-foreground/60 border border-transparent
+                                    hover:bg-background/80 hover:text-foreground
+                                    {opt.active} active:scale-[0.97]"
+                        >
+                          <i
+                            class="fas {opt.icon} text-[10px] transition-transform group-hover:scale-110"
+                          ></i>
+                          <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider"
+                            >{opt.label}</span
+                          >
+                        </div>
+                      </label>
+                    {/each}
+                  </div>
+
+                  <div class="w-full xl:w-auto">
+                    <div
+                      class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/40 shadow-inner"
                     >
-                    <select
-                      bind:value={field.width}
-                      onchange={() => (isDirty = true)}
-                      class="text-[10px] font-bold bg-background border border-border rounded-lg px-2 py-1.5 outline-none min-w-[100px]"
-                      ><option value="100">100%</option><option value="66">66%</option><option
-                        value="50">50%</option
-                      ><option value="33">33%</option></select
-                    >
+                      <div
+                        class="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 sm:py-1 sm:border-r border-border/40 bg-background/50 sm:bg-transparent rounded-md sm:rounded-none"
+                      >
+                        <i class="fas fa-columns text-[10px] text-muted-foreground/50"></i>
+                        <span
+                          class="text-[9px] font-bold uppercase text-muted-foreground tracking-widest whitespace-nowrap"
+                          >Grid Span</span
+                        >
+                      </div>
+
+                      <div class="grid grid-cols-4 sm:flex items-center gap-1 w-full sm:w-auto">
+                        {#each [{ value: '33', label: '1/3', bar: 'w-2' }, { value: '50', label: '1/2', bar: 'w-3.5' }, { value: '66', label: '2/3', bar: 'w-5' }, { value: '100', label: 'Full', bar: 'w-7' }] as opt}
+                          <button
+                            type="button"
+                            onclick={() => {
+                              field.width = opt.value
+                              isDirty = true
+                            }}
+                            class="relative flex flex-col items-center justify-center py-2.5 sm:py-2 px-1 sm:px-4 rounded-md transition-all duration-200 group
+                                  {field.width === opt.value
+                              ? 'bg-primary text-primary-foreground shadow shadow-primary/20 z-10'
+                              : 'text-muted-foreground/50 hover:bg-background hover:text-foreground active:scale-[0.97]'}"
+                          >
+                            <div
+                              class="h-[2px] rounded-sm bg-current mb-1.5 opacity-20 group-hover:opacity-50 transition-all {opt.bar}"
+                            ></div>
+
+                            <span
+                              class="text-[9px] sm:text-[10px] font-bold uppercase tracking-tight"
+                            >
+                              {opt.label}
+                            </span>
+
+                            {#if field.width === opt.value}
+                              <div
+                                in:scale={{ duration: 300, start: 0.5, easing: backOut }}
+                                class="absolute bottom-0.5 w-2 h-[2px] rounded-sm bg-primary-foreground/40"
+                              ></div>
+                            {/if}
+                          </button>
+                        {/each}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
