@@ -21,6 +21,15 @@
   const activeItem = $derived(selectedId ? findNode(menuTree, selectedId) : null)
   const activeConfig = $derived<MenuConfig | undefined>(activeItem?.config)
 
+  let isOpen = $state(false); // Jika Svelte 4, gunakan: let isOpen = false;
+
+  function handleSelect(targetField:any, val:any) {
+    if (!targetField) return;
+    targetField.width = val;
+    isDirty = true;
+    isOpen = false;
+  }
+
   $effect(() => {
     if (isInitialized) return
     const sidebar = $page.props.sidebar as any
@@ -636,7 +645,7 @@
             : 'flex'}"
         >
           {#if activeFieldIndex !== null && activeConfig.fields?.[activeFieldIndex]}
-            {@const field = activeConfig.fields[activeFieldIndex]}
+            {@const field = activeConfig.fields[activeFieldIndex] || {}}
 
             <div
               class="lg:hidden shrink-0 border-b border-border bg-card p-3 flex items-center gap-3 shadow-sm z-20"
@@ -655,7 +664,7 @@
               <div
                 class="max-w-4xl mx-auto space-y-6 lg:space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-300"
               >
-                <div class="bg-card border border-border/80 rounded-2xl p-5 md:p-6 shadow-sm">
+                <div class="bg-card border border-border/80 rounded-md p-5 md:p-6 shadow-sm">
                   <div class="flex items-center gap-3 mb-5 pb-4 border-b border-border/50">
                     <div
                       class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
@@ -755,7 +764,7 @@
 
                 {#if ['number', 'currency'].includes(field.type)}
                   <div
-                    class="group relative overflow-hidden rounded-3xl border border-border/50 bg-card shadow-sm transition-all hover:shadow-md"
+                    class="group relative overflow-hidden rounded-lg border border-border/50 bg-card shadow-sm transition-all hover:shadow-md"
                     transition:slide
                   >
                     <div class="absolute inset-y-0 left-0 w-1 bg-primary/40"></div>
@@ -766,7 +775,7 @@
                       >
                         <div class="flex items-center gap-3">
                           <div
-                            class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+                            class="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary"
                           >
                             <i class="fas fa-calculator text-sm"></i>
                           </div>
@@ -831,7 +840,7 @@
                         >
                           <div class="flex items-center gap-3">
                             <div
-                              class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+                              class="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary"
                             >
                               <i class="fas fa-calculator text-sm"></i>
                             </div>
@@ -848,7 +857,7 @@
                           </div>
 
                           <label
-                            class="relative inline-flex cursor-pointer items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 px-4 py-2 transition-colors hover:bg-muted/50"
+                            class="relative inline-flex cursor-pointer items-center gap-3 rounded-md border border-border/60 bg-muted/30 px-4 py-2 transition-colors hover:bg-muted/50"
                           >
                             <input
                               type="checkbox"
@@ -915,7 +924,7 @@
                             </div>
 
                             <div
-                              class="flex gap-4 rounded-2xl border {isMath(
+                              class="flex gap-4 rounded-md border {isMath(
                                 field.calculation.operation
                               )
                                 ? 'bg-blue-500/[0.03] border-blue-500/20'
@@ -967,7 +976,7 @@
 
                 {#if field.type === 'select' && Array.isArray(field.options)}
                   <div
-                    class="bg-amber-500/[0.02] border border-amber-500/20 rounded-2xl p-5 md:p-6 shadow-sm relative overflow-hidden"
+                    class="bg-amber-500/[0.02] border border-amber-500/20 rounded-md p-5 md:p-6 shadow-sm relative overflow-hidden"
                     transition:slide
                   >
                     <div class="absolute top-0 left-0 w-1 h-full bg-amber-500/50"></div>
@@ -1022,7 +1031,7 @@
 
                 {#if field.type === 'relation'}
                   <div
-                    class="bg-emerald-500/[0.02] border border-emerald-500/20 rounded-2xl p-5 md:p-6 shadow-sm relative overflow-hidden"
+                    class="bg-emerald-500/[0.02] border border-emerald-500/20 rounded-md p-5 md:p-6 shadow-sm relative overflow-hidden"
                     transition:slide
                   >
                     <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500/50"></div>
@@ -1082,7 +1091,7 @@
 
                 {#if field.type === 'repeater' || field.type === 'object_group'}
                   <div
-                    class="bg-card border-2 border-dashed border-primary/30 rounded-2xl p-4 md:p-6 shadow-sm overflow-hidden"
+                    class="bg-card border-2 border-dashed border-primary/30 rounded-md p-4 md:p-6 shadow-sm overflow-hidden"
                     transition:slide
                   >
                     <div
@@ -1167,7 +1176,7 @@
                           <div class="pl-2 border-l-2 border-border/50">
                             {#if ['number', 'currency'].includes(sf.type) && sf.calculation}
                               <div
-                                class="mt-4 p-5 bg-blue-500/[0.03] border border-blue-500/20 rounded-2xl space-y-5 shadow-inner"
+                                class="mt-4 p-5 bg-blue-500/[0.03] border border-blue-500/20 rounded-md space-y-5 shadow-inner"
                                 transition:slide
                               >
                                 <div
@@ -1452,86 +1461,85 @@
                   </div>
                 {/if}
 
-                <div
-                  in:slide={{ duration: 300 }}
-                  class="bg-card border border-border/50 rounded-lg p-3 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4"
+                <div 
+                  in:slide={{ duration: 200 }} 
+                  class="bg-card border border-border rounded-md shadow-sm p-1.5 flex flex-col lg:flex-row lg:items-center gap-2"
                 >
-                  <div
-                    class="grid grid-cols-4 xl:flex items-center gap-1.5 bg-muted/20 p-1.5 rounded-lg border border-border/40 w-full xl:w-auto"
-                  >
-                    {#each [{ key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt', active: 'peer-checked:bg-purple-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-purple-500' }, { key: 'required', label: 'Required', icon: 'fa-asterisk', active: 'peer-checked:bg-amber-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-amber-500' }, { key: 'readonly', label: 'Readonly', icon: 'fa-lock', active: 'peer-checked:bg-blue-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-blue-500' }, { key: 'show_up', label: 'Visible', icon: 'fa-eye', active: 'peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:shadow-sm peer-checked:border-emerald-500' }] as opt}
-                      <label class="relative cursor-pointer group">
+                  <div class="grid grid-cols-2 sm:flex items-center gap-1 w-full lg:w-auto flex-1">
+                    {#each [
+                      { key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt' },
+                      { key: 'required', label: 'Required', icon: 'fa-asterisk' },
+                      { key: 'readonly', label: 'Readonly', icon: 'fa-lock' },
+                      { key: 'show_up', label: 'Visible', icon: 'fa-eye' }
+                    ] as opt}
+                      <label class="relative cursor-pointer group flex-1 sm:flex-none">
                         <input
                           type="checkbox"
                           bind:checked={field[opt.key as keyof typeof field]}
                           onchange={() => (isDirty = true)}
                           class="peer sr-only"
                         />
-
-                        <div
-                          class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 px-2 py-2.5 sm:px-4 sm:py-2 rounded-md transition-all duration-200
-                                    bg-transparent text-muted-foreground/60 border border-transparent
-                                    hover:bg-background/80 hover:text-foreground
-                                    {opt.active} active:scale-[0.97]"
-                        >
-                          <i
-                            class="fas {opt.icon} text-[10px] transition-transform group-hover:scale-110"
-                          ></i>
-                          <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider"
-                            >{opt.label}</span
-                          >
+                        <div class="flex items-center justify-center gap-2 px-3 py-1.5 rounded text-[11px] font-medium text-muted-foreground border border-transparent transition-all select-none hover:bg-muted/50 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:font-semibold">
+                          <i class="fas {opt.icon} text-[10px] opacity-60 peer-checked:opacity-100"></i>
+                          {opt.label}
                         </div>
                       </label>
                     {/each}
                   </div>
 
-                  <div class="w-full xl:w-auto">
-                    <div
-                      class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/40 shadow-inner"
+                  <div class="relative w-full sm:w-64 lg:w-48">
+                    <button
+                      type="button"
+                      onclick={() => (isOpen = !isOpen)}
+                      class="flex items-stretch w-full bg-muted/10 border border-border rounded-md overflow-hidden group hover:border-primary/40 focus:ring-2 focus:ring-primary/5 transition-all outline-none h-[36px]"
                     >
-                      <div
-                        class="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 sm:py-1 sm:border-r border-border/40 bg-background/50 sm:bg-transparent rounded-md sm:rounded-none"
-                      >
+                      <div class="flex items-center gap-2 px-3 bg-muted/20 border-r border-border shrink-0 select-none">
                         <i class="fas fa-columns text-[10px] text-muted-foreground/50"></i>
-                        <span
-                          class="text-[9px] font-bold uppercase text-muted-foreground tracking-widest whitespace-nowrap"
-                          >Grid Span</span
-                        >
+                        <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80">Width</span>
                       </div>
+                      
+                      <div class="flex items-center justify-between flex-1 px-3 bg-background text-[11px] font-bold text-foreground">
+                        <span>{field.width ? field.width + '%' : 'Auto'}</span>
+                        <i class="fas fa-chevron-down text-[8px] opacity-40 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"></i>
+                      </div>
+                    </button>
 
-                      <div class="grid grid-cols-4 sm:flex items-center gap-1 w-full sm:w-auto">
-                        {#each [{ value: '33', label: '1/3', bar: 'w-2' }, { value: '50', label: '1/2', bar: 'w-3.5' }, { value: '66', label: '2/3', bar: 'w-5' }, { value: '100', label: 'Full', bar: 'w-7' }] as opt}
-                          <button
-                            type="button"
-                            onclick={() => {
-                              field.width = opt.value
-                              isDirty = true
-                            }}
-                            class="relative flex flex-col items-center justify-center py-2.5 sm:py-2 px-1 sm:px-4 rounded-md transition-all duration-200 group
-                                  {field.width === opt.value
-                              ? 'bg-primary text-primary-foreground shadow shadow-primary/20 z-10'
-                              : 'text-muted-foreground/50 hover:bg-background hover:text-foreground active:scale-[0.97]'}"
-                          >
-                            <div
-                              class="h-[2px] rounded-sm bg-current mb-1.5 opacity-20 group-hover:opacity-50 transition-all {opt.bar}"
-                            ></div>
+                    {#if isOpen}
+                      <button 
+                        class="fixed inset-0 z-40 cursor-default bg-transparent w-full h-full" 
+                        onclick={() => (isOpen = false)}
+                        aria-label="Close"
+                      ></button>
 
-                            <span
-                              class="text-[9px] sm:text-[10px] font-bold uppercase tracking-tight"
+                      <div
+                        in:scale={{ duration: 100, start: 0.98 }}
+                        out:fade={{ duration: 75 }}
+                        class="absolute top-full left-0 right-0 mt-1 z-50 bg-popover border border-border shadow-lg rounded-md overflow-hidden"
+                      >
+                        <div class="p-1 flex flex-col">
+                          {#each [
+                            { v: '33', l: '33% (Small)' },
+                            { v: '50', l: '50% (Half)' },
+                            { v: '66', l: '66% (Large)' },
+                            { v: '100', l: '100% (Full)' }
+                          ] as opt}
+                            <button
+                              type="button"
+                              onclick={() => handleSelect(field, opt.v)}
+                              class="flex items-center justify-between px-3 py-2.5 rounded-sm text-[11px] font-semibold transition-colors
+                                    {field.width === opt.v 
+                                      ? 'bg-primary text-primary-foreground' 
+                                      : 'text-foreground hover:bg-muted/80'}"
                             >
-                              {opt.label}
-                            </span>
-
-                            {#if field.width === opt.value}
-                              <div
-                                in:scale={{ duration: 300, start: 0.5, easing: backOut }}
-                                class="absolute bottom-0.5 w-2 h-[2px] rounded-sm bg-primary-foreground/40"
-                              ></div>
-                            {/if}
-                          </button>
-                        {/each}
+                              {opt.l}
+                              {#if field.width === opt.v}
+                                <i class="fas fa-check text-[9px]"></i>
+                              {/if}
+                            </button>
+                          {/each}
+                        </div>
                       </div>
-                    </div>
+                    {/if}
                   </div>
                 </div>
               </div>
@@ -1626,7 +1634,9 @@
                 deleteNode(node.id)
               }}
               class="w-7 h-7 rounded-md flex items-center justify-center text-destructive/70 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 transition-all touch-manipulation"
-              ><i class="fas fa-times text-[10px]"></i></button
+              >
+              <i class="fa-solid fa-eraser text-[12px] "></i> 
+            </button
             >
           {/if}
           {#if node.sub_sidemenu}
