@@ -11,7 +11,7 @@
     <div class="relative mb-6">
       <div class="absolute inset-0 animate-ping rounded-full bg-primary opacity-20"></div>
       <div
-        class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
+        class="relative flex h-20 w-20 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
       >
         <i class="fas fa-cube text-4xl"></i>
       </div>

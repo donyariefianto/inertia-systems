@@ -131,7 +131,7 @@
 </script>
 
 <div
-  class="relative h-full w-full overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
+  class="relative h-full w-full overflow-hidden rounded-lg border border-border bg-background shadow-sm"
 >
   {#if !activeTabId}
     <div
@@ -153,10 +153,10 @@
         {#each tabs as tab}
           <button
             onclick={() => openTab(tab.id)}
-            class="group flex h-full flex-col items-start gap-2 rounded-3xl border border-border bg-card p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+            class="group flex h-full flex-col items-start gap-2 rounded-xl border border-border bg-card p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <div
-              class="flex h-14 w-14 items-center justify-center rounded-2xl {tab.bg} {tab.color} shadow-inner transition-transform duration-300 group-hover:scale-110"
+              class="flex h-14 w-14 items-center justify-center rounded-lg {tab.bg} {tab.color} shadow-inner transition-transform duration-300 group-hover:scale-110"
             >
               <i class="{tab.icon} text-2xl"></i>
             </div>

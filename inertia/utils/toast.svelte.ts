@@ -4,6 +4,7 @@ interface Toast {
   id: string
   message: string
   type: ToastType
+  duration: number
 }
 
 let toastList = $state<Toast[]>([])
@@ -14,7 +15,7 @@ export const toast = {
   },
   add(message: string, type: ToastType = 'success', duration: number = 5000) {
     const id = Date.now().toString(36) + Math.random().toString(36).substring(2)
-    toastList = [...toastList, { id, message, type }]
+    toastList = [...toastList, { id, message, type, duration }]
     if (duration > 0) {
       setTimeout(() => {
         this.remove(id)

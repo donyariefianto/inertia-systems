@@ -503,8 +503,7 @@
               <div class="space-y-3" transition:slide>
                 {#each mfaMethods as method}
                   <div
-                    class="relative overflow-hidden rounded-2xl border {activeMfaType ===
-                    method.type
+                    class="relative overflow-hidden rounded-lg border {activeMfaType === method.type
                       ? 'border-primary bg-primary/5 shadow-sm'
                       : 'border-border bg-muted/5'} transition-all"
                   >

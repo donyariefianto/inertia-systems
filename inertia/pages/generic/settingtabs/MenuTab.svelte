@@ -21,13 +21,13 @@
   const activeItem = $derived(selectedId ? findNode(menuTree, selectedId) : null)
   const activeConfig = $derived<MenuConfig | undefined>(activeItem?.config)
 
-  let isOpen = $state(false); // Jika Svelte 4, gunakan: let isOpen = false;
+  let isOpen = $state(false) // Jika Svelte 4, gunakan: let isOpen = false;
 
-  function handleSelect(targetField:any, val:any) {
-    if (!targetField) return;
-    targetField.width = val;
-    isDirty = true;
-    isOpen = false;
+  function handleSelect(targetField: any, val: any) {
+    if (!targetField) return
+    targetField.width = val
+    isDirty = true
+    isOpen = false
   }
 
   $effect(() => {
@@ -182,7 +182,7 @@
     class="flex-1 flex flex-col lg:flex-row gap-3 md:gap-4 p-3 md:p-4 overflow-hidden min-h-0 bg-muted/5"
   >
     <div
-      class="w-full lg:w-[320px] xl:w-1/4 h-[40%] lg:h-full flex flex-col bg-card rounded-2xl border border-border overflow-hidden shadow-sm shrink-0"
+      class="w-full lg:w-[320px] xl:w-1/4 h-[40%] lg:h-full flex flex-col bg-card rounded-lg border border-border overflow-hidden shadow-sm shrink-0"
     >
       <div
         class="p-4 border-b border-border bg-muted/30 flex justify-between items-center shrink-0"
@@ -214,7 +214,7 @@
     </div>
 
     <div
-      class="flex-1 flex flex-col bg-card rounded-2xl min-h-[50%] lg:min-h-0 border border-border overflow-hidden shadow-sm relative"
+      class="flex-1 flex flex-col bg-card rounded-lg min-h-[50%] lg:min-h-0 border border-border overflow-hidden shadow-sm relative"
     >
       <div
         class="p-4 border-b border-border bg-muted/30 shrink-0 flex justify-between items-center"
@@ -239,7 +239,7 @@
             in:fade={{ duration: 300, easing: backOut }}
           >
             <div
-              class="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden flex flex-col"
+              class="bg-card border border-border/50 rounded-lg shadow-sm overflow-hidden flex flex-col"
             >
               <div class="bg-muted/10 px-5 py-4 border-b border-border/50 flex items-center gap-4">
                 <div
@@ -374,7 +374,7 @@
 
             {#if activeItem.type === 'tableview'}
               <div
-                class="relative overflow-hidden bg-[#0f172a] border border-slate-800 rounded-2xl shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
+                class="relative overflow-hidden bg-[#0f172a] border border-slate-800 rounded-lg shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
               >
                 <div
                   class="absolute right-0 top-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"
@@ -384,7 +384,7 @@
                   class="relative p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left"
                 >
                   <div
-                    class="w-16 h-16 rounded-2xl bg-[#1e293b] border border-slate-700/50 flex items-center justify-center shrink-0 shadow-inner"
+                    class="w-16 h-16 rounded-lg bg-[#1e293b] border border-slate-700/50 flex items-center justify-center shrink-0 shadow-inner"
                   >
                     <i class="fas fa-database text-2xl text-blue-400"></i>
                   </div>
@@ -1461,17 +1461,12 @@
                   </div>
                 {/if}
 
-                <div 
-                  in:slide={{ duration: 200 }} 
+                <div
+                  in:slide={{ duration: 200 }}
                   class="bg-card border border-border rounded-md shadow-sm p-1.5 flex flex-col lg:flex-row lg:items-center gap-2"
                 >
                   <div class="grid grid-cols-2 sm:flex items-center gap-1 w-full lg:w-auto flex-1">
-                    {#each [
-                      { key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt' },
-                      { key: 'required', label: 'Required', icon: 'fa-asterisk' },
-                      { key: 'readonly', label: 'Readonly', icon: 'fa-lock' },
-                      { key: 'show_up', label: 'Visible', icon: 'fa-eye' }
-                    ] as opt}
+                    {#each [{ key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt' }, { key: 'required', label: 'Required', icon: 'fa-asterisk' }, { key: 'readonly', label: 'Readonly', icon: 'fa-lock' }, { key: 'show_up', label: 'Visible', icon: 'fa-eye' }] as opt}
                       <label class="relative cursor-pointer group flex-1 sm:flex-none">
                         <input
                           type="checkbox"
@@ -1479,8 +1474,11 @@
                           onchange={() => (isDirty = true)}
                           class="peer sr-only"
                         />
-                        <div class="flex items-center justify-center gap-2 px-3 py-1.5 rounded text-[11px] font-medium text-muted-foreground border border-transparent transition-all select-none hover:bg-muted/50 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:font-semibold">
-                          <i class="fas {opt.icon} text-[10px] opacity-60 peer-checked:opacity-100"></i>
+                        <div
+                          class="flex items-center justify-center gap-2 px-3 py-1.5 rounded text-[11px] font-medium text-muted-foreground border border-transparent transition-all select-none hover:bg-muted/50 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:font-semibold"
+                        >
+                          <i class="fas {opt.icon} text-[10px] opacity-60 peer-checked:opacity-100"
+                          ></i>
                           {opt.label}
                         </div>
                       </label>
@@ -1493,20 +1491,31 @@
                       onclick={() => (isOpen = !isOpen)}
                       class="flex items-stretch w-full bg-muted/10 border border-border rounded-md overflow-hidden group hover:border-primary/40 focus:ring-2 focus:ring-primary/5 transition-all outline-none h-[36px]"
                     >
-                      <div class="flex items-center gap-2 px-3 bg-muted/20 border-r border-border shrink-0 select-none">
+                      <div
+                        class="flex items-center gap-2 px-3 bg-muted/20 border-r border-border shrink-0 select-none"
+                      >
                         <i class="fas fa-columns text-[10px] text-muted-foreground/50"></i>
-                        <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80">Width</span>
+                        <span
+                          class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80"
+                          >Width</span
+                        >
                       </div>
-                      
-                      <div class="flex items-center justify-between flex-1 px-3 bg-background text-[11px] font-bold text-foreground">
+
+                      <div
+                        class="flex items-center justify-between flex-1 px-3 bg-background text-[11px] font-bold text-foreground"
+                      >
                         <span>{field.width ? field.width + '%' : 'Auto'}</span>
-                        <i class="fas fa-chevron-down text-[8px] opacity-40 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"></i>
+                        <i
+                          class="fas fa-chevron-down text-[8px] opacity-40 transition-transform duration-200 {isOpen
+                            ? 'rotate-180'
+                            : ''}"
+                        ></i>
                       </div>
                     </button>
 
                     {#if isOpen}
-                      <button 
-                        class="fixed inset-0 z-40 cursor-default bg-transparent w-full h-full" 
+                      <button
+                        class="fixed inset-0 z-40 cursor-default bg-transparent w-full h-full"
                         onclick={() => (isOpen = false)}
                         aria-label="Close"
                       ></button>
@@ -1517,19 +1526,14 @@
                         class="absolute top-full left-0 right-0 mt-1 z-50 bg-popover border border-border shadow-lg rounded-md overflow-hidden"
                       >
                         <div class="p-1 flex flex-col">
-                          {#each [
-                            { v: '33', l: '33% (Small)' },
-                            { v: '50', l: '50% (Half)' },
-                            { v: '66', l: '66% (Large)' },
-                            { v: '100', l: '100% (Full)' }
-                          ] as opt}
+                          {#each [{ v: '33', l: '33% (Small)' }, { v: '50', l: '50% (Half)' }, { v: '66', l: '66% (Large)' }, { v: '100', l: '100% (Full)' }] as opt}
                             <button
                               type="button"
                               onclick={() => handleSelect(field, opt.v)}
                               class="flex items-center justify-between px-3 py-2.5 rounded-sm text-[11px] font-semibold transition-colors
-                                    {field.width === opt.v 
-                                      ? 'bg-primary text-primary-foreground' 
-                                      : 'text-foreground hover:bg-muted/80'}"
+                                    {field.width === opt.v
+                                ? 'bg-primary text-primary-foreground'
+                                : 'text-foreground hover:bg-muted/80'}"
                             >
                               {opt.l}
                               {#if field.width === opt.v}
@@ -1550,7 +1554,7 @@
             >
               <div class="max-w-sm">
                 <div
-                  class="w-24 h-24 bg-card rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6 border border-border/50"
+                  class="w-24 h-24 bg-card rounded-xl shadow-sm flex items-center justify-center mx-auto mb-6 border border-border/50"
                 >
                   <i class="fas fa-sliders-h text-4xl text-primary/30"></i>
                 </div>
@@ -1634,10 +1638,9 @@
                 deleteNode(node.id)
               }}
               class="w-7 h-7 rounded-md flex items-center justify-center text-destructive/70 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 transition-all touch-manipulation"
-              >
-              <i class="fa-solid fa-eraser text-[12px] "></i> 
-            </button
             >
+              <i class="fa-solid fa-eraser text-[12px]"></i>
+            </button>
           {/if}
           {#if node.sub_sidemenu}
             <button

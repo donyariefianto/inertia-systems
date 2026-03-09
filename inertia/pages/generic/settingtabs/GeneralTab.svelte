@@ -11,7 +11,7 @@
       </p>
     </div>
 
-    <div class="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+    <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       {#each config?.fields || [] as field, i}
         <div
           class="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between {i !==

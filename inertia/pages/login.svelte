@@ -226,7 +226,7 @@
         >
           <div class="text-center space-y-2">
             <div
-              class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-2 shadow-sm"
+              class="inline-flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-primary mb-2 shadow-sm"
             >
               {#if mfaType === 'totp'}
                 <i class="fas fa-shield-halved text-2xl"></i>
@@ -261,7 +261,7 @@
                 autocomplete="one-time-code"
                 placeholder="······"
                 class="flex h-16 w-full text-center text-3xl font-mono font-bold tracking-[12px]
-                      bg-muted/30 border-2 border-border/50 rounded-2xl
+                      bg-muted/30 border-2 border-border/50 rounded-lg
                       focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10
                       outline-none transition-all duration-300 placeholder:opacity-30"
                 required

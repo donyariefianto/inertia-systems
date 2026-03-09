@@ -3,7 +3,6 @@
   import { fly, scale } from 'svelte/transition'
   import { expoOut } from 'svelte/easing'
 
-  // Mapping menggunakan Semantic Tokens dari app.css Anda
   const themes = {
     success: {
       color: 'var(--color-success)',
@@ -42,7 +41,6 @@
     <div
       role="alert"
       aria-live="assertive"
-      /* Animasi: Di mobile lebih enak muncul dari bawah (y), di desktop dari kanan (x) */
       in:fly={{ y: 20, x: window.innerWidth > 640 ? 50 : 0, duration: 400, easing: expoOut }}
       out:scale={{ start: 0.95, duration: 200 }}
       class="group pointer-events-auto relative overflow-hidden rounded-[var(--radius-xl)]
@@ -89,6 +87,7 @@
       <div
         class="absolute bottom-0 left-0 h-[3px] animate-progress-shrink origin-left group-hover:[animation-play-state:paused]"
         style:background={theme.color}
+        style:animation-duration="{item.duration}ms"
       ></div>
     </div>
   {/each}
@@ -105,7 +104,9 @@
   }
 
   .animate-progress-shrink {
-    animation: progress-shrink 5s linear forwards;
+    animation-name: progress-shrink;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     width: 100%;
   }
 </style>

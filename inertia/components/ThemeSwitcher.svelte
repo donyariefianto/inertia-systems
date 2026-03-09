@@ -12,7 +12,7 @@
 <div
   class="mx-auto flex {isCollapsed
     ? 'flex-col py-3 w-12'
-    : 'flex-row px-3 py-2.5 w-full'} items-center justify-between gap-3 rounded-2xl border border-border/50 bg-background/40 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] backdrop-blur-md transition-all duration-300"
+    : 'flex-row px-3 py-2.5 w-full'} items-center justify-between gap-3 rounded-lg border border-border/50 bg-background/40 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] backdrop-blur-md transition-all duration-300"
 >
   <button
     type="button"

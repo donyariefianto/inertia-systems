@@ -35,7 +35,7 @@
         ></div>
 
         <div
-          class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-card border border-border/50 shadow-xl shadow-primary/5"
+          class="relative flex h-16 w-16 items-center justify-center rounded-lg bg-card border border-border/50 shadow-xl shadow-primary/5"
         >
           <i class="fas fa-circle-notch fa-spin text-2xl text-primary"></i>
         </div>

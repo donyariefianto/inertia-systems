@@ -162,13 +162,12 @@
       if (!res.ok) {
         throw new Error(result.message || 'Gagal membuat dashboard.')
       }
-      activeDashboard = result.data
+      activeDashboard = { widgets: [] }
 
       loadDashboards()
-      toast.add('Dashboard berhasil dibuat.', 'success')
+      toast.add('Dashboard berhasil dibuat.', 'success', 1000)
 
       currentStep = 'CANVAS'
-
       shellForm = { name: '' }
     } catch (err) {
       toast.add(err.message, 'error')
@@ -362,7 +361,7 @@
         currentStep = 'SHELL'
       }
       loadDashboards()
-      toast.add('Dashboard telah dihapus secara permanen.', 'success')
+      toast.add('Dashboard telah dihapus secara permanen.', 'success', 1000)
     } catch (error) {
       console.error('[Delete Dashboard Error]:', error)
       toast.add(error.message, 'error')
@@ -523,7 +522,7 @@
           </div>
         {:else if !dashboards || dashboards.length === 0}
           <div
-            class="flex flex-col items-center justify-center py-16 px-6 text-center border border-dashed border-border/60 rounded-2xl bg-background/50 backdrop-blur-sm"
+            class="flex flex-col items-center justify-center py-16 px-6 text-center border border-dashed border-border/60 rounded-lg bg-background/50 backdrop-blur-sm"
           >
             <div
               class="w-20 h-20 mb-4 rounded-full bg-primary/10 flex items-center justify-center text-primary"
@@ -556,7 +555,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {#each dashboards as dash}
               <div
-                class="group relative flex flex-col rounded-2xl border border-border/50 bg-card p-5 shadow-sm hover:shadow-lg hover:border-border/80 transition-all duration-200"
+                class="group relative flex flex-col rounded-lg border border-border/50 bg-card p-5 shadow-sm hover:shadow-lg hover:border-border/80 transition-all duration-200"
               >
                 <div class="flex items-start justify-between gap-2">
                   <h3 class="font-semibold text-foreground text-base truncate" title={dash.name}>
@@ -568,11 +567,11 @@
                     class="shrink-0 text-muted-foreground/40 hover:text-destructive transition-colors"
                     title="Hapus"
                   >
-                    <i class="fas fa-trash-alt text-sm"></i>
+                    <i class="fa-solid fa-eraser text-sm"></i>
                   </button>
                 </div>
 
-                <p class="text-xs font-mono text-muted-foreground/70 mt-1">ID: {dash.id}</p>
+                <p class="text-xs font-mono text-muted-foreground/70 mt-1">ID: {dash._id}</p>
 
                 <div class="flex-1"></div>
 
@@ -654,7 +653,7 @@
       >
         <div class="shrink-0 bg-gradient-to-r from-primary/5 to-transparent px-8 py-10">
           <div
-            class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner"
+            class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner"
           >
             <i class="fas fa-rocket text-xl"></i>
           </div>
@@ -682,7 +681,7 @@
                   bind:value={shellForm.name}
                   type="text"
                   placeholder="e.g. Sales Performance Q3"
-                  class="w-full rounded-2xl border border-border bg-background px-5 py-4 text-sm font-bold text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all placeholder:font-normal placeholder:text-muted-foreground/40 shadow-sm"
+                  class="w-full rounded-lg border border-border bg-background px-5 py-4 text-sm font-bold text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all placeholder:font-normal placeholder:text-muted-foreground/40 shadow-sm"
                 />
                 <div class="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground/20">
                   <i class="fas fa-edit text-xs"></i>
@@ -691,7 +690,7 @@
             </div>
 
             <div
-              class="p-4 rounded-2xl bg-muted/30 border border-dashed border-border flex items-start gap-3"
+              class="p-4 rounded-lg bg-muted/30 border border-dashed border-border flex items-start gap-3"
             >
               <i class="fas fa-info-circle text-primary mt-0.5 text-xs"></i>
               <p class="text-[10px] text-muted-foreground leading-tight">
@@ -706,7 +705,7 @@
           <button
             onclick={saveShell}
             disabled={isSubmittingShell || !shellForm.name.trim()}
-            class="w-full flex items-center justify-center gap-3 rounded-2xl bg-primary px-6 py-4 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
+            class="w-full flex items-center justify-center gap-3 rounded-lg bg-primary px-6 py-4 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
           >
             {#if isSubmittingShell}
               <i class="fas fa-circle-notch fa-spin"></i> Processing...
@@ -717,7 +716,7 @@
 
           <button
             onclick={() => (currentStep = 'LIBRARY')}
-            class="w-full rounded-2xl px-6 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+            class="w-full rounded-lg px-6 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
           >
             Discard & Back
           </button>
@@ -779,7 +778,7 @@
                 ></div>
 
                 <div
-                  class="relative w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center shadow-inner border border-border/40 group-hover:scale-105 group-hover:bg-primary/5 transition-all duration-500"
+                  class="relative w-14 h-14 rounded-lg bg-muted/50 flex items-center justify-center shadow-inner border border-border/40 group-hover:scale-105 group-hover:bg-primary/5 transition-all duration-500"
                 >
                   <i
                     class="fas fa-layer-group text-xl text-muted-foreground/40 group-hover:text-primary/60 transition-colors"
@@ -1223,7 +1222,7 @@
                           </div>
 
                           <div
-                            class="group rounded-2xl border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.pipeline
+                            class="group rounded-lg border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.pipeline
                               ? 'border-red-500/50 ring-4 ring-red-500/5'
                               : 'border-slate-700/40 focus-within:border-indigo-500/40 focus-within:ring-4 focus-within:ring-indigo-500/5'}"
                           >
@@ -1327,7 +1326,7 @@
                           </div>
 
                           <div
-                            class="rounded-2xl border transition-all duration-300 shadow-2xl overflow-hidden
+                            class="rounded-lg border transition-all duration-300 shadow-2xl overflow-hidden
                                 {activeWidget.config.useVariant
                               ? jsonErrors.variant
                                 ? 'border-red-500/50 bg-[#0b0e14] ring-4 ring-red-500/5'
@@ -1420,7 +1419,7 @@
                         </div>
 
                         <div
-                          class="group rounded-2xl border border-slate-700/40 bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 focus-within:border-green-500/40 focus-within:ring-4 focus-within:ring-green-500/5"
+                          class="group rounded-lg border border-slate-700/40 bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 focus-within:border-green-500/40 focus-within:ring-4 focus-within:ring-green-500/5"
                         >
                           <div
                             class="h-8 bg-[#161b22] border-b border-slate-800/50 flex items-center justify-between px-4"
@@ -1530,7 +1529,7 @@
                       </div>
 
                       <div
-                        class="group rounded-2xl border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.echarts
+                        class="group rounded-lg border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.echarts
                           ? 'border-red-500/50 ring-4 ring-red-500/5'
                           : 'border-slate-700/40 focus-within:border-blue-500/40 focus-within:ring-4 focus-within:ring-blue-500/5'}"
                       >

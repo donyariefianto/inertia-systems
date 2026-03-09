@@ -32,7 +32,7 @@
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {#each config?.charts || ['overview', 'conversion'] as chartKey}
       <div
-        class="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm min-h-[350px]"
+        class="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm min-h-[350px]"
       >
         <h3 class="font-bold text-foreground capitalize mb-6">
           {chartKey.replace('_', ' ')} Chart

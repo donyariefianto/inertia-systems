@@ -89,7 +89,7 @@
               <div in:fly={{ y: 20, duration: 400, delay: i * 100 }}>
                 <Link
                   href={card.path}
-                  class="group relative flex h-full flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  class="group relative flex h-full flex-col gap-5 rounded-lg border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                   <div class="flex items-center gap-4">
                     <div
@@ -123,7 +123,7 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <!-- Informasi Sesi -->
           <article
-            class="rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
+            class="rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
             in:fade={{ delay: 400 }}
           >
             <header class="mb-5 flex items-center gap-3">
@@ -162,7 +162,7 @@
 
           <!-- Informasi Rilis -->
           <article
-            class="rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
+            class="rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
             in:fade={{ delay: 500 }}
           >
             <header class="mb-5 flex items-center gap-3">
@@ -173,7 +173,7 @@
             </header>
             <div class="flex items-center gap-6">
               <div
-                class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-muted to-muted/30 text-muted-foreground"
+                class="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/30 text-muted-foreground"
               >
                 <i class="fas fa-code-branch text-2xl"></i>
               </div>

@@ -729,7 +729,7 @@
                 activeRuleId = rule.id
                 isDrawerOpen = false
               }}
-              class="relative w-full flex flex-col items-start rounded-2xl border p-5 transition-all text-left overflow-hidden
+              class="relative w-full flex flex-col items-start rounded-lg border p-5 transition-all text-left overflow-hidden
                         {activeRuleId === rule.id
                 ? 'border-primary bg-primary/5 ring-1 ring-primary/20 shadow-md'
                 : 'border-border bg-card hover:border-primary/50 hover:bg-muted'}"
@@ -848,7 +848,7 @@
                 </div>
               {:else if field.type === 'code_editor'}
                 <div
-                  class="rounded-2xl border border-input bg-[#0f111a] p-1.5 shadow-2xl relative group focus-within:ring-2 focus-within:ring-primary/20 transition-all"
+                  class="rounded-lg border border-input bg-[#0f111a] p-1.5 shadow-2xl relative group focus-within:ring-2 focus-within:ring-primary/20 transition-all"
                 >
                   <textarea
                     value={selectedNodeData[field.name] || ''}

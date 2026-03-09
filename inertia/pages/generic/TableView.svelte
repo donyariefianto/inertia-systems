@@ -302,7 +302,7 @@
 </script>
 
 <div
-  class="flex h-full w-full w-full bg-background border border-border/80 rounded-2xl inset-0 flex flex-col animate-in fade-in duration-500 overflow-hidden shadow-2xl"
+  class="flex h-full w-full w-full bg-background border border-border/80 rounded-lg inset-0 flex flex-col animate-in fade-in duration-500 overflow-hidden shadow-2xl"
 >
   <div
     class="flex flex-col gap-5 sm:flex-row sm:items-end justify-between p-4 md:p-6 lg:px-8 shrink-0"
@@ -345,7 +345,7 @@
 
         {#if isColumnManagerOpen}
           <div
-            class="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col"
+            class="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col"
             transition:slide={{ duration: 200 }}
           >
             <div class="px-4 py-3 border-b border-border/50 bg-muted/30">
@@ -413,7 +413,7 @@
           in:fade={{ duration: 200 }}
         >
           <div
-            class="bg-card px-8 py-5 rounded-2xl shadow-2xl border border-border/50 flex items-center gap-5 ring-1 ring-black/5"
+            class="bg-card px-8 py-5 rounded-lg shadow-2xl border border-border/50 flex items-center gap-5 ring-1 ring-black/5"
           >
             <div class="relative flex items-center justify-center">
               <div class="absolute inset-0 rounded-full blur-md bg-primary/30 animate-pulse"></div>
@@ -790,7 +790,7 @@
                   </div>
                 {:else if field.type === 'repeater' || field.type === 'object_group'}
                   <div
-                    class="p-1 rounded-2xl bg-gradient-to-b from-border/50 to-transparent transition-all duration-500"
+                    class="p-1 rounded-lg bg-gradient-to-b from-border/50 to-transparent transition-all duration-500"
                   >
                     <div
                       class="p-4 md:p-5 border border-border/80 rounded-[15px] bg-card/50 backdrop-blur-sm space-y-4 md:space-y-5"

@@ -282,14 +282,14 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {#each features as feature}
         <div
-          class="group relative overflow-hidden rounded-3xl border border-border/60 bg-card p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:border-primary/30"
+          class="group relative overflow-hidden rounded-xl border border-border/60 bg-card p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:border-primary/30"
         >
           <div
             class="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-primary/5 transition-transform group-hover:scale-150"
           ></div>
 
           <div
-            class="relative h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6"
+            class="relative h-14 w-14 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-6"
           >
             <i class="fas fa-{feature.icon} text-2xl"></i>
           </div>
@@ -325,7 +325,7 @@
           <div class="space-y-4">
             {#each category.items as item}
               <div
-                class="group rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-all hover:border-primary/40 hover:bg-primary/5"
+                class="group rounded-lg border border-border/50 bg-card p-5 shadow-sm transition-all hover:border-primary/40 hover:bg-primary/5"
               >
                 <h4 class="font-bold text-foreground flex items-center gap-2">
                   <i
@@ -386,7 +386,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {#each techStack as item}
         <div
-          class="flex flex-col items-center justify-center rounded-2xl border border-border/50 bg-card p-6 text-center shadow-sm hover:shadow-md transition-shadow"
+          class="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-6 text-center shadow-sm hover:shadow-md transition-shadow"
         >
           <i class="fas fa-{item.icon} text-3xl text-muted-foreground mb-4"></i>
           <div class="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">
