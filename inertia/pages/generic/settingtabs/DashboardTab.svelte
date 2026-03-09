@@ -162,8 +162,7 @@
       if (!res.ok) {
         throw new Error(result.message || 'Gagal membuat dashboard.')
       }
-      activeDashboard = { widgets: [] }
-
+      activeDashboard = { _id: result.insertedId, widgets: [] }
       loadDashboards()
       toast.add('Dashboard berhasil dibuat.', 'success', 1000)
 

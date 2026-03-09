@@ -4,6 +4,8 @@
   import { backOut } from 'svelte/easing'
   import { EncryptionService } from '~/stores/encryption'
   import type { MenuNode, MenuConfig } from '~/types/menu'
+  import { Confirm } from '~/utils/confirm.svelte'
+  import { toast } from '~/utils/toast.svelte'
 
   let { menuTree = $bindable<MenuNode[]>([]) } = $props()
 
@@ -100,11 +102,14 @@
     if (isTable) {
       const parent = selectedId ? findNode(menuTree, selectedId) : null
       if (!parent || parent.type !== 'group') {
-        alert("⚠️ Operasi Ditolak: Tabel harus dimasukkan ke dalam 'Folder/Group'.")
+        toast.add("⚠️ Operasi Ditolak: Tabel harus dimasukkan ke dalam 'Folder/Group'.", 'warning')
         return
       }
       if (parent.locked) {
-        alert('⚠️ Akses Ditolak: Group sistem dikunci dan tidak dapat menerima modifikasi.')
+        toast.add(
+          '⚠️ Akses Ditolak: Group sistem dikunci dan tidak dapat menerima modifikasi.',
+          'warning'
+        )
         return
       }
       parent.sub_sidemenu = parent.sub_sidemenu || []
@@ -119,14 +124,21 @@
     isDirty = true
   }
 
-  function deleteNode(id: string) {
+  async function deleteNode(id: string) {
     const node = findNode(menuTree, id)
     if (!node) return
     if (node.locked) {
-      alert('🔒 Node ini dikunci oleh sistem dan tidak dapat dihapus.')
+      toast.add('🔒 Node ini dikunci oleh sistem dan tidak dapat dihapus.', 'info')
       return
     }
-    if (confirm(`Hapus "${node.name}" secara permanen? Seluruh data di dalamnya akan terhapus.`)) {
+    if (
+      await Confirm.show({
+        title: `Hapus Menu "${node.name}?`,
+        message: `Hapus "${node.name}" secara permanen? Seluruh data di dalamnya akan terhapus.`,
+        confirmText: 'Ya, Hapus',
+        type: 'destructive',
+      })
+    ) {
       removeNode(menuTree, id)
       if (selectedId === id) {
         selectedId = null
@@ -374,7 +386,7 @@
 
             {#if activeItem.type === 'tableview'}
               <div
-                class="relative overflow-hidden bg-[#0f172a] border border-slate-800 rounded-lg shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500"
+                class="relative overflow-hidden bg-card border border-border rounded-lg shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500"
               >
                 <div
                   class="absolute right-0 top-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"
@@ -384,23 +396,25 @@
                   class="relative p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left"
                 >
                   <div
-                    class="w-16 h-16 rounded-lg bg-[#1e293b] border border-slate-700/50 flex items-center justify-center shrink-0 shadow-inner"
+                    class="w-16 h-16 rounded-lg bg-muted/50 border border-border/50 flex items-center justify-center shrink-0 shadow-inner"
                   >
-                    <i class="fas fa-database text-2xl text-blue-400"></i>
+                    <i class="fas fa-database text-2xl text-primary"></i>
                   </div>
 
                   <div class="flex-1 space-y-2">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <h3 class="text-lg md:text-xl font-bold text-white tracking-tight">
+                      <h3 class="text-lg md:text-xl font-bold text-foreground tracking-tight">
                         Schema Configurator
                       </h3>
                       <span
-                        class="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-widest self-center sm:self-auto hidden sm:inline-block"
+                        class="text-[9px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20 uppercase tracking-widest self-center sm:self-auto hidden sm:inline-block"
                       >
                         Advanced
                       </span>
                     </div>
-                    <p class="text-[11px] sm:text-xs text-slate-400 leading-relaxed max-w-lg">
+                    <p
+                      class="text-[11px] sm:text-xs text-muted-foreground leading-relaxed max-w-lg"
+                    >
                       Desain struktur koleksi database, kelola relasi antar tabel, dan atur formulir
                       data secara visual tanpa menulis kode.
                     </p>
@@ -413,7 +427,7 @@
                         activeItem.config = { endpoint: '', collectionName: '', fields: [] }
                       isTableConfigOpen = true
                     }}
-                    class="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-[12px] whitespace-nowrap disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none active:scale-95 border border-primary/20 shrink-0"
+                    class="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground rounded-lg font-bold shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-[12px] whitespace-nowrap disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none active:scale-95 border border-primary/20 shrink-0"
                   >
                     <i class="fas fa-project-diagram"></i>
                     <span>Launch Editor</span>
@@ -443,10 +457,10 @@
 
   {#if isTableConfigOpen && activeConfig}
     <div
-      class="absolute flex inset-0 bg-background flex flex-col z-50 overflow-hidden"
+      class="absolute flex inset-0 bg-background flex flex-col overflow-hidden"
       transition:slide={{ axis: 'y', duration: 300 }}
     >
-      <div class="shrink-0 bg-card border-b border-border flex flex-col z-20 shadow-sm relative">
+      <div class="shrink-0 bg-card border-b border-border flex flex-col shadow-sm relative">
         <div class="p-3 md:px-6 md:py-4 flex flex-wrap justify-between items-center gap-3">
           <div class="flex items-center gap-3 md:gap-4">
             <button
@@ -1466,7 +1480,7 @@
                   class="bg-card border border-border rounded-md shadow-sm p-1.5 flex flex-col lg:flex-row lg:items-center gap-2"
                 >
                   <div class="grid grid-cols-2 sm:flex items-center gap-1 w-full lg:w-auto flex-1">
-                    {#each [{ key: 'encrypt', label: 'Encrypt', icon: 'fa-shield-alt' }, { key: 'required', label: 'Required', icon: 'fa-asterisk' }, { key: 'readonly', label: 'Readonly', icon: 'fa-lock' }, { key: 'show_up', label: 'Visible', icon: 'fa-eye' }] as opt}
+                    {#each [{ key: 'encrypted', label: 'Encrypt', icon: 'fa-shield-alt' }, { key: 'required', label: 'Required', icon: 'fa-asterisk' }, { key: 'readonly', label: 'Readonly', icon: 'fa-lock' }, { key: 'show_up', label: 'Visible', icon: 'fa-eye' }] as opt}
                       <label class="relative cursor-pointer group flex-1 sm:flex-none">
                         <input
                           type="checkbox"

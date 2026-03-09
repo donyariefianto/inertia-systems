@@ -30,6 +30,7 @@ export type FieldConfig = {
   type: string
   export?: boolean
   required?: boolean
+  encrypted?: boolean
   unique?: boolean
   readonly?: boolean
   show_up?: boolean

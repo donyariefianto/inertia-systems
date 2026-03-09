@@ -117,7 +117,7 @@
         console.log('Starting save operation...')
       },
       onSuccess: () => {
-        alert('Success: Perubahan berhasil disimpan.')
+        toast.add('Success: Perubahan berhasil disimpan.')
       },
       onError: (errors) => {
         console.error('Save failed:', errors)

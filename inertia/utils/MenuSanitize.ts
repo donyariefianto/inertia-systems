@@ -1,6 +1,16 @@
 export const sanitizeField = (field: any): any => {
-  const { name, label, type, required, unique, readonly, width, show_up } = field
-  let clean: any = { name, label, type, required, unique, readonly, width, show_up: !!show_up }
+  const { name, label, type, required, encrypted, unique, readonly, width, show_up } = field
+  let clean: any = {
+    name,
+    label,
+    type,
+    required,
+    encrypted,
+    unique,
+    readonly,
+    width,
+    show_up: !!show_up,
+  }
 
   switch (type) {
     case 'number':
@@ -54,22 +64,17 @@ export const sanitizeField = (field: any): any => {
 export const prepareMenuPayload = (nodes: any[]): any[] => {
   return nodes.map((node) => {
     const cleanNode = { ...node }
-
     if (cleanNode.config) {
       cleanNode.config = {
         endpoint: cleanNode.config.endpoint,
         collectionName: cleanNode.config.collectionName,
-
         fields: (cleanNode.config.fields || []).map((f: any) => sanitizeField(f)),
       }
     }
-
     if (cleanNode.sub_sidemenu && cleanNode.sub_sidemenu.length > 0) {
       cleanNode.sub_sidemenu = prepareMenuPayload(cleanNode.sub_sidemenu)
     }
-
     delete cleanNode.expanded
-
     return cleanNode
   })
 }

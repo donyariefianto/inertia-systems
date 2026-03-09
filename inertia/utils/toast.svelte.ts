@@ -13,7 +13,7 @@ export const toast = {
   get all() {
     return toastList
   },
-  add(message: string, type: ToastType = 'success', duration: number = 5000) {
+  add(message: string, type: ToastType = 'success', duration: number = 2000) {
     const id = Date.now().toString(36) + Math.random().toString(36).substring(2)
     toastList = [...toastList, { id, message, type, duration }]
     if (duration > 0) {
