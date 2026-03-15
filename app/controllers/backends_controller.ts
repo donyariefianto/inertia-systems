@@ -290,11 +290,16 @@ export default class BackendsController {
   async getCollectionDataDetail({ params, response }: HttpContext) {
     const colName = params.col
     const id = params.id
-    if (!id || id === 'undefined' || id === 'default') {
+    if (!id || id === 'undefined' || id === 'default' || id === 'null') {
       return response.status(400).send({ message: 'ID parameter is required' })
     }
     const collections = MongoService.collection(colName)
     const result = await collections?.findOne({ _id: new ObjectId(id) })
+    if (!result) {
+      return response.notFound({
+        status: false,
+      })
+    }
     let data_encrypt = EncryptionService.encrypt(JSON.stringify(result))
     return response.send(data_encrypt)
   }

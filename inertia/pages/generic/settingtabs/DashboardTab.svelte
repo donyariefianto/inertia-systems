@@ -225,23 +225,19 @@
   function applyWidgetType(widgetDef) {
     activeWidget.type = widgetDef.id
     activeWidget.category = widgetDef.category
-
-    if (activeWidget.title === 'New Visualisation') {
-      activeWidget.title = widgetDef.name
-    }
+    activeWidget.title = widgetDef.name
 
     if (widgetDef.defaultConfig) {
-      if (widgetDef.defaultConfig.echarts_options) {
+      if (widgetDef.defaultConfig.echartsOptions) {
         activeWidget.config.echartsOptions = JSON.stringify(
-          widgetDef.defaultConfig.echarts_options,
+          widgetDef.defaultConfig.echartsOptions,
           null,
           2
         )
       } else {
         activeWidget.config.echartsOptions = '{}'
       }
-
-      const sampleData = widgetDef.defaultConfig.static_data || widgetDef.defaultConfig.data
+      const sampleData = widgetDef.defaultConfig.data_config.static_data
 
       if (sampleData) {
         activeWidget.config.staticJson = JSON.stringify(sampleData, null, 2)
@@ -371,6 +367,7 @@
     const FormatdataStaticJson = formatJsonUtility(data.staticJson)
     const FormatdatavariantJson = formatJsonUtility(data.variantJson)
     const FormatdataechartsOptions = formatJsonUtility(data.echartsOptions)
+    const FormatdatapipelineJson = formatJsonUtility(data.pipelineJson)
 
     data.staticJson = !FormatdataStaticJson.error
       ? FormatdataStaticJson.data
@@ -381,13 +378,14 @@
     data.echartsOptions = !FormatdataechartsOptions.error
       ? FormatdataechartsOptions.data
       : FormatdataechartsOptions.msg
+    data.pipelineJson = !FormatdatapipelineJson.error
+      ? FormatdatapipelineJson.data
+      : FormatdatapipelineJson.msg
   }
 
   export function getDashboardJSON() {
     if (!activeDashboard) return null
-
     const finalData = $state.snapshot(activeDashboard)
-
     finalData.widgets = finalData.widgets.map((widget) => {
       if (widget.config.dataSourceMode === 'database') {
         widget.config.staticJson = ''
@@ -932,7 +930,7 @@
           <button
             transition:fade={{ duration: 200 }}
             class="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm"
-            onclick={() => (isInspectorOpen = false)}
+            onclick={() => (isInspectorOpen = false, activeTabConfig = 'design')}
             aria-label="Close Inspector Panel"
           ></button>
         {/if}
@@ -974,7 +972,7 @@
                   <div class="h-6 w-px bg-border mx-1"></div>
                 {/if}
                 <button
-                  onclick={() => (isInspectorOpen = false)}
+                  onclick={() => (isInspectorOpen = false, activeTabConfig = 'design')}
                   class="w-9 h-9 rounded-xl bg-background border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors shadow-sm"
                   title="Close Panel"
                 >
@@ -1186,14 +1184,10 @@
                           <div class="flex items-end justify-between px-1">
                             <div class="space-y-1">
                               <div class="flex items-center gap-2">
-                                <h4
-                                  class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em]"
-                                >
+                                <h4 class="text-[10px] font-black text-primary uppercase tracking-[0.15em]">
                                   Aggregation Pipeline
                                 </h4>
-                                <span
-                                  class="flex h-1.5 w-1.5 rounded-full bg-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.4)]"
-                                ></span>
+                                <span class="flex h-1.5 w-1.5 rounded-full bg-primary/50 shadow-[0_0_8px_rgba(var(--primary-rgb),0.4)]"></span>
                               </div>
                               <p class="text-[9px] text-muted-foreground italic">
                                 Konfigurasi query database
@@ -1208,48 +1202,32 @@
                                 jsonErrors.pipeline = res.error
                               }}
                               class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all {jsonErrors.pipeline
-                                ? 'text-red-500 animate-pulse'
+                                ? 'text-destructive animate-pulse'
                                 : 'text-primary hover:text-primary/70 active:scale-95'}"
                             >
-                              <i
-                                class="fas {jsonErrors.pipeline
-                                  ? 'fa-exclamation-triangle'
-                                  : 'fa-wand-magic-sparkles'} text-[10px]"
-                              ></i>
+                              <i class="fas {jsonErrors.pipeline ? 'fa-exclamation-triangle' : 'fa-wand-magic-sparkles'} text-[10px]"></i>
                               Format
                             </button>
                           </div>
 
                           <div
-                            class="group rounded-lg border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.pipeline
-                              ? 'border-red-500/50 ring-4 ring-red-500/5'
-                              : 'border-slate-700/40 focus-within:border-indigo-500/40 focus-within:ring-4 focus-within:ring-indigo-500/5'}"
+                            class="group rounded-lg border bg-background shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.pipeline
+                              ? 'border-destructive/50 ring-4 ring-destructive/5'
+                              : 'border-border focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
                           >
-                            <div
-                              class="h-8 bg-[#161b22] border-b border-slate-800/50 flex items-center justify-between px-4"
-                            >
+                            <div class="h-8 bg-muted/50 border-b border-border/50 flex items-center justify-between px-4">
                               <div class="flex items-center gap-2">
-                                <div class="flex gap-1.5">
-                                  <div
-                                    class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-red-500/40 transition-colors"
-                                  ></div>
-                                  <div
-                                    class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-amber-500/40 transition-colors"
-                                  ></div>
-                                  <div
-                                    class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-emerald-500/40 transition-colors"
-                                  ></div>
+                                <div class="flex gap-1.5 opacity-40">
+                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
+                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
+                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
                                 </div>
-                                <div class="h-3 w-px bg-slate-800 mx-1"></div>
-                                <span
-                                  class="text-[9px] font-mono text-slate-500 uppercase tracking-tighter"
-                                  >pipeline.json</span
-                                >
+                                <div class="h-3 w-px bg-border mx-1"></div>
+                                <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter">pipeline.json</span>
                               </div>
-                              <span
-                                class="text-[8px] font-mono text-indigo-400/50 bg-indigo-500/5 px-1.5 py-0.5 rounded border border-indigo-500/10 uppercase"
-                                >JSON Array</span
-                              >
+                              <span class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase">
+                                JSON Array
+                              </span>
                             </div>
 
                             <textarea
@@ -1260,23 +1238,24 @@
                               }}
                               spellcheck="false"
                               rows="8"
-                              class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-slate-800 selection:bg-indigo-500/20 {jsonErrors.pipeline
-                                ? 'text-red-400'
-                                : 'text-indigo-300'}"
+                              class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20 {jsonErrors.pipeline
+                                ? 'text-destructive'
+                                : 'text-primary'}"
                               placeholder={'[\n  { "$match": {} }\n]'}
                             ></textarea>
                           </div>
-                          <div
-                            class="flex items-center gap-1.5 text-[9px] text-slate-400 bg-slate-800/30 px-3 py-1.5 rounded-xl border border-slate-700/40"
-                          >
-                            <span class="opacity-70">Support Injection:</span>
-                            <code class="text-indigo-300 font-bold px-1 rounded">
-                              Cara Kerja Injection: Gunakan ID Variant (cth: YEAR) sebagai
-                              placeholder: {JSON.stringify({ $match: { tahun: '{{YEAR}}' } })}.
-                              Sistem akan otomatis menggantinya berdasarkan pilihan dropdown user.
-                            </code>
+
+                          <div class="flex items-start gap-2 text-[9px] text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-xl border border-border">
+                            <i class="fas fa-info-circle mt-0.5 text-primary/70"></i>
+                            <div class="leading-relaxed">
+                              <span class="font-bold text-primary/80 uppercase tracking-tight">Support Injection:</span>
+                              Gunakan ID Variant (cth: <code class="text-primary font-mono">YEAR</code>) sebagai placeholder: 
+                              <code class="opacity-80">{"{ \"$match\": { \"tahun\": \"{{YEAR}}\" } }"}</code>. 
+                              Sistem akan otomatis melakukan sinkronisasi berdasarkan pilihan dropdown user.
+                            </div>
                           </div>
                         </div>
+
                         <div class="space-y-3 mt-6 pt-4 border-t border-border/50">
                           <div class="flex items-center justify-between px-1">
                             <div class="flex items-center gap-3">
@@ -1287,15 +1266,14 @@
                                   class="sr-only peer"
                                 />
                                 <div
-                                  class="w-9 h-5 bg-slate-700 rounded-full peer peer-checked:bg-orange-500/90 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 shadow-inner group-hover:ring-4 group-hover:ring-orange-500/10"
+                                  class="w-9 h-5 bg-muted rounded-full peer peer-checked:bg-primary/90 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 shadow-inner group-hover:ring-4 group-hover:ring-primary/10"
                                 ></div>
                               </label>
 
                               <label
                                 for="variant-dasboard"
-                                class="text-[10px] font-black uppercase tracking-widest transition-colors {activeWidget
-                                  .config.useVariant
-                                  ? 'text-orange-400'
+                                class="text-[10px] font-black uppercase tracking-widest transition-colors {activeWidget.config.useVariant
+                                  ? 'text-primary'
                                   : 'text-muted-foreground/50'}"
                               >
                                 Variant Interface
@@ -1311,14 +1289,10 @@
                                   jsonErrors.variant = res.error
                                 }}
                                 class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all {jsonErrors.variant
-                                  ? 'text-red-500 animate-pulse'
+                                  ? 'text-destructive animate-pulse'
                                   : 'text-primary hover:text-primary/70 active:scale-95'}"
                               >
-                                <i
-                                  class="fas {jsonErrors.variant
-                                    ? 'fa-exclamation-triangle'
-                                    : 'fa-wand-magic-sparkles'} text-[10px]"
-                                ></i>
+                                <i class="fas {jsonErrors.variant ? 'fa-exclamation-triangle' : 'fa-wand-magic-sparkles'} text-[10px]"></i>
                                 Format
                               </button>
                             {/if}
@@ -1326,39 +1300,34 @@
 
                           <div
                             class="rounded-lg border transition-all duration-300 shadow-2xl overflow-hidden
-                                {activeWidget.config.useVariant
-                              ? jsonErrors.variant
-                                ? 'border-red-500/50 bg-[#0b0e14] ring-4 ring-red-500/5'
-                                : 'border-slate-700/40 bg-[#0b0e14] focus-within:border-orange-500/40 focus-within:ring-4 focus-within:ring-orange-500/5'
-                              : 'border-slate-800/30 bg-[#0f172a]/20 opacity-40 grayscale pointer-events-none'}"
+                              {activeWidget.config.useVariant
+                                ? jsonErrors.variant
+                                  ? 'border-destructive/50 bg-background ring-4 ring-destructive/5'
+                                  : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'
+                                : 'border-border/30 bg-muted/20 opacity-40 grayscale pointer-events-none'}"
                           >
                             <div
-                              class="h-8 border-b flex items-center px-4 justify-between transition-colors {activeWidget
-                                .config.useVariant
-                                ? 'bg-[#161b22] border-slate-800/50'
-                                : 'bg-slate-900/50 border-slate-800/50'}"
+                              class="h-8 border-b flex items-center px-4 justify-between transition-colors {activeWidget.config.useVariant
+                                ? 'bg-muted/50 border-border/50'
+                                : 'bg-muted/30 border-border/20'}"
                             >
                               <div class="flex items-center gap-2">
-                                <div class="flex gap-1.5">
-                                  <div
-                                    class="w-2.5 h-2.5 rounded-full {activeWidget.config.useVariant
-                                      ? 'bg-orange-500/50'
-                                      : 'bg-slate-700'}"
-                                  ></div>
-                                  <div class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
+                                <div class="flex gap-1.5 opacity-40">
+                                  <div class="w-2.5 h-2.5 rounded-full {activeWidget.config.useVariant ? 'bg-primary/50' : 'bg-muted-foreground/30'}"></div>
+                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/30"></div>
                                 </div>
-                                <div class="h-3 w-px bg-slate-800 mx-1"></div>
-                                <span
-                                  class="text-[9px] font-mono text-slate-500 uppercase tracking-tighter"
-                                  >variant.json</span
-                                >
+                                <div class="h-3 w-px bg-border mx-1"></div>
+                                <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter">
+                                  variant.json
+                                </span>
                               </div>
                               <span
-                                class="text-[8px] font-mono text-orange-400/50 bg-orange-400/5 px-1.5 py-0.5 rounded border border-orange-500/10 uppercase transition-opacity {activeWidget
-                                  .config.useVariant
+                                class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase transition-opacity {activeWidget.config.useVariant
                                   ? 'opacity-100'
-                                  : 'opacity-0'}">JSON Array</span
+                                  : 'opacity-0'}"
                               >
+                                JSON Array
+                              </span>
                             </div>
 
                             <textarea
@@ -1374,9 +1343,9 @@
                               placeholder={activeWidget.config.useVariant
                                 ? '[\n  { "id": "V1", "name": "Variant 1" }\n]'
                                 : 'Aktifkan toggle untuk mengisi variant'}
-                              class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-slate-800 selection:bg-orange-500/20 {jsonErrors.variant
-                                ? 'text-red-400'
-                                : 'text-orange-300'}"
+                              class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20 {jsonErrors.variant
+                                ? 'text-destructive'
+                                : 'text-primary'}"
                             ></textarea>
                           </div>
                         </div>
@@ -1392,7 +1361,7 @@
                               Static Data Array
                             </label>
                             <span
-                              class="flex h-1.5 w-1.5 rounded-full bg-green-500/50 shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                              class="flex h-1.5 w-1.5 rounded-full bg-primary/50 shadow-[0_0_8px_rgba(var(--primary-rgb),0.4)]"
                             ></span>
                           </div>
 
@@ -1405,8 +1374,8 @@
                             }}
                             class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all
                                   {jsonErrors.static
-                              ? 'text-red-500 animate-pulse'
-                              : 'text-primary hover:text-primary/70'}"
+                              ? 'text-destructive animate-pulse'
+                              : 'text-primary hover:text-primary/70 active:scale-95'}"
                           >
                             <i
                               class="fas {jsonErrors.static
@@ -1418,32 +1387,28 @@
                         </div>
 
                         <div
-                          class="group rounded-lg border border-slate-700/40 bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 focus-within:border-green-500/40 focus-within:ring-4 focus-within:ring-green-500/5"
+                          class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300 
+                          {jsonErrors.static 
+                            ? 'border-destructive/50 ring-4 ring-destructive/5' 
+                            : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
                         >
                           <div
-                            class="h-8 bg-[#161b22] border-b border-slate-800/50 flex items-center justify-between px-4"
+                            class="h-8 bg-muted/50 border-b border-border/50 flex items-center justify-between px-4"
                           >
                             <div class="flex items-center gap-2">
-                              <div class="flex gap-1.5">
-                                <div
-                                  class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-red-500/40 transition-colors"
-                                ></div>
-                                <div
-                                  class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-amber-500/40 transition-colors"
-                                ></div>
-                                <div
-                                  class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-emerald-500/40 transition-colors"
-                                ></div>
+                              <div class="flex gap-1.5 opacity-40">
+                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
                               </div>
-                              <div class="h-3 w-px bg-slate-800 mx-1"></div>
-                              <span
-                                class="text-[9px] font-mono text-slate-500 uppercase tracking-tighter"
+                              <div class="h-3 w-px bg-border mx-1"></div>
+                              <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
                                 >datasource.json</span
                               >
                             </div>
                             <div class="flex items-center gap-2">
                               <span
-                                class="text-[8px] font-mono text-green-500/40 bg-green-500/5 px-1.5 py-0.5 rounded border border-green-500/10 uppercase"
+                                class="text-[8px] font-mono text-primary/60 bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 uppercase"
                                 >JSON</span
                               >
                             </div>
@@ -1454,25 +1419,25 @@
                             bind:value={activeWidget.config.staticJson}
                             spellcheck="false"
                             rows="10"
-                            class="w-full bg-transparent text-green-400 p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-slate-800 selection:bg-green-500/20"
+                            class="w-full bg-transparent text-primary p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20"
                             placeholder={'[\n  { "id": 1, "label": "Data" }\n]'}
                           ></textarea>
 
                           <div
-                            class="bg-[#161b22]/50 border-t border-slate-800/30 px-4 py-2 flex justify-between items-center"
+                            class="bg-muted/30 border-t border-border/30 px-4 py-2 flex justify-between items-center"
                           >
                             <div class="flex items-center gap-4">
                               <div class="flex items-center gap-1.5">
-                                <i class="fas fa-terminal text-[10px] text-slate-600"></i>
-                                <span class="text-[9px] font-mono text-slate-500 uppercase"
+                                <i class="fas fa-terminal text-[10px] text-muted-foreground/50"></i>
+                                <span class="text-[9px] font-mono text-muted-foreground uppercase"
                                   >UTF-8</span
                                 >
                               </div>
                             </div>
                             <div class="flex items-center gap-2">
-                              <i class="fas fa-check-double text-[9px] text-emerald-500/40"></i>
+                              <i class="fas fa-check-double text-[9px] text-primary/50"></i>
                               <span
-                                class="text-[8px] font-black text-slate-600 uppercase tracking-widest"
+                                class="text-[8px] font-black text-muted-foreground uppercase tracking-widest"
                                 >Ready</span
                               >
                             </div>
@@ -1487,10 +1452,9 @@
                           <div class="w-full border-t border-border border-dashed"></div>
                         </div>
                         <div class="relative flex justify-center">
-                          <span
-                            class="bg-card px-2 text-[9px] font-bold uppercase tracking-widest text-muted-foreground"
-                            >ECharts Core</span
-                          >
+                          <span class="bg-card px-3 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                            ECharts Core
+                          </span>
                         </div>
                       </div>
 
@@ -1503,7 +1467,7 @@
                             Visual Options
                           </label>
                           <span
-                            class="flex h-1.5 w-1.5 rounded-full bg-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                            class="flex h-1.5 w-1.5 rounded-full bg-primary/50 shadow-[0_0_8px_rgba(var(--primary-rgb),0.4)]"
                           ></span>
                         </div>
 
@@ -1514,8 +1478,9 @@
                             activeWidget.config.echartsOptions = res.data
                             jsonErrors.echarts = res.error
                           }}
-                          class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all {jsonErrors.echarts
-                            ? 'text-red-500 animate-pulse'
+                          class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all 
+                            {jsonErrors.echarts
+                            ? 'text-destructive animate-pulse'
                             : 'text-primary hover:text-primary/70 active:scale-95'}"
                         >
                           <i
@@ -1528,34 +1493,28 @@
                       </div>
 
                       <div
-                        class="group rounded-lg border bg-[#0b0e14] shadow-2xl overflow-hidden transition-all duration-300 {jsonErrors.echarts
-                          ? 'border-red-500/50 ring-4 ring-red-500/5'
-                          : 'border-slate-700/40 focus-within:border-blue-500/40 focus-within:ring-4 focus-within:ring-blue-500/5'}"
+                        class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300 
+                        {jsonErrors.echarts
+                          ? 'border-destructive/50 ring-4 ring-destructive/5'
+                          : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
                       >
                         <div
-                          class="h-8 bg-[#161b22] border-b border-slate-800/50 flex items-center justify-between px-4"
+                          class="h-8 bg-muted/50 border-b border-border/50 flex items-center justify-between px-4"
                         >
                           <div class="flex items-center gap-2">
-                            <div class="flex gap-1.5">
-                              <div
-                                class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-red-500/40 transition-colors"
-                              ></div>
-                              <div
-                                class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-amber-500/40 transition-colors"
-                              ></div>
-                              <div
-                                class="w-2.5 h-2.5 rounded-full bg-slate-700/50 group-hover:bg-emerald-500/40 transition-colors"
-                              ></div>
+                            <div class="flex gap-1.5 opacity-40">
+                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
+                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
+                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
                             </div>
-                            <div class="h-3 w-px bg-slate-800 mx-1"></div>
-                            <span
-                              class="text-[9px] font-mono text-slate-500 uppercase tracking-tighter"
+                            <div class="h-3 w-px bg-border mx-1"></div>
+                            <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
                               >options.json</span
                             >
                           </div>
                           <div class="flex items-center gap-2">
                             <span
-                              class="text-[8px] font-mono text-blue-500/40 bg-blue-500/5 px-1.5 py-0.5 rounded border border-blue-500/10 uppercase"
+                              class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase"
                               >JSON Object</span
                             >
                           </div>
@@ -1570,9 +1529,8 @@
                           }}
                           spellcheck="false"
                           rows="10"
-                          class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-slate-800 selection:bg-blue-500/20 {jsonErrors.echarts
-                            ? 'text-red-400'
-                            : 'text-blue-300'}"
+                          class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20 
+                          {jsonErrors.echarts ? 'text-destructive' : 'text-primary'}"
                           placeholder={'{ "tooltip": {}, "series": [] }'}
                         ></textarea>
                       </div>

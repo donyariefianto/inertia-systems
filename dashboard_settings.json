@@ -1,0 +1,1880 @@
+[{
+  "_id": {
+    "$oid": "69b58314a3b8f5961ff1c758"
+  },
+  "name": "Table & Labels",
+  "widgets": [
+    {
+      "id": "w-1773503316908",
+      "title": "Table",
+      "type": "simple_table",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "simple"
+    },
+    {
+      "id": "w-1773503328777",
+      "title": "Label",
+      "type": "label",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "simple"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:47:32.844Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:48:52.157Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b58373a3b8f5961ff1c759"
+  },
+  "name": "Lines",
+  "widgets": [
+    {
+      "id": "w-1773503350070",
+      "title": "Smoothed Line",
+      "type": "line_smooth",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "xAxis": {
+            "type": "category",
+            "data": []
+          },
+          "yAxis": {
+            "type": "value"
+          },
+          "series": [
+            {
+              "data": [],
+              "type": "line",
+              "smooth": true
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "line"
+    },
+    {
+      "id": "w-1773503357150",
+      "title": "Stacked Line",
+      "type": "line_stacked",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+              "type": "cross"
+            }
+          },
+          "legend": {
+            "data": []
+          },
+          "toolbox": {
+            "feature": {
+              "saveAsImage": {}
+            }
+          },
+          "xAxis": [
+            {
+              "type": "category",
+              "boundaryGap": false,
+              "data": []
+            }
+          ],
+          "yAxis": [
+            {
+              "type": "value"
+            }
+          ],
+          "series": []
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "line"
+    },
+    {
+      "id": "w-1773503361241",
+      "title": "Large Scale Area",
+      "type": "line_area_large",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "toolbox": {
+            "feature": {
+              "dataZoom": {
+                "yAxisIndex": "none"
+              },
+              "restore": {},
+              "saveAsImage": {}
+            }
+          },
+          "tooltip": {
+            "trigger": "axis"
+          },
+          "xAxis": {
+            "type": "category",
+            "boundaryGap": false,
+            "data": []
+          },
+          "yAxis": {
+            "type": "value",
+            "boundaryGap": [
+              0,
+              "100%"
+            ]
+          },
+          "dataZoom": [
+            {
+              "type": "inside",
+              "start": 0,
+              "end": 10
+            },
+            {
+              "start": 0,
+              "end": 10
+            }
+          ],
+          "series": [
+            {
+              "name": "Fake Data",
+              "type": "line",
+              "symbol": "none",
+              "sampling": "lttb",
+              "itemStyle": {
+                "color": "rgb(255, 70, 131)"
+              },
+              "data": []
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "line"
+    },
+    {
+      "id": "w-1773503368146",
+      "title": "Multiple X Axes",
+      "type": "line_multi_x",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "xAxis": [
+            {
+              "type": "category",
+              "axisTick": {
+                "alignWithLabel": true
+              },
+              "axisLine": {
+                "onZero": false,
+                "lineStyle": {
+                  "color": "#EE6666"
+                }
+              },
+              "axisPointer": {
+                "label": {}
+              },
+              "data": []
+            },
+            {
+              "type": "category",
+              "axisTick": {
+                "alignWithLabel": true
+              },
+              "axisLine": {
+                "onZero": false,
+                "lineStyle": {
+                  "color": "#5470C6"
+                }
+              },
+              "axisPointer": {
+                "label": {}
+              },
+              "data": []
+            }
+          ],
+          "tooltip": {
+            "trigger": "none",
+            "axisPointer": {
+              "type": "cross"
+            }
+          },
+          "legend": {},
+          "grid": {
+            "top": 70,
+            "bottom": 50
+          },
+          "yAxis": [
+            {
+              "type": "value"
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "line"
+    },
+    {
+      "id": "w-1773503378184",
+      "title": "Line Race",
+      "type": "line_race",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "legend": {
+            "bottom": 0
+          },
+          "tooltip": {
+            "order": "valueDesc",
+            "trigger": "axis"
+          },
+          "xAxis": {
+            "type": "category",
+            "boundaryGap": false
+          },
+          "yAxis": {
+            "type": "value"
+          },
+          "grid": {
+            "right": 140
+          },
+          "series": [
+            {
+              "type": "line",
+              "smooth": true,
+              "endLabel": {
+                "show": true
+              }
+            },
+            {
+              "type": "line",
+              "smooth": true,
+              "endLabel": {
+                "show": true
+              }
+            },
+            {
+              "type": "line",
+              "smooth": true,
+              "endLabel": {
+                "show": true
+              }
+            }
+          ],
+          "animationDuration": 5000,
+          "animationEasing": "cubicInOut",
+          "dataset": {
+            "source": []
+          }
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "line"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:49:07.865Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:49:44.541Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b583a8a3b8f5961ff1c75a"
+  },
+  "name": "Bar",
+  "widgets": [
+    {
+      "id": "w-1773503427711",
+      "title": "Large Scale Bar",
+      "type": "bar_large",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "axis"
+          },
+          "toolbox": {
+            "feature": {
+              "saveAsImage": {}
+            }
+          },
+          "xAxis": {
+            "data": [],
+            "silent": false,
+            "splitLine": {
+              "show": false
+            }
+          },
+          "yAxis": {},
+          "dataZoom": [
+            {
+              "type": "inside"
+            },
+            {
+              "type": "slider"
+            }
+          ],
+          "series": [
+            {
+              "name": "Value",
+              "type": "bar",
+              "data": [],
+              "large": true,
+              "largeThreshold": 2000
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "bar"
+    },
+    {
+      "id": "w-1773503434188",
+      "title": "Bar Race",
+      "type": "bar_race",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "xAxis": {},
+          "yAxis": {
+            "type": "category",
+            "data": [],
+            "inverse": true,
+            "animationDuration": 300,
+            "animationDurationUpdate": 300
+          },
+          "animationDuration": 0,
+          "animationDurationUpdate": 3000,
+          "animationEasing": "linear",
+          "animationEasingUpdate": "linear",
+          "series": [
+            {
+              "realtimeSort": true,
+              "name": "X",
+              "type": "bar",
+              "data": [],
+              "label": {
+                "show": true,
+                "position": "right",
+                "valueAnimation": true
+              }
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "bar"
+    },
+    {
+      "id": "w-1773503437859",
+      "title": "Multiple Y Axes",
+      "type": "bar_multi_y",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "axis"
+          },
+          "legend": {
+            "data": []
+          },
+          "xAxis": [],
+          "yAxis": [],
+          "series": []
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "bar"
+    },
+    {
+      "id": "w-1773503442281",
+      "title": "Mixed Line & Bar",
+      "type": "mixed_line_bar",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+              "type": "cross"
+            }
+          },
+          "legend": {
+            "data": []
+          },
+          "xAxis": {},
+          "yAxis": [],
+          "series": []
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "bar"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:50:00.144Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:50:51.362Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b58438a3b8f5961ff1c75b"
+  },
+  "name": "Pie & Donut",
+  "widgets": [
+    {
+      "id": "w-1773503563928",
+      "title": "Rounded Doughnut",
+      "type": "pie_doughnut_rounded",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "item"
+          },
+          "legend": {
+            "top": "5%",
+            "left": "center"
+          },
+          "series": [
+            {
+              "type": "pie",
+              "radius": [
+                "40%",
+                "70%"
+              ],
+              "avoidLabelOverlap": false,
+              "itemStyle": {
+                "borderRadius": 10,
+                "borderColor": "#fff",
+                "borderWidth": 2
+              },
+              "label": {
+                "show": true,
+                "position": "center"
+              },
+              "emphasis": {
+                "label": {
+                  "show": true,
+                  "fontSize": 40,
+                  "fontWeight": "bold"
+                }
+              },
+              "labelLine": {
+                "show": true
+              },
+              "data": []
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "pie"
+    },
+    {
+      "id": "w-1773503567760",
+      "title": "Scrollable Legend",
+      "type": "pie_scroll",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {
+            "trigger": "item",
+            "formatter": "{a} <br/>{b} : {c} ({d}%)"
+          },
+          "legend": {},
+          "series": []
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "pie"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:52:24.117Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:52:51.360Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b58470a3b8f5961ff1c75c"
+  },
+  "name": "Scatter & Plot",
+  "widgets": [
+    {
+      "id": "w-1773503689051",
+      "title": "Basic Scatter",
+      "type": "scatter_basic",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "xAxis": {},
+          "yAxis": {},
+          "series": [
+            {
+              "type": "scatter",
+              "symbolSize": 20
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "scatter"
+    },
+    {
+      "id": "w-1773503698719",
+      "title": "Aggregate to Bar",
+      "type": "scatter_aggregate",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "scatter"
+    },
+    {
+      "id": "w-1773503702547",
+      "title": "Clustering",
+      "type": "scatter_cluster",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "timeline": {
+            "top": "center",
+            "right": 50,
+            "height": 300,
+            "width": 10,
+            "inverse": true,
+            "autoPlay": false,
+            "playInterval": 2500,
+            "symbol": "none",
+            "orient": "vertical",
+            "axisType": "category",
+            "label": {
+              "formatter": "step {value}",
+              "position": 10
+            },
+            "checkpointStyle": {
+              "animationDuration": 1500
+            },
+            "data": []
+          },
+          "baseOption": {
+            "animationDurationUpdate": 1500,
+            "transition": [
+              "shape"
+            ],
+            "tooltip": {},
+            "xAxis": {
+              "type": "value"
+            },
+            "yAxis": {
+              "type": "value"
+            },
+            "series": [
+              {
+                "type": "scatter"
+              }
+            ]
+          },
+          "options": []
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "scatter"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:53:20.621Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:55:09.494Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b58488a3b8f5961ff1c75d"
+  },
+  "name": "Radar & Gauge",
+  "widgets": [
+    {
+      "id": "w-1773503716387",
+      "title": "Basic Radar",
+      "type": "radar_basic",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "radar"
+    },
+    {
+      "id": "w-1773503721153",
+      "title": "Gauge",
+      "type": "gauge_multi",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "series": [
+            {
+              "type": "gauge",
+              "anchor": {
+                "show": true,
+                "showAbove": true,
+                "size": 18,
+                "itemStyle": {
+                  "color": "#FAC858"
+                }
+              },
+              "pointer": {
+                "icon": "path://M2.9,0.7L2.9,0.7c1.4,0,2.6,1.2,2.6,2.6v115c0,1.4-1.2,2.6-2.6,2.6l0,0c-1.4,0-2.6-1.2-2.6-2.6V3.3C0.3,1.9,1.4,0.7,2.9,0.7z",
+                "width": 8,
+                "length": "80%",
+                "offsetCenter": [
+                  0,
+                  "8%"
+                ]
+              },
+              "progress": {
+                "show": true,
+                "overlap": true,
+                "roundCap": true
+              },
+              "axisLine": {
+                "roundCap": true
+              },
+              "data": [],
+              "title": {
+                "fontSize": 14
+              },
+              "detail": {
+                "width": 40,
+                "height": 14,
+                "fontSize": 14,
+                "color": "#fff",
+                "backgroundColor": "inherit",
+                "borderRadius": 3,
+                "formatter": "{value}%"
+              }
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "radar"
+    },
+    {
+      "id": "w-1773503724405",
+      "title": "Gauge Grade",
+      "type": "gauge_grade",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "series": [],
+          "tooltip": {
+            "formatter": "{a} <br/>{b} : {c}%"
+          }
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "radar"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:53:44.814Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:55:28.658Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b5849da3b8f5961ff1c75e"
+  },
+  "name": "Tree & Flow",
+  "widgets": [
+    {
+      "id": "w-1773503741238",
+      "title": "L-to-R Tree",
+      "type": "tree_lr",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {},
+          "series": [
+            {
+              "type": "tree",
+              "data": [],
+              "top": "10%",
+              "left": "8%",
+              "bottom": "22%",
+              "right": "20%",
+              "symbolSize": 10,
+              "label": {
+                "position": "left",
+                "verticalAlign": "middle",
+                "align": "right",
+                "fontSize": 14
+              },
+              "leaves": {
+                "label": {
+                  "position": "right",
+                  "verticalAlign": "middle",
+                  "align": "left"
+                }
+              },
+              "emphasis": {
+                "focus": "descendant"
+              },
+              "expandAndCollapse": true,
+              "animationDuration": 550,
+              "animationDurationUpdate": 750,
+              "orient": "LR"
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "flow"
+    },
+    {
+      "id": "w-1773503746089",
+      "title": "R-to-L Tree",
+      "type": "tree_rl",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {
+          "tooltip": {},
+          "series": [
+            {
+              "type": "tree",
+              "data": [],
+              "top": "10%",
+              "left": "20%",
+              "bottom": "22%",
+              "right": "8%",
+              "symbolSize": 10,
+              "label": {
+                "position": "right",
+                "verticalAlign": "middle",
+                "align": "left",
+                "fontSize": 14
+              },
+              "leaves": {
+                "label": {
+                  "position": "left",
+                  "verticalAlign": "middle",
+                  "align": "right"
+                }
+              },
+              "emphasis": {
+                "focus": "descendant"
+              },
+              "expandAndCollapse": true,
+              "animationDuration": 550,
+              "animationDurationUpdate": 750,
+              "orient": "RL"
+            }
+          ]
+        }
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "flow"
+    },
+    {
+      "id": "w-1773503749352",
+      "title": "Multiple Trees",
+      "type": "tree_multi",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "flow"
+    },
+    {
+      "id": "w-1773503752212",
+      "title": "Basic Sankey",
+      "type": "sankey_basic",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "flow"
+    },
+    {
+      "id": "w-1773503757066",
+      "title": "Sankey Levels",
+      "type": "sankey_levels",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "flow"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:54:05.209Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:56:01.878Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69b584bfa3b8f5961ff1c75f"
+  },
+  "name": "3D Visualization",
+  "widgets": [
+    {
+      "id": "w-1773503770302",
+      "title": "3D Bar Dataset",
+      "type": "bar3d_dataset",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "3d"
+    },
+    {
+      "id": "w-1773503774437",
+      "title": "Bar3D Noise",
+      "type": "bar3d_transparent",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "3d"
+    },
+    {
+      "id": "w-1773503778444",
+      "title": "Scatter 3D",
+      "type": "scatter3d_basic",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "3d"
+    },
+    {
+      "id": "w-1773503781413",
+      "title": "3D Line Ortho",
+      "type": "line3d_ortho",
+      "config": {
+        "description": null,
+        "icon": "fas fa-chart-pie",
+        "width": "half",
+        "refresh": "0",
+        "dataSourceMode": "static",
+        "scopeId": "factory_a",
+        "collectionName": null,
+        "staticJson": [
+          {
+            "name": "Kategori A",
+            "value": 100
+          }
+        ],
+        "allowVariant": false,
+        "variantJson": [
+          {
+            "id": "id",
+            "label": "label",
+            "options": [
+              {
+                "label": "label",
+                "value": "value"
+              },
+              {
+                "label2": "label2",
+                "value": "value2"
+              }
+            ],
+            "default": "label"
+          }
+        ],
+        "pipelineJson": [],
+        "echartsOptions": {}
+      },
+      "intelligence": {
+        "narrative": {
+          "persona": "technical_expert"
+        }
+      },
+      "category": "3d"
+    }
+  ],
+  "created_at": {
+    "$date": "2026-03-14T15:54:39.320Z"
+  },
+  "updated_at": {
+    "$date": "2026-03-14T15:56:26.206Z"
+  }
+}]

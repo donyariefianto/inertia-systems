@@ -302,7 +302,7 @@
 </script>
 
 <div
-  class="flex h-full w-full w-full bg-background border border-border/80 rounded-lg inset-0 flex flex-col animate-in fade-in duration-500 overflow-hidden shadow-2xl"
+  class="flex inset-0 flex-col h-full w-full bg-background border border-border/80 rounded-lg animate-in fade-in duration-500 overflow-hidden shadow-2xl"
 >
   <div
     class="flex flex-col gap-5 sm:flex-row sm:items-end justify-between p-4 md:p-6 lg:px-8 shrink-0"
@@ -410,7 +410,7 @@
       {#if isLoading}
         <div
           class="absolute inset-0 z-30 bg-background/50 backdrop-blur-md flex items-center justify-center"
-          in:fade={{ duration: 200 }}
+          in:fade={{ duration: 300 }}
         >
           <div
             class="bg-card px-8 py-5 rounded-lg shadow-2xl border border-border/50 flex items-center gap-5 ring-1 ring-black/5"
@@ -429,166 +429,169 @@
             </div>
           </div>
         </div>
-      {/if}
-
-      <div class="relative flex-1 overflow-auto custom-scrollbar">
-        {#if !config.endpoint}
-          <div
-            class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-80"
-          >
+      {:else}
+        <div class="relative flex-1 overflow-auto custom-scrollbar">
+          {#if !config.endpoint}
             <div
-              class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner relative group"
+              class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-80"
             >
               <div
-                class="absolute inset-0 rounded-full bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-500"
-              ></div>
-              <i class="fas fa-link text-3xl text-muted-foreground/40"></i>
+                class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner relative group"
+              >
+                <div
+                  class="absolute inset-0 rounded-full bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-500"
+                ></div>
+                <i class="fas fa-link text-3xl text-muted-foreground/40"></i>
+              </div>
+              <h3 class="text-lg font-bold text-foreground tracking-tight">Endpoint Terputus</h3>
+              <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
+                Tautkan tabel ini ke endpoint API melalui Schema Builder untuk mulai mengelola data.
+              </p>
             </div>
-            <h3 class="text-lg font-bold text-foreground tracking-tight">Endpoint Terputus</h3>
-            <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
-              Tautkan tabel ini ke endpoint API melalui Schema Builder untuk mulai mengelola data.
-            </p>
-          </div>
-        {:else if dataList.length === 0 && !isLoading}
-          <div
-            class="absolute inset-0 flex flex-col items-center justify-center text-center p-8"
-            in:fade={{ duration: 200 }}
-          >
+          {:else if dataList.length === 0 && !isLoading}
             <div
-              class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner"
+              class="absolute inset-0 flex flex-col items-center justify-center text-center p-8"
+              in:fade={{ duration: 200 }}
             >
-              <i class="fas fa-inbox text-3xl text-muted-foreground/40"></i>
+              <div
+                class="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mb-6 border border-border/50 shadow-inner"
+              >
+                <i class="fas fa-inbox text-3xl text-muted-foreground/40"></i>
+              </div>
+              <h3 class="text-lg font-bold text-foreground tracking-tight">Koleksi Kosong</h3>
+              <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
+                Belum ada entri data yang ditemukan untuk koleksi ini.
+              </p>
             </div>
-            <h3 class="text-lg font-bold text-foreground tracking-tight">Koleksi Kosong</h3>
-            <p class="text-sm font-medium text-muted-foreground mt-2 max-w-sm leading-relaxed">
-              Belum ada entri data yang ditemukan untuk koleksi ini.
-            </p>
-          </div>
-        {:else}
-          <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-full">
-            <thead class="bg-card/95 sticky top-0 z-20 backdrop-blur-xl shadow-sm">
-              <tr>
-                <th
-                  class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 w-14 text-center"
-                >
-                  No
-                </th>
-                {#each visibleFields as field}
+          {:else}
+            <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-full">
+              <thead class="bg-card/95 sticky top-0 z-20 backdrop-blur-xl shadow-sm">
+                <tr>
                   <th
-                    class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 whitespace-nowrap"
+                    class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 w-14 text-center"
                   >
-                    {field.label}
+                    No
                   </th>
-                {/each}
-                <th
-                  class="px-6 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 text-right sticky right-0 bg-card/95 backdrop-blur-xl w-32 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
-                >
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-
-            <tbody class="divide-y divide-border/40">
-              {#each dataList as row, idx (row.id || row._id || idx)}
-                <tr class="hover:bg-muted/30 transition-colors duration-200 group">
-                  <td class="px-5 py-4 text-[11px] font-bold text-muted-foreground/50 text-center">
-                    {(currentPage - 1) * itemsPerPage + idx + 1}
-                  </td>
-
                   {#each visibleFields as field}
-                    <td class="px-5 py-4 text-[13px] text-foreground/90 whitespace-nowrap">
-                      {#if field.type === 'boolean'}
-                        <span
-                          class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm {row[
-                            field.name
-                          ]
-                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'}"
-                        >
-                          {formatValue(row[field.name], field)}
-                        </span>
-                      {:else if field.type === 'select'}
-                        <span
-                          class="px-2.5 py-1.5 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm"
-                        >
-                          {formatValue(row[field.name], field)}
-                        </span>
-                      {:else}
-                        <span
-                          class={field.type === 'number' || field.type === 'currency'
-                            ? 'font-mono font-medium tracking-tight text-foreground'
-                            : 'font-medium'}
-                        >
-                          {formatValue(row[field.name], field)}
-                        </span>
-                      {/if}
-                    </td>
+                    <th
+                      class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 whitespace-nowrap"
+                    >
+                      {field.label}
+                    </th>
                   {/each}
-
-                  <td
-                    class="px-6 py-3 text-right sticky right-0 bg-card group-hover:bg-muted/10 transition-colors duration-200 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
+                  <th
+                    class="px-6 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 text-right sticky right-0 bg-card/95 backdrop-blur-xl w-32 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
                   >
-                    <div class="flex items-center justify-end gap-2">
-                      <button
-                        class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
-                        title="Edit Data"
-                        onclick={() => openEditForm(row)}
-                      >
-                        <i class="fas fa-pen text-xs"></i>
-                      </button>
-                      <button
-                        onclick={() => handleDelete(row.id || row._id)}
-                        class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-rose-500/10 hover:text-rose-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
-                        title="Hapus Data"
-                      >
-                        <i class="fas fa-trash-alt text-xs"></i>
-                      </button>
-                    </div>
-                  </td>
+                    Aksi
+                  </th>
                 </tr>
-              {/each}
-            </tbody>
-          </table>
-        {/if}
-      </div>
+              </thead>
 
-      <div
-        class="shrink-0 border-t border-border/40 bg-background/80 backdrop-blur-xl px-5 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-20"
-      >
-        <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
-          Menampilkan <span class="text-foreground"
-            >{totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span
-          >
-          - <span class="text-foreground">{Math.min(currentPage * itemsPerPage, totalItems)}</span>
-          dari <span class="text-primary">{totalItems}</span>
-        </span>
+              <tbody class="divide-y divide-border/40">
+                {#each dataList as row, idx (row.id || row._id || idx)}
+                  <tr class="hover:bg-muted/30 transition-colors duration-200 group">
+                    <td
+                      class="px-5 py-4 text-[11px] font-bold text-muted-foreground/50 text-center"
+                    >
+                      {(currentPage - 1) * itemsPerPage + idx + 1}
+                    </td>
 
-        <div class="flex gap-2 items-center">
-          <button
-            aria-label="prev"
-            disabled={currentPage === 1 || isLoading}
-            onclick={() => currentPage--}
-            class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
-          >
-            <i class="fas fa-chevron-left text-[10px]"></i>
-          </button>
+                    {#each visibleFields as field}
+                      <td class="px-5 py-4 text-[13px] text-foreground/90 whitespace-nowrap">
+                        {#if field.type === 'boolean'}
+                          <span
+                            class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm {row[
+                              field.name
+                            ]
+                              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                              : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'}"
+                          >
+                            {formatValue(row[field.name], field)}
+                          </span>
+                        {:else if field.type === 'select'}
+                          <span
+                            class="px-2.5 py-1.5 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm"
+                          >
+                            {formatValue(row[field.name], field)}
+                          </span>
+                        {:else}
+                          <span
+                            class={field.type === 'number' || field.type === 'currency'
+                              ? 'font-mono font-medium tracking-tight text-foreground'
+                              : 'font-medium'}
+                          >
+                            {formatValue(row[field.name], field)}
+                          </span>
+                        {/if}
+                      </td>
+                    {/each}
 
-          <div
-            class="flex items-center justify-center min-w-[36px] h-9 px-3 text-[13px] font-bold text-foreground bg-muted/30 border border-border/40 rounded-lg shadow-inner"
-          >
-            {currentPage}
-          </div>
-
-          <button
-            aria-label="next"
-            disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) || isLoading}
-            onclick={() => currentPage++}
-            class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
-          >
-            <i class="fas fa-chevron-right text-[10px]"></i>
-          </button>
+                    <td
+                      class="px-6 py-3 text-right sticky right-0 bg-card group-hover:bg-muted/10 transition-colors duration-200 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
+                    >
+                      <div class="flex items-center justify-end gap-2">
+                        <button
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
+                          title="Edit Data"
+                          onclick={() => openEditForm(row)}
+                        >
+                          <i class="fas fa-pen text-xs"></i>
+                        </button>
+                        <button
+                          onclick={() => handleDelete(row.id || row._id)}
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:bg-rose-500/10 hover:text-rose-600 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95"
+                          title="Hapus Data"
+                        >
+                          <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          {/if}
         </div>
-      </div>
+
+        <div
+          class="shrink-0 border-t border-border/40 bg-background/80 backdrop-blur-xl px-5 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-20"
+        >
+          <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+            Menampilkan <span class="text-foreground"
+              >{totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span
+            >
+            -
+            <span class="text-foreground">{Math.min(currentPage * itemsPerPage, totalItems)}</span>
+            dari <span class="text-primary">{totalItems}</span>
+          </span>
+
+          <div class="flex gap-2 items-center">
+            <button
+              aria-label="prev"
+              disabled={currentPage === 1 || isLoading}
+              onclick={() => currentPage--}
+              class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
+            >
+              <i class="fas fa-chevron-left text-[10px]"></i>
+            </button>
+
+            <div
+              class="flex items-center justify-center min-w-[36px] h-9 px-3 text-[13px] font-bold text-foreground bg-muted/30 border border-border/40 rounded-lg shadow-inner"
+            >
+              {currentPage}
+            </div>
+
+            <button
+              aria-label="next"
+              disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) || isLoading}
+              onclick={() => currentPage++}
+              class="w-9 h-9 rounded-lg border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-card transition-all duration-200 shadow-sm active:scale-95 touch-manipulation"
+            >
+              <i class="fas fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -676,24 +679,26 @@
                   ></textarea>
                 {:else if field.type === 'any'}
                   <div
-                    class="group relative rounded-xl overflow-hidden border border-border/80 bg-[#0f172a] focus-within:border-orange-500/50 focus-within:ring-2 focus-within:ring-orange-500/10 transition-all shadow-inner {field.readonly
+                    class="group relative rounded-xl overflow-hidden border border-border/80 bg-background focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all shadow-inner {field.readonly
                       ? 'opacity-80'
                       : ''}"
                   >
                     <div
-                      class="flex items-center justify-between px-3 py-2 bg-[#1e293b] border-b border-slate-700/50"
+                      class="flex items-center justify-between px-3 py-2 bg-muted/40 border-b border-border/50"
                     >
                       <div class="flex items-center gap-2">
-                        <div class="flex gap-1.5">
-                          <div class="w-2 h-2 rounded-full bg-slate-600"></div>
-                          <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                        <div class="flex gap-1.5 opacity-40">
+                          <div class="w-1.5 h-1.5 rounded-full bg-muted-foreground"></div>
+                          <div class="w-1.5 h-1.5 rounded-full bg-muted-foreground"></div>
                         </div>
+
                         <span
-                          class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1"
+                          class="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1"
                         >
-                          JSON Payload <span class="text-orange-400/70 lowercase font-mono"
-                            >({field.name})</span
-                          >
+                          JSON Payload
+                          <span class="text-primary/70 lowercase font-mono italic">
+                            ({field.name})
+                          </span>
                         </span>
                       </div>
 
@@ -701,9 +706,9 @@
                         <button
                           type="button"
                           onclick={() => formatJsonData(field.name)}
-                          class="flex items-center gap-1.5 text-[9px] font-bold bg-[#0f172a] border border-slate-700 text-slate-300 px-2.5 py-1 rounded-md shadow-sm hover:border-orange-500/50 hover:text-orange-400 transition-all active:scale-95"
+                          class="flex items-center gap-1.5 text-[9px] font-bold bg-background border border-border text-muted-foreground px-2.5 py-1 rounded-md shadow-sm hover:border-primary/50 hover:text-primary transition-all active:scale-95"
                         >
-                          <i class="fas fa-magic"></i> Format & Validasi
+                          <i class="fas fa-magic text-[8px]"></i> Format & Validasi
                         </button>
                       {/if}
                     </div>
@@ -711,10 +716,10 @@
                     <textarea
                       id="field-{field.name}"
                       bind:value={formData[field.name]}
-                      placeholder=""
+                      placeholder="Enter JSON data..."
                       readonly={field.readonly}
                       spellcheck="false"
-                      class="w-full px-4 py-3 bg-transparent text-orange-300 border-none text-[11px] font-mono leading-relaxed focus:outline-none focus:ring-0 min-h-[160px] custom-scrollbar resize-none read-only:cursor-not-allowed placeholder:text-slate-700"
+                      class="w-full px-4 py-3 bg-transparent text-primary border-none text-[11px] font-mono leading-relaxed focus:outline-none focus:ring-0 min-h-[160px] custom-scrollbar resize-none read-only:cursor-not-allowed placeholder:text-muted-foreground/30"
                     ></textarea>
                   </div>
                 {:else if field.type === 'boolean'}

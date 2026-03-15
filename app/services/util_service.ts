@@ -29,6 +29,7 @@ export class UtilService {
           path: 'dashboard',
           permissions: ['admin', 'user'],
           config: {
+            dashboardId: null,
             collectionName: 'dashboard_settings',
             endpoint: '/api/collections/dashboard_settings',
             fields: [

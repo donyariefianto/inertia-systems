@@ -300,7 +300,9 @@
 
 <SplashScreen />
 
-<div class="flex min-h-screen bg-background text-foreground transition-colors duration-300">
+<div
+  class="flex h-dvh w-full overflow-hidden bg-background text-foreground transition-colors duration-300"
+>
   <Sidebar
     {isDesktopCollapsed}
     menuData={decryptedMenu}
@@ -308,7 +310,7 @@
     onClose={() => (isMobileOpen = false)}
   />
 
-  <div class="flex flex-1 flex-col overflow-hidden relative">
+  <div class="flex flex-1 flex-col min-h-0 relative">
     <header
       class="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-6 backdrop-blur-md lg:px-8"
     >
