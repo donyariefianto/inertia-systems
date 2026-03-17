@@ -214,12 +214,7 @@ export class DataTransformer {
             smooth: true,
             showSymbol: false,
             lineStyle: { width: 3 },
-            
-            
-            
-            
-            
-            
+
             labelLayout: { moveOverlap: 'shiftY' },
             emphasis: { focus: 'series' },
           })),
@@ -496,15 +491,15 @@ export class DataTransformer {
         option.series = [
           {
             type: 'pie',
-            radius: ['45%', '70%'], 
-            center: ['50%', '45%'], 
+            radius: ['45%', '70%'],
+            center: ['50%', '45%'],
             avoidLabelOverlap: true,
             itemStyle: {
               borderRadius: 10,
               borderWidth: 10,
             },
             label: {
-              show: false, 
+              show: false,
               position: 'center',
             },
             emphasis: {
@@ -513,7 +508,7 @@ export class DataTransformer {
                 fontSize: 18,
                 fontWeight: 'bold',
                 color: textColor,
-                formatter: `{b}\n{c}`, 
+                formatter: `{b}\n{c}`,
               },
             },
             labelLine: { show: false },
@@ -529,25 +524,25 @@ export class DataTransformer {
       case 'pie_rose': {
         if (!valKey || !nameKey) return option
         option.tooltip = { trigger: 'item' }
-        option.legend = { show: false } 
+        option.legend = { show: false }
         option.series = [
           {
             type: 'pie',
-            radius: ['15%', '75%'], 
+            radius: ['15%', '75%'],
             center: ['50%', '50%'],
-            roseType: 'area', 
+            roseType: 'area',
             itemStyle: {
               borderRadius: 6,
               borderWidth: 1.5,
             },
             label: {
               color: textColor,
-              formatter: '{b}\n{d}%', 
+              formatter: '{b}\n{d}%',
               fontFamily: 'inherit',
             },
             data: safeData
               .map((item) => ({ name: item[nameKey], value: item[valKey] }))
-              
+
               .sort((a, b) => b.value - a.value),
           },
         ]
@@ -559,20 +554,20 @@ export class DataTransformer {
         option.series = [
           {
             type: 'sunburst',
-            data: safeData, 
-            radius: [0, '75%'], 
+            data: safeData,
+            radius: [0, '75%'],
             itemStyle: {
               borderRadius: 4,
               borderColor: '#ffffff',
               borderWidth: 1.5,
             },
             label: {
-              rotate: 'radial', 
-              
+              rotate: 'radial',
+
               fontSize: 10,
               fontFamily: 'inherit',
             },
-            emphasis: { focus: 'ancestor' }, 
+            emphasis: { focus: 'ancestor' },
           },
         ]
         return option
@@ -587,28 +582,43 @@ export class DataTransformer {
     const textColor = this.resultColor().textColor
     switch (widgetType) {
       case 'scatter': {
-        if (safeData.length === 0) return option;        
-        const keys = Object.keys(safeData[0]);
-        const numKeys = keys.filter(k => typeof safeData[0][k] === 'number');
-        const strKey = keys.find(k => typeof safeData[0][k] === 'string') || keys[0];
-        if (numKeys.length < 2) return option; 
+        if (safeData.length === 0) return option
+        const keys = Object.keys(safeData[0])
+        const numKeys = keys.filter((k) => typeof safeData[0][k] === 'number')
+        const strKey = keys.find((k) => typeof safeData[0][k] === 'string') || keys[0]
+        if (numKeys.length < 2) return option
         option.tooltip = {
           trigger: 'item',
-          formatter: (p: any) => 
-            `<b>${p.value[strKey]}</b><br/>${numKeys[0]}: ${p.value[numKeys[0]]}<br/>${numKeys[1]}: ${p.value[numKeys[1]]}`
-        };
+          formatter: (p: any) =>
+            `<b>${p.value[strKey]}</b><br/>${numKeys[0]}: ${p.value[numKeys[0]]}<br/>${numKeys[1]}: ${p.value[numKeys[1]]}`,
+        }
 
-        option.grid = { top: '10%', bottom: '10%', left: '10%', right: '10%', containLabel: true };
-        option.xAxis = { type: 'value', name: numKeys[0], splitLine: { lineStyle: { type: 'dashed', color: borderColor } } };
-        option.yAxis = { type: 'value', name: numKeys[1], splitLine: { lineStyle: { type: 'dashed', color: borderColor } } };        
-        option.dataset = { source: safeData };
-        option.series = [{
-          type: 'scatter',
-          symbolSize: 14, 
-          itemStyle: { color: primaryColor, opacity: 0.8 },
-          encode: { x: numKeys[0], y: numKeys[1], tooltip: [numKeys[0], numKeys[1]], itemName: strKey }
-        }];
-        return option;
+        option.grid = { top: '10%', bottom: '10%', left: '10%', right: '10%', containLabel: true }
+        option.xAxis = {
+          type: 'value',
+          name: numKeys[0],
+          splitLine: { lineStyle: { type: 'dashed', color: borderColor } },
+        }
+        option.yAxis = {
+          type: 'value',
+          name: numKeys[1],
+          splitLine: { lineStyle: { type: 'dashed', color: borderColor } },
+        }
+        option.dataset = { source: safeData }
+        option.series = [
+          {
+            type: 'scatter',
+            symbolSize: 14,
+            itemStyle: { color: primaryColor, opacity: 0.8 },
+            encode: {
+              x: numKeys[0],
+              y: numKeys[1],
+              tooltip: [numKeys[0], numKeys[1]],
+              itemName: strKey,
+            },
+          },
+        ]
+        return option
       }
     }
   }
@@ -620,36 +630,38 @@ export class DataTransformer {
     const textColor = this.resultColor().textColor
     switch (widgetType) {
       case 'radar': {
-        if (safeData.length === 0) return option;        
-        const keys = Object.keys(safeData[0]);
-        const strKey = keys.find(k => typeof safeData[0][k] === 'string') || keys[0];
-        const metrics = keys.filter(k => k !== strKey);        
-        const indicators = metrics.map(m => ({ name: m }));
+        if (safeData.length === 0) return option
+        const keys = Object.keys(safeData[0])
+        const strKey = keys.find((k) => typeof safeData[0][k] === 'string') || keys[0]
+        const metrics = keys.filter((k) => k !== strKey)
+        const indicators = metrics.map((m) => ({ name: m }))
 
-        option.tooltip = { trigger: 'item' };
-        option.legend = { bottom: 0, textStyle: { color: textColor } };        
+        option.tooltip = { trigger: 'item' }
+        option.legend = { bottom: 0, textStyle: { color: textColor } }
         option.radar = {
           indicator: indicators,
           shape: 'polygon',
-          radius: '65%', 
+          radius: '65%',
           splitNumber: 4,
           axisName: { color: textColor, fontWeight: 'bold' },
           splitLine: { lineStyle: { color: borderColor } },
-          splitArea: { show: false }, 
-          axisLine: { lineStyle: { color: borderColor } }
-        };
+          splitArea: { show: false },
+          axisLine: { lineStyle: { color: borderColor } },
+        }
 
-        option.series = [{
-          type: 'radar',
-          symbolSize: 6,
-          lineStyle: { width: 2 },
-          areaStyle: { opacity: 0.2 }, 
-          data: safeData.map(item => ({
-            name: String(item[strKey]),
-            value: metrics.map(m => item[m])
-          }))
-        }];
-        return option;
+        option.series = [
+          {
+            type: 'radar',
+            symbolSize: 6,
+            lineStyle: { width: 2 },
+            areaStyle: { opacity: 0.2 },
+            data: safeData.map((item) => ({
+              name: String(item[strKey]),
+              value: metrics.map((m) => item[m]),
+            })),
+          },
+        ]
+        return option
       }
     }
   }
@@ -659,58 +671,62 @@ export class DataTransformer {
     const borderColor = this.resultColor().borderColor
     const textColor = this.resultColor().textColor
     switch (widgetType) {
-      case 'tree': {        
-        const treeData = Array.isArray(data) ? data : [data];
-        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' };
-        option.series = [{
-          type: 'tree',
-          data: treeData,
-          roam: true, 
-          symbolSize: 12,
-          initialTreeDepth: 2, 
-          label: {
-            position: 'left',
-            verticalAlign: 'middle',
-            align: 'right',
-            fontSize: 12,
-            color: textColor
+      case 'tree': {
+        const treeData = Array.isArray(data) ? data : [data]
+        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' }
+        option.series = [
+          {
+            type: 'tree',
+            data: treeData,
+            roam: true,
+            symbolSize: 12,
+            initialTreeDepth: 2,
+            label: {
+              position: 'left',
+              verticalAlign: 'middle',
+              align: 'right',
+              fontSize: 12,
+              color: textColor,
+            },
+            leaves: {
+              label: { position: 'right', verticalAlign: 'middle', align: 'left' },
+            },
+            lineStyle: { curveness: 0.5, color: borderColor, width: 1.5 },
+            itemStyle: { color: primaryColor, borderColor: '#fff', borderWidth: 2 },
+            expandAndCollapse: true,
+            animationDuration: 550,
+            animationDurationUpdate: 750,
           },
-          leaves: {
-            label: { position: 'right', verticalAlign: 'middle', align: 'left' }
-          },
-          lineStyle: { curveness: 0.5, color: borderColor, width: 1.5 },
-          itemStyle: { color: primaryColor, borderColor: '#fff', borderWidth: 2 },
-          expandAndCollapse: true,
-          animationDuration: 550,
-          animationDurationUpdate: 750
-        }];
-        return option;
+        ]
+        return option
       }
-      case 'sankey': {        
-        const sankeyData = (data as any); 
-        if (!sankeyData.nodes || !sankeyData.links) return option;
-        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' };
-        option.series = [{
-          type: 'sankey',
-          data: sankeyData.nodes,
-          links: sankeyData.links,
-          emphasis: { focus: 'adjacency' }, 
-          nodeAlign: 'justify',
-          nodeWidth: 15,
-          nodeGap: 10, 
-          layoutIterations: 32, 
-          lineStyle: {
-            color: 'source', 
-            curveness: 0.5,
-            opacity: 0.3
+      case 'sankey': {
+        const sankeyData = data as any
+        if (!sankeyData.nodes || !sankeyData.links) return option
+        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' }
+        option.series = [
+          {
+            type: 'sankey',
+            data: sankeyData.nodes,
+            links: sankeyData.links,
+            emphasis: { focus: 'adjacency' },
+            nodeAlign: 'justify',
+            nodeWidth: 15,
+            nodeGap: 10,
+            layoutIterations: 32,
+            lineStyle: {
+              color: 'source',
+              curveness: 0.5,
+              opacity: 0.3,
+            },
+            itemStyle: {
+              borderColor: '#fff',
+              borderWidth: 1,
+            },
+            label: { color: textColor, fontSize: 11 },
           },
-          itemStyle: {
-            borderColor: '#fff',
-            borderWidth: 1
-          },
-          label: { color: textColor, fontSize: 11 }
-        }];
-        return option;
+        ]
+        return option
       }
     }
   }

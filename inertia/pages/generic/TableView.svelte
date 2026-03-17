@@ -107,19 +107,19 @@
   }
 
   function toggleColumn(name: string) {
-    const isCurrentlyActive = activeColumnNames.includes(name);
-    
-    if (isCurrentlyActive) {      
+    const isCurrentlyActive = activeColumnNames.includes(name)
+
+    if (isCurrentlyActive) {
       if (activeColumnNames.length > 1) {
-        activeColumnNames = activeColumnNames.filter((n) => n !== name);
+        activeColumnNames = activeColumnNames.filter((n) => n !== name)
       }
     } else {
-      activeColumnNames = [...activeColumnNames, name];
+      activeColumnNames = [...activeColumnNames, name]
     }
   }
-  
+
   function showAllColumns() {
-    activeColumnNames = allFields.map(f => f.name);
+    activeColumnNames = allFields.map((f) => f.name)
   }
 
   function openAddForm() {
@@ -137,7 +137,6 @@
       )
     }
 
-    
     try {
       const method = isEditMode ? 'PUT' : 'POST'
       const url = isEditMode
@@ -161,7 +160,6 @@
     } catch (error) {
       toast.add('Error: ' + error.message, 'error')
     } finally {
-      
     }
   }
 
@@ -252,7 +250,6 @@
           typeof decryptedRaw === 'string' ? JSON.parse(decryptedRaw) : decryptedRaw
         dataList = parsedData.data || []
         totalItems = parsedData.total || 0
-        
       }
     } catch (error) {
       console.error('Fetch error:', error)
@@ -262,42 +259,42 @@
   }
 
   function openEditForm(item: any) {
-    const systemKeys = ['_id', 'created_at', 'updated_at', 'deleted_at'];
+    const systemKeys = ['_id', 'created_at', 'updated_at', 'deleted_at']
     const formattedData = Object.entries(item).reduce((acc, [key, value]) => {
       if (systemKeys.includes(key)) {
-        acc[key] = value;
-        return acc;
+        acc[key] = value
+        return acc
       }
       if (value !== null && typeof value === 'object') {
         try {
-          acc[key] = JSON.stringify(value, null, 2);
+          acc[key] = JSON.stringify(value, null, 2)
         } catch (e) {
-          acc[key] = value;
+          acc[key] = value
         }
       } else {
-        acc[key] = value;
+        acc[key] = value
       }
-      return acc;
-    }, {} as any);
+      return acc
+    }, {} as any)
 
-    formData = formattedData;
-    selectedId = item._id || item.id;
-    isEditMode = true;
-    isAddFormOpen = true;
+    formData = formattedData
+    selectedId = item._id || item.id
+    isEditMode = true
+    isAddFormOpen = true
   }
 
   const getGridWidth = (width: string | number | undefined): string => {
     const w = String(width)
     switch (w) {
       case '33':
-        return 'md:col-span-4' 
+        return 'md:col-span-4'
       case '50':
-        return 'md:col-span-6' 
+        return 'md:col-span-6'
       case '66':
-        return 'md:col-span-8' 
+        return 'md:col-span-8'
       case '100':
       default:
-        return 'md:col-span-12' 
+        return 'md:col-span-12'
     }
   }
 
@@ -305,34 +302,34 @@
     visiblePasswordFields[fieldName] = !visiblePasswordFields[fieldName]
   }
   function syntaxHighlight(json: any) {
-    if (json === null || json === undefined) return '<span class="text-rose-500">null</span>';
-    
-    if (typeof json !== 'string') {
-      json = JSON.stringify(json, null, 2); 
-    }
-    
-    
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
-    
-    const highlighted = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match: string) {
-      let cls = 'text-orange-400'; 
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) {
-          cls = 'text-primary font-semibold'; 
-        } else {
-          cls = 'text-emerald-500'; 
-        }
-      } else if (/true|false/.test(match)) {
-        cls = 'text-blue-500'; 
-      } else if (/null/.test(match)) {
-        cls = 'text-rose-500'; 
-      }
-      return `<span class="${cls}">${match}</span>`;
-    });
+    if (json === null || json === undefined) return '<span class="text-rose-500">null</span>'
 
-    
-    return highlighted.trim();
+    if (typeof json !== 'string') {
+      json = JSON.stringify(json, null, 2)
+    }
+
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    const highlighted = json.replace(
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+      function (match: string) {
+        let cls = 'text-orange-400'
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'text-primary font-semibold'
+          } else {
+            cls = 'text-emerald-500'
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'text-blue-500'
+        } else if (/null/.test(match)) {
+          cls = 'text-rose-500'
+        }
+        return `<span class="${cls}">${match}</span>`
+      }
+    )
+
+    return highlighted.trim()
   }
 </script>
 
@@ -383,11 +380,13 @@
             class="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col focus:outline-none"
             transition:slide={{ duration: 250, axis: 'y' }}
           >
-            <div class="px-4 py-3 border-b border-border/50 bg-muted/20 flex items-center justify-between">
+            <div
+              class="px-4 py-3 border-b border-border/50 bg-muted/20 flex items-center justify-between"
+            >
               <h4 class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
                 Manage Columns
               </h4>
-              <button 
+              <button
                 onclick={showAllColumns}
                 class="text-[10px] font-medium text-primary hover:underline transition-all"
               >
@@ -403,21 +402,27 @@
                 <label
                   class="flex items-center justify-between px-3 py-2 rounded-lg transition-all
                   {isLastOne ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-muted'}"
-                  title={isLastOne ? "Minimal harus ada satu kolom yang tampil" : ""}
+                  title={isLastOne ? 'Minimal harus ada satu kolom yang tampil' : ''}
                 >
                   <div class="flex items-center gap-3">
                     <div class="relative flex items-center justify-center">
                       <input
                         type="checkbox"
                         checked={isActive}
-                        disabled={isLastOne} 
+                        disabled={isLastOne}
                         onchange={() => toggleColumn(field.name)}
                         class="peer appearance-none w-4 h-4 rounded border border-border bg-background checked:bg-primary transition-all disabled:cursor-not-allowed"
                       />
-                      <i class="fas fa-check absolute text-[8px] text-primary-foreground opacity-0 peer-checked:opacity-100"></i>
+                      <i
+                        class="fas fa-check absolute text-[8px] text-primary-foreground opacity-0 peer-checked:opacity-100"
+                      ></i>
                     </div>
-                    
-                    <span class="text-xs font-medium {isActive ? 'text-primary' : 'text-muted-foreground'}">
+
+                    <span
+                      class="text-xs font-medium {isActive
+                        ? 'text-primary'
+                        : 'text-muted-foreground'}"
+                    >
                       {field.label}
                     </span>
                   </div>
@@ -547,29 +552,42 @@
                     </td>
 
                     {#each visibleFields as field}
-                      <td class="px-5 py-4 text-[13px] text-foreground/90 overflow-visible max-w-[300px]">
+                      <td
+                        class="px-5 py-4 text-[13px] text-foreground/90 overflow-visible max-w-[300px]"
+                      >
                         {#if field.type === 'boolean'}
                           {@const isTrue = !!row[field.name]}
-                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm
-                            {isTrue ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20'}">
-                            <span class="w-1.5 h-1.5 rounded-full {isTrue ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm
+                            {isTrue
+                              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                              : 'bg-rose-500/10 text-rose-600 border-rose-500/20'}"
+                          >
+                            <span
+                              class="w-1.5 h-1.5 rounded-full {isTrue
+                                ? 'bg-emerald-500'
+                                : 'bg-rose-500'}"
+                            ></span>
                             {formatValue(isTrue, field)}
                           </span>
-
                         {:else if field.type === 'select'}
-                          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm uppercase tracking-wide">
+                          <span
+                            class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm uppercase tracking-wide"
+                          >
                             {formatValue(row[field.name], field)}
                           </span>
                         {:else if field.type === 'password'}
                           <div class="flex items-center gap-2">
-                            <span class="font-mono text-[14px] tracking-[0.3em] text-muted-foreground/50 select-none">
+                            <span
+                              class="font-mono text-[14px] tracking-[0.3em] text-muted-foreground/50 select-none"
+                            >
                               ••••••••
                             </span>
-                            
-                            <button 
+
+                            <button
                               onclick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(row[field.name]);
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(row[field.name])
                               }}
                               class="p-1.5 rounded-md hover:bg-muted text-muted-foreground/40 hover:text-primary transition-all opacity-0 group-hover:opacity-100"
                               title="Copy Raw Value"
@@ -584,44 +602,81 @@
                           {@const isObject = typeof val === 'object' && !isArray && !isNull}
 
                           <div class="relative group/inspector inline-flex items-center">
-                            
-                            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-border/60 transition-all duration-300 select-none cursor-pointer
+                            <div
+                              class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-border/60 transition-all duration-300 select-none cursor-pointer
                               {isNull ? 'bg-muted/20 text-muted-foreground/50' : ''}
                               {isArray ? 'bg-blue-500/5 border-blue-500/20 text-blue-600' : ''}
-                              {isObject ? 'bg-indigo-500/5 border-indigo-500/20 text-indigo-600' : ''}
-                              {!isNull && !isArray && !isObject ? 'bg-muted/40 text-foreground' : ''}
-                              group-hover/inspector:ring-2 group-hover/inspector:ring-primary/10 group-hover/inspector:border-primary/30">
-                              
-                              <i class="fas {isArray ? 'fa-layer-group' : isObject ? 'fa-brackets-curly' : 'fa-font'} text-[9px] opacity-70"></i>
-                              <span class="text-[10px] font-bold font-mono uppercase tracking-tight">
-                                {isArray ? `List[${val.length}]` : isObject ? `Map{${Object.keys(val).length}}` : 'Any'}
+                              {isObject
+                                ? 'bg-indigo-500/5 border-indigo-500/20 text-indigo-600'
+                                : ''}
+                              {!isNull && !isArray && !isObject
+                                ? 'bg-muted/40 text-foreground'
+                                : ''}
+                              group-hover/inspector:ring-2 group-hover/inspector:ring-primary/10 group-hover/inspector:border-primary/30"
+                            >
+                              <i
+                                class="fas {isArray
+                                  ? 'fa-layer-group'
+                                  : isObject
+                                    ? 'fa-brackets-curly'
+                                    : 'fa-font'} text-[9px] opacity-70"
+                              ></i>
+                              <span
+                                class="text-[10px] font-bold font-mono uppercase tracking-tight"
+                              >
+                                {isArray
+                                  ? `List[${val.length}]`
+                                  : isObject
+                                    ? `Map{${Object.keys(val).length}}`
+                                    : 'Any'}
                               </span>
                             </div>
 
-                            <div class="invisible group-hover/inspector:visible opacity-0 group-hover/inspector:opacity-100 scale-95 group-hover/inspector:scale-100 
-                              transition-all duration-200 absolute z-[100] top-full left-0 pt-3 min-w-[320px] max-w-sm 
-                              pointer-events-none group-hover/inspector:pointer-events-auto">
-                              
-                              <div class="bg-card/98 backdrop-blur-xl border border-border shadow-2xl rounded-xl overflow-hidden flex flex-col ring-1 ring-black/5">
-                                
-                                <div class="px-4 py-2 bg-muted/40 border-b border-border/50 flex items-center justify-between">
-                                  <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">Object Inspector</span>
-                                  <button 
-                                    onclick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(JSON.stringify(val, null, 2)); }}
-                                    class="px-2 py-1 rounded bg-primary/10 hover:bg-primary hover:text-white text-[9px] font-bold text-primary transition-all active:scale-90">
+                            <div
+                              class="invisible group-hover/inspector:visible opacity-0 group-hover/inspector:opacity-100 scale-95 group-hover/inspector:scale-100
+                              transition-all duration-200 absolute z-[100] top-full left-0 pt-3 min-w-[320px] max-w-sm
+                              pointer-events-none group-hover/inspector:pointer-events-auto"
+                            >
+                              <div
+                                class="bg-card/98 backdrop-blur-xl border border-border shadow-2xl rounded-xl overflow-hidden flex flex-col ring-1 ring-black/5"
+                              >
+                                <div
+                                  class="px-4 py-2 bg-muted/40 border-b border-border/50 flex items-center justify-between"
+                                >
+                                  <span
+                                    class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70"
+                                    >Object Inspector</span
+                                  >
+                                  <button
+                                    onclick={(e) => {
+                                      e.stopPropagation()
+                                      navigator.clipboard.writeText(JSON.stringify(val, null, 2))
+                                    }}
+                                    class="px-2 py-1 rounded bg-primary/10 hover:bg-primary hover:text-white text-[9px] font-bold text-primary transition-all active:scale-90"
+                                  >
                                     <i class="fas fa-copy mr-1"></i> COPY
                                   </button>
                                 </div>
 
-                                <div class="p-4 max-h-64 overflow-y-auto custom-scrollbar bg-card/50">
-                                  <pre class="text-[11px] font-mono leading-relaxed selection:bg-primary/30 text-foreground/90 uppercase tracking-tight">{@html val ? syntaxHighlight(val) : '<span class="text-muted-foreground/40 italic">null</span>'}</pre>
+                                <div
+                                  class="p-4 max-h-64 overflow-y-auto custom-scrollbar bg-card/50"
+                                >
+                                  <pre
+                                    class="text-[11px] font-mono leading-relaxed selection:bg-primary/30 text-foreground/90 uppercase tracking-tight">{@html val
+                                      ? syntaxHighlight(val)
+                                      : '<span class="text-muted-foreground/40 italic">null</span>'}</pre>
                                 </div>
                               </div>
                             </div>
                           </div>
-
                         {:else}
-                          <div class="w-full truncate font-medium {field.type === 'number' || field.type === 'currency' ? 'font-mono tracking-tight' : ''}" title={String(row[field.name] || '')}>
+                          <div
+                            class="w-full truncate font-medium {field.type === 'number' ||
+                            field.type === 'currency'
+                              ? 'font-mono tracking-tight'
+                              : ''}"
+                            title={String(row[field.name] || '')}
+                          >
                             {formatValue(row[field.name], field)}
                           </div>
                         {/if}

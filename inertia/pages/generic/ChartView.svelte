@@ -9,7 +9,7 @@
 
   let { config } = $props()
   const themeTrigger = $derived(`${themeState.mode}-${themeState.colorTheme}`)
-  let fullscreenWidgetId = $state<string | null>(null);
+  let fullscreenWidgetId = $state<string | null>(null)
   let dashboardId = $state<string | null>(null)
   let currentDashboard = $state<any>(null)
   let isLoading = $state(true)
@@ -231,14 +231,14 @@
   }
 
   function handleDownloadImage(id: string) {
-    const chartInstance = id; 
-    if (!chartInstance) return;
-    console.log('download');    
+    const chartInstance = id
+    if (!chartInstance) return
+    console.log('download')
   }
 
   function handleCopyUrl(id: string) {
-    const url = `${id}`;
-    navigator.clipboard.writeText(url);
+    const url = `${id}`
+    navigator.clipboard.writeText(url)
   }
 </script>
 
@@ -344,8 +344,8 @@
       {:else}
         <div
           class="w-full mx-auto transition-all duration-1000 ease-in-out pb-8
-          {fullscreenWidgetId 
-            ? 'max-w-none px-0 items-stretch' 
+          {fullscreenWidgetId
+            ? 'max-w-none px-0 items-stretch'
             : 'max-w-[1600px] px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'}"
         >
           {#each currentDashboard.widgets || [] as widget}
@@ -385,11 +385,20 @@
                       </button>
 
                       <button
-                        onclick={() => fullscreenWidgetId = fullscreenWidgetId === widget.id ? null : widget.id}
-                        title={fullscreenWidgetId === widget.id ? "Exit Fullscreen" : "Fullscreen"}
-                        class="w-8 h-8 flex items-center justify-center rounded-lg {fullscreenWidgetId === widget.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'} transition-all active:scale-95"
+                        onclick={() =>
+                          (fullscreenWidgetId =
+                            fullscreenWidgetId === widget.id ? null : widget.id)}
+                        title={fullscreenWidgetId === widget.id ? 'Exit Fullscreen' : 'Fullscreen'}
+                        class="w-8 h-8 flex items-center justify-center rounded-lg {fullscreenWidgetId ===
+                        widget.id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'} transition-all active:scale-95"
                       >
-                        <i class="fas {fullscreenWidgetId === widget.id ? 'fa-compress-arrows-alt' : 'fa-expand-alt'} text-[10px]"></i>
+                        <i
+                          class="fas {fullscreenWidgetId === widget.id
+                            ? 'fa-compress-arrows-alt'
+                            : 'fa-expand-alt'} text-[10px]"
+                        ></i>
                       </button>
                     </div>
                   </div>
