@@ -5,6 +5,7 @@
   import { getCsrfToken } from '~/utils/getCrsfToken'
   import { Confirm } from '~/utils/confirm.svelte'
   import { toast } from '~/utils/toast.svelte'
+
   let { config = {} as MenuConfig, title = '' } = $props<{
     config: MenuConfig
     title?: string
@@ -24,8 +25,6 @@
 
   let isAddFormOpen = $state(false)
   let formData = $state<Record<string, any>>({})
-  let lastPage = $state(1)
-  let isSaving = $state(false)
   let visiblePasswordFields = $state<Record<string, boolean>>({})
   const allFields = $derived<FieldConfig[]>(config.fields || [])
 
@@ -108,13 +107,19 @@
   }
 
   function toggleColumn(name: string) {
-    if (activeColumnNames.includes(name)) {
+    const isCurrentlyActive = activeColumnNames.includes(name);
+    
+    if (isCurrentlyActive) {      
       if (activeColumnNames.length > 1) {
-        activeColumnNames = activeColumnNames.filter((n) => n !== name)
+        activeColumnNames = activeColumnNames.filter((n) => n !== name);
       }
     } else {
-      activeColumnNames = [...activeColumnNames, name]
+      activeColumnNames = [...activeColumnNames, name];
     }
+  }
+  
+  function showAllColumns() {
+    activeColumnNames = allFields.map(f => f.name);
   }
 
   function openAddForm() {
@@ -132,7 +137,7 @@
       )
     }
 
-    isSaving = true
+    
     try {
       const method = isEditMode ? 'PUT' : 'POST'
       const url = isEditMode
@@ -156,7 +161,7 @@
     } catch (error) {
       toast.add('Error: ' + error.message, 'error')
     } finally {
-      isSaving = false
+      
     }
   }
 
@@ -191,18 +196,13 @@
 
   function initGroupData(_node: HTMLElement, config: { fieldName: string; subFields: any[] }) {
     const { fieldName, subFields } = config
-
-    // Pastikan formData sudah ada dan fieldName valid
     if (formData && fieldName) {
       const currentData = formData[fieldName]
-
-      // Jalankan inisialisasi hanya jika data kosong atau bertipe Array (salah struktur)
       if (!currentData || Array.isArray(currentData)) {
         const initialObj: Record<string, any> = {}
 
         if (subFields && Array.isArray(subFields)) {
           subFields.forEach((sf) => {
-            // Tentukan nilai default berdasarkan tipe field
             if (sf.type === 'boolean') {
               initialObj[sf.name] = false
             } else if (sf.type === 'number' || sf.type === 'currency') {
@@ -212,34 +212,21 @@
             }
           })
         }
-
-        // Simpan ke state
         formData[fieldName] = initialObj
       }
     }
   }
 
-  // Fungsi untuk memvalidasi dan merapikan JSON
   function formatJsonData(fieldName: any) {
     const rawValue = formData[fieldName]
-
-    // Jika kosong, berikan array kosong atau abaikan
     if (!rawValue || rawValue.trim() === '') {
       formData[fieldName] = '[\n  \n]'
       return
     }
-
     try {
-      // 1. Coba parse data (Bisa dari string, atau jika tiba-tiba sudah jadi objek)
       const parsedData = typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue
-
-      // 2. Format ulang menjadi string dengan indentasi 2 spasi agar cantik
       formData[fieldName] = JSON.stringify(parsedData, null, 2)
-
-      // 3. Beri notifikasi sukses
-      toast.add('JSON Valid dan berhasil dirapikan.', 'success')
     } catch (error) {
-      // Jika format JSON salah (ada koma lebih, kurang kutip, dll)
       console.error('[JSON Parse Error]:', error.message)
       toast.add(`Format JSON Tidak Valid: ${error.message}`, 'error')
     }
@@ -265,7 +252,7 @@
           typeof decryptedRaw === 'string' ? JSON.parse(decryptedRaw) : decryptedRaw
         dataList = parsedData.data || []
         totalItems = parsedData.total || 0
-        lastPage = parsedData.totalPages || 1
+        
       }
     } catch (error) {
       console.error('Fetch error:', error)
@@ -275,29 +262,77 @@
   }
 
   function openEditForm(item: any) {
-    formData = { ...item }
-    selectedId = item.id || item._id
-    isEditMode = true
-    isAddFormOpen = true
+    const systemKeys = ['_id', 'created_at', 'updated_at', 'deleted_at'];
+    const formattedData = Object.entries(item).reduce((acc, [key, value]) => {
+      if (systemKeys.includes(key)) {
+        acc[key] = value;
+        return acc;
+      }
+      if (value !== null && typeof value === 'object') {
+        try {
+          acc[key] = JSON.stringify(value, null, 2);
+        } catch (e) {
+          acc[key] = value;
+        }
+      } else {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+
+    formData = formattedData;
+    selectedId = item._id || item.id;
+    isEditMode = true;
+    isAddFormOpen = true;
   }
 
   const getGridWidth = (width: string | number | undefined): string => {
     const w = String(width)
     switch (w) {
       case '33':
-        return 'md:col-span-4' // 4 dari 12 = 33.3%
+        return 'md:col-span-4' 
       case '50':
-        return 'md:col-span-6' // 6 dari 12 = 50%
+        return 'md:col-span-6' 
       case '66':
-        return 'md:col-span-8' // 8 dari 12 = 66.6%
+        return 'md:col-span-8' 
       case '100':
       default:
-        return 'md:col-span-12' // Penuh
+        return 'md:col-span-12' 
     }
   }
 
   function toggleVisibility(fieldName: string) {
     visiblePasswordFields[fieldName] = !visiblePasswordFields[fieldName]
+  }
+  function syntaxHighlight(json: any) {
+    if (json === null || json === undefined) return '<span class="text-rose-500">null</span>';
+    
+    if (typeof json !== 'string') {
+      json = JSON.stringify(json, null, 2); 
+    }
+    
+    
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    
+    const highlighted = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match: string) {
+      let cls = 'text-orange-400'; 
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'text-primary font-semibold'; 
+        } else {
+          cls = 'text-emerald-500'; 
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'text-blue-500'; 
+      } else if (/null/.test(match)) {
+        cls = 'text-rose-500'; 
+      }
+      return `<span class="${cls}">${match}</span>`;
+    });
+
+    
+    return highlighted.trim();
   }
 </script>
 
@@ -345,43 +380,58 @@
 
         {#if isColumnManagerOpen}
           <div
-            class="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col"
-            transition:slide={{ duration: 200 }}
+            class="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col focus:outline-none"
+            transition:slide={{ duration: 250, axis: 'y' }}
           >
-            <div class="px-4 py-3 border-b border-border/50 bg-muted/30">
-              <h4 class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                Tampilan Kolom
+            <div class="px-4 py-3 border-b border-border/50 bg-muted/20 flex items-center justify-between">
+              <h4 class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                Manage Columns
               </h4>
+              <button 
+                onclick={showAllColumns}
+                class="text-[10px] font-medium text-primary hover:underline transition-all"
+              >
+                Reset
+              </button>
             </div>
-            <div class="max-h-64 overflow-y-auto custom-scrollbar p-2 space-y-0.5">
+
+            <div class="max-h-72 overflow-y-auto custom-scrollbar p-1.5 space-y-0.5">
               {#each allFields as field}
+                {@const isActive = activeColumnNames.includes(field.name)}
+                {@const isLastOne = isActive && activeColumnNames.length === 1}
+
                 <label
-                  class="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 rounded-xl cursor-pointer transition-colors group"
+                  class="flex items-center justify-between px-3 py-2 rounded-lg transition-all
+                  {isLastOne ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-muted'}"
+                  title={isLastOne ? "Minimal harus ada satu kolom yang tampil" : ""}
                 >
-                  <div class="relative flex items-center justify-center">
-                    <input
-                      type="checkbox"
-                      checked={activeColumnNames.includes(field.name)}
-                      onchange={() => toggleColumn(field.name)}
-                      class="w-4 h-4 rounded-md border-border text-primary focus:ring-primary/30 appearance-none bg-background checked:bg-primary transition-all cursor-pointer shadow-sm"
-                    />
-                    <i
-                      class="fas fa-check absolute text-[9px] text-primary-foreground opacity-0 group-has-[:checked]:opacity-100 pointer-events-none transition-opacity"
-                    ></i>
+                  <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={isActive}
+                        disabled={isLastOne} 
+                        onchange={() => toggleColumn(field.name)}
+                        class="peer appearance-none w-4 h-4 rounded border border-border bg-background checked:bg-primary transition-all disabled:cursor-not-allowed"
+                      />
+                      <i class="fas fa-check absolute text-[8px] text-primary-foreground opacity-0 peer-checked:opacity-100"></i>
+                    </div>
+                    
+                    <span class="text-xs font-medium {isActive ? 'text-primary' : 'text-muted-foreground'}">
+                      {field.label}
+                    </span>
                   </div>
-                  <span class="text-xs font-semibold text-foreground truncate select-none"
-                    >{field.label}</span
-                  >
                 </label>
               {/each}
             </div>
           </div>
+
           <div
             role="button"
             tabindex="0"
-            class="fixed inset-0 z-40"
-            onkeydown={() => (isColumnManagerOpen = false)}
+            class="fixed inset-0 z-40 bg-transparent"
             onclick={() => (isColumnManagerOpen = false)}
+            onkeydown={(e) => e.key === 'Escape' && (isColumnManagerOpen = false)}
           ></div>
         {/if}
       </div>
@@ -430,7 +480,7 @@
           </div>
         </div>
       {:else}
-        <div class="relative flex-1 overflow-auto custom-scrollbar">
+        <div class="relative flex-1 w-full overflow-x-auto overflow-y-auto custom-scrollbar">
           {#if !config.endpoint}
             <div
               class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-80"
@@ -464,7 +514,7 @@
               </p>
             </div>
           {:else}
-            <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-full">
+            <table class="w-max min-w-full text-left border-collapse">
               <thead class="bg-card/95 sticky top-0 z-20 backdrop-blur-xl shadow-sm">
                 <tr>
                   <th
@@ -474,7 +524,7 @@
                   </th>
                   {#each visibleFields as field}
                     <th
-                      class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 whitespace-nowrap"
+                      class="px-5 py-4 border-b border-border/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 whitespace-nowrap min-w-[160px] max-w-[300px]"
                     >
                       {field.label}
                     </th>
@@ -497,37 +547,89 @@
                     </td>
 
                     {#each visibleFields as field}
-                      <td class="px-5 py-4 text-[13px] text-foreground/90 whitespace-nowrap">
+                      <td class="px-5 py-4 text-[13px] text-foreground/90 overflow-visible max-w-[300px]">
                         {#if field.type === 'boolean'}
-                          <span
-                            class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm {row[
-                              field.name
-                            ]
-                              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
-                              : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'}"
-                          >
-                            {formatValue(row[field.name], field)}
+                          {@const isTrue = !!row[field.name]}
+                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm
+                            {isTrue ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20'}">
+                            <span class="w-1.5 h-1.5 rounded-full {isTrue ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                            {formatValue(isTrue, field)}
                           </span>
+
                         {:else if field.type === 'select'}
-                          <span
-                            class="px-2.5 py-1.5 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm"
-                          >
+                          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-primary/5 text-primary border border-primary/10 shadow-sm uppercase tracking-wide">
                             {formatValue(row[field.name], field)}
                           </span>
+                        {:else if field.type === 'password'}
+                          <div class="flex items-center gap-2">
+                            <span class="font-mono text-[14px] tracking-[0.3em] text-muted-foreground/50 select-none">
+                              ••••••••
+                            </span>
+                            
+                            <button 
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(row[field.name]);
+                              }}
+                              class="p-1.5 rounded-md hover:bg-muted text-muted-foreground/40 hover:text-primary transition-all opacity-0 group-hover:opacity-100"
+                              title="Copy Raw Value"
+                            >
+                              <i class="fas fa-copy text-[10px]"></i>
+                            </button>
+                          </div>
+                        {:else if field.type === 'any'}
+                          {@const val = row[field.name]}
+                          {@const isNull = val === null || val === undefined}
+                          {@const isArray = Array.isArray(val)}
+                          {@const isObject = typeof val === 'object' && !isArray && !isNull}
+
+                          <div class="relative group/inspector inline-flex items-center">
+                            
+                            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-border/60 transition-all duration-300 select-none cursor-pointer
+                              {isNull ? 'bg-muted/20 text-muted-foreground/50' : ''}
+                              {isArray ? 'bg-blue-500/5 border-blue-500/20 text-blue-600' : ''}
+                              {isObject ? 'bg-indigo-500/5 border-indigo-500/20 text-indigo-600' : ''}
+                              {!isNull && !isArray && !isObject ? 'bg-muted/40 text-foreground' : ''}
+                              group-hover/inspector:ring-2 group-hover/inspector:ring-primary/10 group-hover/inspector:border-primary/30">
+                              
+                              <i class="fas {isArray ? 'fa-layer-group' : isObject ? 'fa-brackets-curly' : 'fa-font'} text-[9px] opacity-70"></i>
+                              <span class="text-[10px] font-bold font-mono uppercase tracking-tight">
+                                {isArray ? `List[${val.length}]` : isObject ? `Map{${Object.keys(val).length}}` : 'Any'}
+                              </span>
+                            </div>
+
+                            <div class="invisible group-hover/inspector:visible opacity-0 group-hover/inspector:opacity-100 scale-95 group-hover/inspector:scale-100 
+                              transition-all duration-200 absolute z-[100] top-full left-0 pt-3 min-w-[320px] max-w-sm 
+                              pointer-events-none group-hover/inspector:pointer-events-auto">
+                              
+                              <div class="bg-card/98 backdrop-blur-xl border border-border shadow-2xl rounded-xl overflow-hidden flex flex-col ring-1 ring-black/5">
+                                
+                                <div class="px-4 py-2 bg-muted/40 border-b border-border/50 flex items-center justify-between">
+                                  <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">Object Inspector</span>
+                                  <button 
+                                    onclick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(JSON.stringify(val, null, 2)); }}
+                                    class="px-2 py-1 rounded bg-primary/10 hover:bg-primary hover:text-white text-[9px] font-bold text-primary transition-all active:scale-90">
+                                    <i class="fas fa-copy mr-1"></i> COPY
+                                  </button>
+                                </div>
+
+                                <div class="p-4 max-h-64 overflow-y-auto custom-scrollbar bg-card/50">
+                                  <pre class="text-[11px] font-mono leading-relaxed selection:bg-primary/30 text-foreground/90 uppercase tracking-tight">{@html val ? syntaxHighlight(val) : '<span class="text-muted-foreground/40 italic">null</span>'}</pre>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                         {:else}
-                          <span
-                            class={field.type === 'number' || field.type === 'currency'
-                              ? 'font-mono font-medium tracking-tight text-foreground'
-                              : 'font-medium'}
-                          >
+                          <div class="w-full truncate font-medium {field.type === 'number' || field.type === 'currency' ? 'font-mono tracking-tight' : ''}" title={String(row[field.name] || '')}>
                             {formatValue(row[field.name], field)}
-                          </span>
+                          </div>
                         {/if}
                       </td>
                     {/each}
 
                     <td
-                      class="px-6 py-3 text-right sticky right-0 bg-card group-hover:bg-muted/10 transition-colors duration-200 shadow-[-12px_0_15px_-4px_rgba(0,0,0,0.02)] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
+                      class="px-6 py-3 text-right sticky right-0 bg-card z-10 group-hover:bg-muted transition-colors duration-200 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-border/40"
                     >
                       <div class="flex items-center justify-end gap-2">
                         <button
@@ -552,7 +654,6 @@
             </table>
           {/if}
         </div>
-
         <div
           class="shrink-0 border-t border-border/40 bg-background/80 backdrop-blur-xl px-5 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-20"
         >

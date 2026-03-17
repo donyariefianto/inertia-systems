@@ -260,8 +260,8 @@
         </h1>
         <p class="text-[11px] font-medium text-muted-foreground mt-1 flex items-center gap-2">
           <i class="fas fa-clock opacity-50"></i>
-          Terakhir diperbarui: {currentDashboard.updated_at?.$date
-            ? new Date(currentDashboard.updated_at.$date).toLocaleString('id-ID')
+          Terakhir diperbarui: {currentDashboard.updated_at
+            ? new Date(currentDashboard.updated_at).toLocaleString('id-ID')
             : new Date().toLocaleString('id-ID')}
         </p>
       {:else}
