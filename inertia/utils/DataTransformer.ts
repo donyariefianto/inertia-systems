@@ -1,229 +1,420 @@
+import * as echarts from 'echarts'
+
 export class DataTransformer {
-  static transform(categoryType: string, widgetType: string, rawData: any, baseOptions: any = {}): any {
+  static getCSSVar(name: string) {
+    if (typeof window !== 'undefined') {
+      const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+      return val || null
+    }
+    return null
+  }
+  static transform(
+    categoryType: string,
+    widgetType: string,
+    rawData: any,
+    baseOptions: any = {}
+  ): any {
     try {
-      let finalOptions = JSON.parse(JSON.stringify(baseOptions));
-      const safeData = rawData || [];
+      let finalOptions = JSON.parse(JSON.stringify(baseOptions))
+      const safeData = rawData || []
 
       switch (categoryType) {
         case 'line':
-          return this.handleLineCategory(widgetType, safeData, finalOptions);
+          return this.handleLineCategory(widgetType, safeData, finalOptions)
+        case 'bar':
+          return this.handleBarCategory(widgetType, safeData, finalOptions)
         default:
-          console.warn(`[DataTransformer] Category '${categoryType}' belum dihandle.`);
-          return finalOptions;
+          console.warn(`[DataTransformer] Category '${categoryType}' belum dihandle.`)
+          return finalOptions
       }
     } catch (error) {
-      console.error(`[DataTransformer] Transformasi gagal untuk tipe ${widgetType}:`, error);
-      return baseOptions; // Fail-safe: kembalikan UI ke konfigurasi kosong
+      console.error(`[DataTransformer] Transformasi gagal untuk tipe ${widgetType}:`, error)
+      return baseOptions
     }
   }
-
   private static handleLineCategory(widgetType: string, data: any, option: any): any {
-    // ==========================================
-    // 1. DEFENSIVE INITIALIZATION (Enterprise Guard)
-    // Mencegah error "Cannot read properties of undefined"
-    // ==========================================
-    option.xAxis = option.xAxis || { type: 'category' };
-    option.yAxis = option.yAxis || { type: 'value' };
-    option.series = Array.isArray(option.series) && option.series.length > 0 
-      ? option.series 
-      : [{}];
-
-    const safeData = Array.isArray(data) ? data : [];
-
-    // ==========================================
-    // 2. DATA MAPPING & SPECIALIZATION
-    // ==========================================
+    const primaryColor = this.getCSSVar('--color-primary') || '#18181b'
+    const textColor = this.getCSSVar('--color-muted-foreground') || '#71717a'
+    const borderColor = this.getCSSVar('--color-border') || '#e4e4e7'
+    option.xAxis = option.xAxis || { type: 'category' }
+    option.yAxis = option.yAxis || { type: 'value' }
+    option.series = Array.isArray(option.series) && option.series.length > 0 ? option.series : [{}]
+    const safeData = Array.isArray(data) ? data : []
     switch (widgetType) {
       case 'line_smooth': {
-        const labels = safeData.map((d: any) => d.label || d._id || d.name || '-');
-        const vals = safeData.map((d: any) => Number(d.value) || 0);
-        
-        // Gunakan properti secara spesifik agar konfigurasi Blueprint tidak tertimpa
-        if (Array.isArray(option.xAxis)) option.xAxis[0].data = labels;
-        else option.xAxis.data = labels;
-        
+        const labels = safeData.map((d: any) => d.label || d._id || d.name || '-')
+        const vals = safeData.map((d: any) => Number(d.value) || 0)
+
+        if (Array.isArray(option.xAxis)) option.xAxis[0].data = labels
+        else option.xAxis.data = labels
+
         option.series[0] = {
           ...option.series[0],
           type: 'line',
-          smooth: true, // Wajib untuk tipe ini
-          data: vals
-        };
-        return option;
+          smooth: true,
+          data: vals,
+        }
+        return option
       }
-
       case 'line_stacked': {
-        // Mengurai array campuran (Series Object & xAxis Metadata) dari Registry
-        const seriesItems = safeData.filter((d: any) => d.name && d.data);
-        const axisItem = safeData.find((d: any) => d.xAxis);
+        const seriesItems = safeData.filter((d: any) => d.name && d.data)
+        const axisItem = safeData.find((d: any) => d.xAxis)
 
-        // Map data ke xAxis
         if (axisItem) {
-          if (Array.isArray(option.xAxis)) option.xAxis[0].data = axisItem.xAxis;
-          else option.xAxis.data = axisItem.xAxis;
+          if (Array.isArray(option.xAxis)) option.xAxis[0].data = axisItem.xAxis
+          else option.xAxis.data = axisItem.xAxis
         }
 
-        // Map Legend
-        option.legend = option.legend || {};
-        option.legend.data = seriesItems.map((d: any) => d.name);
-
-        // Konstruksi ulang seluruh array series agar menjadi Stacked Area
+        option.legend = option.legend || {}
+        option.legend.data = seriesItems.map((d: any) => d.name)
         option.series = seriesItems.map((item: any) => ({
           name: item.name,
           type: 'line',
-          stack: 'Total', // Identifier wajib ECharts untuk menumpuk (stack) garis
-          areaStyle: {}, 
+          stack: 'Total',
+          areaStyle: {},
           emphasis: { focus: 'series' },
-          data: Array.isArray(item.data) ? item.data : []
-        }));
-        return option;
+          data: Array.isArray(item.data) ? item.data : [],
+        }))
+        return option
       }
-
       case 'line_area_large': {
-        const labels = safeData.map((d: any) => d.label || d._id || '-');
-        const vals = safeData.map((d: any) => Number(d.value) || 0);
+        const labels = safeData.map((d: any) => d.label || d._id || '-')
+        const vals = safeData.map((d: any) => Number(d.value) || 0)
 
-        if (Array.isArray(option.xAxis)) option.xAxis[0].data = labels;
-        else option.xAxis.data = labels;
+        if (Array.isArray(option.xAxis)) option.xAxis[0].data = labels
+        else option.xAxis.data = labels
 
         option.series[0] = {
           ...option.series[0],
           type: 'line',
           areaStyle: { opacity: 0.2 },
-          sampling: 'lttb', // Proteksi LTTB (Wajib untuk big data)
-          data: vals
-        };
-        return option;
+          sampling: 'lttb',
+          data: vals,
+        }
+        return option
       }
-
       case 'line_multi_x': {
-        const seriesItems = safeData.filter((d: any) => d.name && d.data);
-
-        // Jika xAxis memiliki lebih dari 1 sumbu (Array), kita suntikkan datanya masing-masing
+        const seriesItems = safeData.filter((d: any) => d.name && d.data)
         if (Array.isArray(option.xAxis)) {
           option.xAxis.forEach((element: any, index: number) => {
-            element.data = seriesItems[index]?.axisPointer || [];
-          });
+            element.data = seriesItems[index]?.axisPointer || []
+          })
         }
 
         option.series = seriesItems.map((item: any) => ({
           name: item.name,
           type: 'line',
-          data: Array.isArray(item.data) ? item.data : []
-        }));
-        return option;
+          data: Array.isArray(item.data) ? item.data : [],
+        }))
+        return option
       }
-
       case 'line_race': {
-        if (safeData.length < 2) return option;
+        const sample = data[0]
+        const keys = Object.keys(sample)
+        let valKey = '',
+          nameKey = '',
+          timeKey = ''
 
-        const header = safeData[0];
-        const firstDataRow = safeData[1];
-        let valIdx = -1, timeIdx = -1, catIdx = -1;
-
-        firstDataRow.forEach((cell: any, i: number) => {
-          const val = Number(cell);
-          const isNum = !isNaN(val);
-          
-          if (isNum) {
-            // Deteksi waktu: Angka 4 digit antara 1700-2100 biasanya adalah tahun
-            if (val >= 1700 && val <= 2100) timeIdx = i;
-            // Selain itu dianggap sebagai nilai metrik (Income/Value/Amount)
-            else valIdx = i;
-          } else {
-            // Data string dianggap sebagai kategori (Country/Brand/Category)
-            catIdx = i;
+        keys.forEach((key) => {
+          const val = sample[key]
+          if (typeof val === 'number') {
+            if (val >= 1700 && val <= 2100) timeKey = key
+            else valKey = key
+          } else if (typeof val === 'string') {
+            nameKey = key
           }
-        });
+        })
 
-        // Fallback jika deteksi otomatis gagal (asumsi urutan standar)
-        const finalValIdx = valIdx !== -1 ? valIdx : 0;
-        const finalCatIdx = catIdx !== -1 ? catIdx : 1;
-        const finalTimeIdx = timeIdx !== -1 ? timeIdx : 2;
+        const timeFrames = [...new Set(data.map((item) => item[timeKey]))].sort((a, b) => a - b)
+        const categories = [...new Set(data.map((item) => item[nameKey]))]
 
-        const valName = header[finalValIdx];
-        const catName = header[finalCatIdx];
-        const timeName = header[finalTimeIdx];
-
-        // 2. SORTING KRONOLOGIS (Wajib agar garis tidak berantakan)
-        const sortedData = [
-          header,
-          ...safeData.slice(1).sort((a, b) => Number(a[finalTimeIdx]) - Number(b[finalTimeIdx]))
-        ];
-
-        const categories = Array.from(new Set(sortedData.slice(1).map(row => row[finalCatIdx])));
-
-        // 3. KONFIGURASI DASAR (Responsive Grid)
-        option.grid = { 
-          top: '10%', 
-          left: '3%', 
-          right: '140px', // Ruang lebar untuk endLabel di Desktop/Tablet
-          bottom: '5%', 
-          containLabel: true 
-        };
-        option.xAxis = { type: 'category', nameLocation: 'middle' };
-        option.yAxis = { type: 'value' };
-        option.tooltip = { trigger: 'axis', order: 'valueDesc' };
-
-        // 4. DATASET & TRANSFORM
-        option.dataset = [{ id: 'dataset_raw', source: sortedData }];
-
-        const datasetWithFilters: any[] = [];
-        const seriesList: any[] = [];
-
-        categories.forEach((cat: any) => {
-          const datasetId = `ds_${cat}`;
-          
-          datasetWithFilters.push({
-            id: datasetId,
-            fromDatasetId: 'dataset_raw',
-            transform: {
-              type: 'filter',
-              config: { dimension: catName, '=': cat }
-            }
-          });
-
-          seriesList.push({
-            type: 'line',
-            datasetId: datasetId,
-            name: String(cat),
-            showSymbol: false,
-            smooth: true,
-            lineStyle: { width: 3 },
-            endLabel: {
-              show: true,
-              // Formatter dinamis menggunakan index hasil deteksi
-              formatter: (p: any) => `${p.value[finalCatIdx]}: ${p.value[finalValIdx].toLocaleString()}`,
-              fontWeight: 'bold',
-              distance: 15
+        option.baseOption = {
+          timeline: {
+            show: true,
+            autoPlay: true,
+            loop: false,
+            playInterval: 1000,
+            realtime: true,
+            data: timeFrames.map(String),
+            bottom: '2%',
+            left: '10%',
+            right: '10%',
+            label: { color: textColor, fontSize: 10 },
+            checkpointStyle: { color: primaryColor, borderWidth: 2 },
+            controlStyle: {
+              showPlayBtn: false,
+              showNextBtn: true,
+              showPrevBtn: true,
+              itemSize: 20,
+              color: textColor,
             },
+          },
+          grid: {
+            top: '10%',
+            left: '5%',
+            right: '10%',
+            bottom: '80px',
+            containLabel: true,
+          },
+          tooltip: { trigger: 'axis' },
+          xAxis: {
+            type: 'category',
+            data: timeFrames.map(String),
+            boundaryGap: false,
+          },
+          yAxis: { type: 'value', splitLine: { lineStyle: { opacity: 0.1 } } },
+
+          series: categories.map((cat) => ({
+            name: String(cat),
+            type: 'line',
+            smooth: true,
+            showSymbol: false,
+            lineStyle: { width: 3, },
+            // endLabel: {
+            //   show: true,
+            //   formatter: (params: any) => `${params.seriesName}: ${params.value.toLocaleString()}`,
+            //   fontWeight: 'bold',
+            //   distance: 10,
+            // },
             labelLayout: { moveOverlap: 'shiftY' },
             emphasis: { focus: 'series' },
-            encode: {
-              x: timeName,
-              y: valName,
-              label: [catName, valName],
-              itemName: timeName,
-              tooltip: [valName]
-            }
-          });
-        });
+          })),
+        }
 
-        option.dataset.push(...datasetWithFilters);
-        option.series = seriesList;
+        option.options = timeFrames.map((currentTime) => {
+          return {
+            series: categories.map((cat) => {
+              const cumulativeData = data
+                .filter((item) => item[nameKey] === cat && item[timeKey] <= currentTime)
+                .sort((a, b) => a[timeKey] - b[timeKey])
+                .map((item) => item[valKey])
 
-        // 5. RACING ANIMATION LOGIC (Ultra Slow & Linear)
-        // Durasi panjang tanpa interval menciptakan efek pertumbuhan garis progresif
-        option.animationDuration = 15000; // 15 Detik untuk "Race" yang dramatis
-        option.animationDurationUpdate = 2000;
-        option.animationEasing = 'linear'; // Wajib linear agar kecepatan konstan
-        option.animationEasingUpdate = 'linear';
+              return { data: cumulativeData }
+            }),
+          }
+        })
 
-        return option;
+        return option
       }
-
       default:
-        console.warn(`[handleLineCategory] Type '${widgetType}' belum dihandle. Fallback ke basic.`);
-        return option;
+        console.warn(`[handleLineCategory] Type '${widgetType}' belum dihandle. Fallback ke basic.`)
+        return option
+    }
+  }
+  private static handleBarCategory(widgetType: string, data: any[], option: any): any {
+    const safeData = Array.isArray(data) ? data : []
+    const primaryColor = this.getCSSVar('--color-primary') || '#18181b'
+    const mutedColor = this.getCSSVar('--color-muted') || '#f4f4f5'
+    const borderColor = this.getCSSVar('--color-border') || '#e4e4e7'
+    const textColor = this.getCSSVar('--color-muted-foreground') || '#71717a'
+    const isHorizontal = widgetType === 'bar_horizontal' || widgetType === 'bar_race'
+    switch (widgetType) {
+      case 'bar': {
+        ;((option.xAxis = {
+          type: 'category',
+          data: data.map((obj) => obj.label),
+        }),
+          (option.yAxis = {
+            type: 'value',
+          }),
+          (option.series[0].data = data.map((obj) => parseInt(obj.value))))
+        option.series[0].backgroundStyle = {
+          color: mutedColor,
+          opacity: 0.2,
+          borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0],
+        }
+        option.series[0].itemStyle = {
+          color: primaryColor,
+          borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0],
+        }
+        return option
+      }
+      case 'bar_horizontal': {
+        ;((option.yAxis = {
+          type: 'category',
+          data: data.map((obj) => obj.label),
+        }),
+          (option.xAxis = {
+            type: 'value',
+          }),
+          (option.series[0].data = data.map((obj) => parseInt(obj.value))))
+        option.series[0].backgroundStyle = {
+          color: mutedColor,
+          opacity: 0.2,
+          borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0],
+        }
+        option.series[0].itemStyle = {
+          color: primaryColor,
+          borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0],
+        }
+        return option
+      }
+      case 'bar_stacked': {
+        option.xAxis = data.find((x) => x.type === 'category')
+        option.yAxis = {
+          type: 'value',
+        }
+        option.series = data.filter((x) => x.type === 'bar')
+        return option
+      }
+      case 'bar_large': {
+        const header = data[0]
+        option.dataset = [{ source: data }]
+        option.xAxis = {
+          type: 'category',
+          axisTick: { alignWithLabel: true },
+          axisLabel: { hideOverlap: true },
+        }
+        option.yAxis = {
+          type: 'value',
+          splitLine: { lineStyle: { color: mutedColor } }, //
+        }
+        option.series = [
+          {
+            type: 'bar',
+            large: true,
+            largeThreshold: 400,
+            progressive: 2000,
+            itemStyle: {
+              color: primaryColor,
+              borderRadius: 0,
+            },
+            encode: {
+              x: header[1],
+              y: header[0],
+            },
+            emphasis: {
+              itemStyle: { color: primaryColor, opacity: 0.8 },
+            },
+          },
+        ]
+        option.dataZoom = [
+          {
+            type: 'inside',
+            start: 0,
+            end: 20,
+          },
+          {
+            type: 'slider',
+            bottom: 10,
+            height: 20,
+            borderColor: 'transparent',
+            handleStyle: { color: primaryColor },
+          },
+        ]
+        option.tooltip = {
+          trigger: 'axis',
+          confine: true,
+          axisPointer: { type: 'shadow' },
+        }
+        return option
+      }
+      case 'bar_race': {
+        const sample = data[0]
+        const keys = Object.keys(sample)
+
+        let valKey = '',
+          nameKey = '',
+          timeKey = ''
+
+        keys.forEach((key) => {
+          const value = sample[key]
+          if (typeof value === 'number') {
+            if (value >= 1700 && value <= 2100) timeKey = key
+            else valKey = key
+          } else if (typeof value === 'string') {
+            nameKey = key
+          }
+        })
+        if (!timeKey)
+          timeKey =
+            keys.find(
+              (k) => k.toLowerCase().includes('year') || k.toLowerCase().includes('time')
+            ) || keys[2]
+        if (!valKey) valKey = keys[0]
+        if (!nameKey) nameKey = keys[1]
+        const timeFrames = [...new Set(data.map((item) => item[timeKey]))].sort()
+        option.baseOption = {
+          timeline: {
+            show: true,
+            autoPlay: true,
+            playInterval: 800,
+            loop: false,
+            data: timeFrames.map(String),
+            bottom: '0%',
+            left: '5%',
+            right: '5%',
+            padding: [0, 0, 10, 0],
+            lineStyle: { color: mutedColor, width: 1 },
+            label: {
+              position: 10,
+              color: textColor,
+              fontSize: 10,
+              fontFamily: 'Inter, sans-serif',
+            },
+            itemStyle: { color: mutedColor },
+            checkpointStyle: {
+              color: primaryColor,
+              borderColor: 'white',
+              borderWidth: 2,
+            },
+            controlStyle: {
+              showPlayBtn: false,
+              showNextBtn: true,
+              showPrevBtn: true,
+              itemSize: 18,
+              color: textColor,
+              borderColor: textColor,
+              position: 'left',
+            },
+            emphasis: {
+              itemStyle: { color: primaryColor },
+              controlStyle: { color: primaryColor, borderColor: primaryColor },
+            },
+          },
+          grid: { top: '5%', left: '3%', right: '15%', bottom: '65px', containLabel: true },
+          xAxis: {
+            type: 'value',
+            max: 'dataMax',
+            splitLine: { lineStyle: { color: mutedColor, opacity: 0.1 } },
+          },
+          yAxis: {
+            type: 'category',
+            inverse: true,
+            animationDuration: 300,
+            animationDurationUpdate: 300,
+          },
+          series: [
+            {
+              type: 'bar',
+              realtimeSort: true,
+
+              encode: { x: valKey, y: nameKey },
+              itemStyle: {
+                color: primaryColor,
+                borderRadius: [0, 4, 4, 0],
+              },
+              label: {
+                show: true,
+                position: 'right',
+                valueAnimation: true,
+                fontWeight: 'bold',
+                fontFamily: 'inherit',
+              },
+            },
+          ],
+        }
+
+        option.options = timeFrames.map((time) => ({
+          dataset: {
+            source: data.filter((item) => item[timeKey] === time),
+          },
+        }))
+        return option
+      }
+      default:
+        console.warn(`[handleBarCategory] Type '${widgetType}' belum dihandle. Fallback ke basic.`)
+        return option
     }
   }
 }

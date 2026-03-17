@@ -3,10 +3,12 @@
   import { fade, fly } from 'svelte/transition'
   import { expoOut } from 'svelte/easing'
   import { EncryptionService } from '~/stores/encryption'
-  import EChartsRenderer from '~/components/EChartsRenderer.svelte';
+  import EChartsRenderer from '~/components/EChartsRenderer.svelte'
   import { DataTransformer } from '~/utils/DataTransformer'
+  import { themeState } from '~/stores/theme.svelte'
 
   let { config } = $props()
+  const themeTrigger = $derived(`${themeState.mode}-${themeState.colorTheme}`)
 
   let dashboardId = $state<string | null>(null)
   let currentDashboard = $state<any>(null)
@@ -30,9 +32,7 @@
     if (typeof AbortController !== 'undefined') {
       listController = new AbortController()
     }
-
     isListLoading = true
-
     try {
       const params = new URLSearchParams({
         page: currentPage.toString(),
@@ -44,11 +44,8 @@
       const response = await fetch(`/api/collections/dashboard_settings?${params.toString()}`, {
         signal,
       })
-
       if (!response.ok) throw new Error('Gagal memuat daftar dashboard.')
-
       const result = await response.json()
-
       if (result?.ciphertext && result?.nonce) {
         const decryptedRaw = EncryptionService.decrypt(result.nonce, result.ciphertext)
         const parsedData =
@@ -196,7 +193,7 @@
         console.warn('[ChartView] Gagal sinkronisasi URL State.', e)
       }
     }
-    
+
     await fetchDashboard(id)
 
     isSelectorOpen = false
@@ -217,17 +214,21 @@
     }
   }
 
-  function getWidgetOptions(widget: any) {
-    const rawData = widget.config?.dataSourceMode === 'static' 
-      ? (widget.config?.staticJson || []) 
-      : (widget.dynamicData || []);
+  function getWidgetOptions(widget: any, _theme: string) {
+    const rawData =
+      widget.config?.dataSourceMode === 'static'
+        ? widget.config?.staticJson || []
+        : widget.dynamicData || []
 
-    const visualConfig = widget.config?.echartsOptions || {};
-    const category_chart = widget.category || null;
-    const type_chart = widget.type || null;
-    return DataTransformer.transform(category_chart, type_chart, rawData, visualConfig);
+    const visualConfig = widget.config?.echartsOptions || {}
+
+    return DataTransformer.transform(
+      widget.category || null,
+      widget.type || null,
+      rawData,
+      visualConfig
+    )
   }
-  
 </script>
 
 <div
@@ -335,11 +336,16 @@
         >
           {#each currentDashboard.widgets || [] as widget}
             <div class={getWidgetSpan(widget.config?.width)}>
-              <div class="bg-card border border-border rounded-xl h-[380px] p-5 shadow-sm flex flex-col hover:shadow-md transition-all group">
-                
-                <div class="flex items-center justify-between border-b border-border/40 pb-4 mb-4 shrink-0">
+              <div
+                class="bg-card border border-border rounded-xl h-[380px] p-5 shadow-sm flex flex-col hover:shadow-md transition-all group"
+              >
+                <div
+                  class="flex items-center justify-between border-b border-border/40 pb-4 mb-4 shrink-0"
+                >
                   <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                    >
                       <i class="{widget.config?.icon || 'fas fa-chart-bar'} text-xs"></i>
                     </div>
                     <h3 class="font-bold text-sm text-foreground truncate">
@@ -348,33 +354,37 @@
                   </div>
                   <button
                     aria-label="ellipsis"
-                    class="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-primary transition-colors shrink-0">
+                    class="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-primary transition-colors shrink-0"
+                  >
                     <i class="fas fa-ellipsis-v text-xs"></i>
                   </button>
                 </div>
 
                 <div class="flex-1 min-h-0 relative w-full rounded-lg">
-                  
                   {#if widget.type === 'simple_table'}
-                    <div class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5">
+                    <div
+                      class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
+                    >
                       <i class="fas fa-table text-2xl text-muted-foreground/30 mb-2"></i>
-                      <span class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Table View Logic</span>
+                      <span
+                        class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
+                        >Table View Logic</span
+                      >
                     </div>
-                  
                   {:else if widget.type === 'label'}
-                    <div class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5">
+                    <div
+                      class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
+                    >
                       <i class="fas fa-tag text-2xl text-muted-foreground/30 mb-2"></i>
-                      <span class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Label View Logic</span>
+                      <span
+                        class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
+                        >Label View Logic</span
+                      >
                     </div>
-                  
                   {:else}
-                    <EChartsRenderer 
-                      options={getWidgetOptions(widget)} 
-                    />
+                    <EChartsRenderer options={getWidgetOptions(widget, themeTrigger)} />
                   {/if}
-
                 </div>
-
               </div>
             </div>
           {/each}

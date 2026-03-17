@@ -930,7 +930,7 @@
           <button
             transition:fade={{ duration: 200 }}
             class="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm"
-            onclick={() => (isInspectorOpen = false, activeTabConfig = 'design')}
+            onclick={() => ((isInspectorOpen = false), (activeTabConfig = 'design'))}
             aria-label="Close Inspector Panel"
           ></button>
         {/if}
@@ -972,7 +972,7 @@
                   <div class="h-6 w-px bg-border mx-1"></div>
                 {/if}
                 <button
-                  onclick={() => (isInspectorOpen = false, activeTabConfig = 'design')}
+                  onclick={() => ((isInspectorOpen = false), (activeTabConfig = 'design'))}
                   class="w-9 h-9 rounded-xl bg-background border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors shadow-sm"
                   title="Close Panel"
                 >
@@ -1184,10 +1184,14 @@
                           <div class="flex items-end justify-between px-1">
                             <div class="space-y-1">
                               <div class="flex items-center gap-2">
-                                <h4 class="text-[10px] font-black text-primary uppercase tracking-[0.15em]">
+                                <h4
+                                  class="text-[10px] font-black text-primary uppercase tracking-[0.15em]"
+                                >
                                   Aggregation Pipeline
                                 </h4>
-                                <span class="flex h-1.5 w-1.5 rounded-full bg-primary/50 shadow-[0_0_8px_rgba(var(--primary-rgb),0.4)]"></span>
+                                <span
+                                  class="flex h-1.5 w-1.5 rounded-full bg-primary/50 shadow-[0_0_8px_rgba(var(--primary-rgb),0.4)]"
+                                ></span>
                               </div>
                               <p class="text-[9px] text-muted-foreground italic">
                                 Konfigurasi query database
@@ -1205,7 +1209,11 @@
                                 ? 'text-destructive animate-pulse'
                                 : 'text-primary hover:text-primary/70 active:scale-95'}"
                             >
-                              <i class="fas {jsonErrors.pipeline ? 'fa-exclamation-triangle' : 'fa-wand-magic-sparkles'} text-[10px]"></i>
+                              <i
+                                class="fas {jsonErrors.pipeline
+                                  ? 'fa-exclamation-triangle'
+                                  : 'fa-wand-magic-sparkles'} text-[10px]"
+                              ></i>
                               Format
                             </button>
                           </div>
@@ -1215,17 +1223,30 @@
                               ? 'border-destructive/50 ring-4 ring-destructive/5'
                               : 'border-border focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
                           >
-                            <div class="h-8 bg-muted/50 border-b border-border/50 flex items-center justify-between px-4">
+                            <div
+                              class="h-8 bg-muted/50 border-b border-border/50 flex items-center justify-between px-4"
+                            >
                               <div class="flex items-center gap-2">
                                 <div class="flex gap-1.5 opacity-40">
-                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
-                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
-                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
+                                  <div
+                                    class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"
+                                  ></div>
+                                  <div
+                                    class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"
+                                  ></div>
+                                  <div
+                                    class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"
+                                  ></div>
                                 </div>
                                 <div class="h-3 w-px bg-border mx-1"></div>
-                                <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter">pipeline.json</span>
+                                <span
+                                  class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
+                                  >pipeline.json</span
+                                >
                               </div>
-                              <span class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase">
+                              <span
+                                class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase"
+                              >
                                 JSON Array
                               </span>
                             </div>
@@ -1245,13 +1266,20 @@
                             ></textarea>
                           </div>
 
-                          <div class="flex items-start gap-2 text-[9px] text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-xl border border-border">
+                          <div
+                            class="flex items-start gap-2 text-[9px] text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-xl border border-border"
+                          >
                             <i class="fas fa-info-circle mt-0.5 text-primary/70"></i>
                             <div class="leading-relaxed">
-                              <span class="font-bold text-primary/80 uppercase tracking-tight">Support Injection:</span>
-                              Gunakan ID Variant (cth: <code class="text-primary font-mono">YEAR</code>) sebagai placeholder: 
-                              <code class="opacity-80">{"{ \"$match\": { \"tahun\": \"{{YEAR}}\" } }"}</code>. 
-                              Sistem akan otomatis melakukan sinkronisasi berdasarkan pilihan dropdown user.
+                              <span class="font-bold text-primary/80 uppercase tracking-tight"
+                                >Support Injection:</span
+                              >
+                              Gunakan ID Variant (cth:
+                              <code class="text-primary font-mono">YEAR</code>) sebagai placeholder:
+                              <code class="opacity-80"
+                                >{'{ "$match": { "tahun": "{{YEAR}}" } }'}</code
+                              >. Sistem akan otomatis melakukan sinkronisasi berdasarkan pilihan
+                              dropdown user.
                             </div>
                           </div>
                         </div>
@@ -1272,7 +1300,8 @@
 
                               <label
                                 for="variant-dasboard"
-                                class="text-[10px] font-black uppercase tracking-widest transition-colors {activeWidget.config.useVariant
+                                class="text-[10px] font-black uppercase tracking-widest transition-colors {activeWidget
+                                  .config.useVariant
                                   ? 'text-primary'
                                   : 'text-muted-foreground/50'}"
                               >
@@ -1292,7 +1321,11 @@
                                   ? 'text-destructive animate-pulse'
                                   : 'text-primary hover:text-primary/70 active:scale-95'}"
                               >
-                                <i class="fas {jsonErrors.variant ? 'fa-exclamation-triangle' : 'fa-wand-magic-sparkles'} text-[10px]"></i>
+                                <i
+                                  class="fas {jsonErrors.variant
+                                    ? 'fa-exclamation-triangle'
+                                    : 'fa-wand-magic-sparkles'} text-[10px]"
+                                ></i>
                                 Format
                               </button>
                             {/if}
@@ -1301,28 +1334,38 @@
                           <div
                             class="rounded-lg border transition-all duration-300 shadow-2xl overflow-hidden
                               {activeWidget.config.useVariant
-                                ? jsonErrors.variant
-                                  ? 'border-destructive/50 bg-background ring-4 ring-destructive/5'
-                                  : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'
-                                : 'border-border/30 bg-muted/20 opacity-40 grayscale pointer-events-none'}"
+                              ? jsonErrors.variant
+                                ? 'border-destructive/50 bg-background ring-4 ring-destructive/5'
+                                : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'
+                              : 'border-border/30 bg-muted/20 opacity-40 grayscale pointer-events-none'}"
                           >
                             <div
-                              class="h-8 border-b flex items-center px-4 justify-between transition-colors {activeWidget.config.useVariant
+                              class="h-8 border-b flex items-center px-4 justify-between transition-colors {activeWidget
+                                .config.useVariant
                                 ? 'bg-muted/50 border-border/50'
                                 : 'bg-muted/30 border-border/20'}"
                             >
                               <div class="flex items-center gap-2">
                                 <div class="flex gap-1.5 opacity-40">
-                                  <div class="w-2.5 h-2.5 rounded-full {activeWidget.config.useVariant ? 'bg-primary/50' : 'bg-muted-foreground/30'}"></div>
-                                  <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/30"></div>
+                                  <div
+                                    class="w-2.5 h-2.5 rounded-full {activeWidget.config.useVariant
+                                      ? 'bg-primary/50'
+                                      : 'bg-muted-foreground/30'}"
+                                  ></div>
+                                  <div
+                                    class="w-2.5 h-2.5 rounded-full bg-muted-foreground/30"
+                                  ></div>
                                 </div>
                                 <div class="h-3 w-px bg-border mx-1"></div>
-                                <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter">
+                                <span
+                                  class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
+                                >
                                   variant.json
                                 </span>
                               </div>
                               <span
-                                class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase transition-opacity {activeWidget.config.useVariant
+                                class="text-[8px] font-mono text-primary/50 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/10 uppercase transition-opacity {activeWidget
+                                  .config.useVariant
                                   ? 'opacity-100'
                                   : 'opacity-0'}"
                               >
@@ -1387,9 +1430,9 @@
                         </div>
 
                         <div
-                          class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300 
-                          {jsonErrors.static 
-                            ? 'border-destructive/50 ring-4 ring-destructive/5' 
+                          class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300
+                          {jsonErrors.static
+                            ? 'border-destructive/50 ring-4 ring-destructive/5'
                             : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
                         >
                           <div
@@ -1397,12 +1440,19 @@
                           >
                             <div class="flex items-center gap-2">
                               <div class="flex gap-1.5 opacity-40">
-                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
+                                <div
+                                  class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"
+                                ></div>
+                                <div
+                                  class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"
+                                ></div>
+                                <div
+                                  class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"
+                                ></div>
                               </div>
                               <div class="h-3 w-px bg-border mx-1"></div>
-                              <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
+                              <span
+                                class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
                                 >datasource.json</span
                               >
                             </div>
@@ -1452,7 +1502,9 @@
                           <div class="w-full border-t border-border border-dashed"></div>
                         </div>
                         <div class="relative flex justify-center">
-                          <span class="bg-card px-3 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                          <span
+                            class="bg-card px-3 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60"
+                          >
                             ECharts Core
                           </span>
                         </div>
@@ -1478,7 +1530,7 @@
                             activeWidget.config.echartsOptions = res.data
                             jsonErrors.echarts = res.error
                           }}
-                          class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all 
+                          class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all
                             {jsonErrors.echarts
                             ? 'text-destructive animate-pulse'
                             : 'text-primary hover:text-primary/70 active:scale-95'}"
@@ -1493,7 +1545,7 @@
                       </div>
 
                       <div
-                        class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300 
+                        class="group rounded-lg border shadow-2xl overflow-hidden transition-all duration-300
                         {jsonErrors.echarts
                           ? 'border-destructive/50 ring-4 ring-destructive/5'
                           : 'border-border bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5'}"
@@ -1503,12 +1555,19 @@
                         >
                           <div class="flex items-center gap-2">
                             <div class="flex gap-1.5 opacity-40">
-                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"></div>
-                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"></div>
-                              <div class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"></div>
+                              <div
+                                class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-destructive/40 transition-colors"
+                              ></div>
+                              <div
+                                class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-amber-500/40 transition-colors"
+                              ></div>
+                              <div
+                                class="w-2.5 h-2.5 rounded-full bg-muted-foreground/50 group-hover:bg-primary/40 transition-colors"
+                              ></div>
                             </div>
                             <div class="h-3 w-px bg-border mx-1"></div>
-                            <span class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
+                            <span
+                              class="text-[9px] font-mono text-muted-foreground uppercase tracking-tighter"
                               >options.json</span
                             >
                           </div>
@@ -1529,7 +1588,7 @@
                           }}
                           spellcheck="false"
                           rows="10"
-                          class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20 
+                          class="w-full bg-transparent p-5 text-[12px] font-mono outline-none resize-y custom-scrollbar block leading-relaxed placeholder:text-muted-foreground/20 selection:bg-primary/20
                           {jsonErrors.echarts ? 'text-destructive' : 'text-primary'}"
                           placeholder={'{ "tooltip": {}, "series": [] }'}
                         ></textarea>

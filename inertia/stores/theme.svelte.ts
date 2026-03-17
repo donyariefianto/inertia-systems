@@ -31,12 +31,7 @@ export function setThemeColor(color: string) {
 function applyTheme() {
   if (typeof window === 'undefined') return
   const root = document.documentElement
-
-  // 1. Handle Dark Mode
   root.classList.toggle('dark', themeState.mode === 'dark')
-
-  // 2. Handle 3 Varian Warna (Cleanup & Apply)
-  // Menghapuskan semua kelas yang bermula dengan 'theme-' secara bersih
   const currentClasses = Array.from(root.classList)
   currentClasses.forEach((c) => {
     if (c.startsWith('theme-')) root.classList.remove(c)
