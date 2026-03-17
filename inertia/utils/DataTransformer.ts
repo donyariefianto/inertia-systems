@@ -148,6 +148,10 @@ export class DataTransformer {
               itemSize: 20,
               color: textColor,
             },
+            lineStyle: {
+              color: borderColor, // Mengikuti --color-border (Zinc/Forest)
+              width: 2,
+            },
           },
           grid: {
             top: '10%',
@@ -169,7 +173,7 @@ export class DataTransformer {
             type: 'line',
             smooth: true,
             showSymbol: false,
-            lineStyle: { width: 3, },
+            lineStyle: { width: 3 },
             // endLabel: {
             //   show: true,
             //   formatter: (params: any) => `${params.seriesName}: ${params.value.toLocaleString()}`,
@@ -347,10 +351,12 @@ export class DataTransformer {
             padding: [0, 0, 10, 0],
             lineStyle: { color: mutedColor, width: 1 },
             label: {
-              position: 10,
               color: textColor,
               fontSize: 10,
-              fontFamily: 'Inter, sans-serif',
+              emphasis: {
+                color: primaryColor,
+                fontWeight: 'bold',
+              },
             },
             itemStyle: { color: mutedColor },
             checkpointStyle: {
