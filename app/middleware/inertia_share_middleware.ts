@@ -18,6 +18,8 @@ export default class InertiaShareMiddleware {
       } catch (error) {
         console.error('❌ Middleware Sidebar Error:', error)
       }
+    } else {
+      return ctx.response.redirect().toPath('/login')
     }
 
     ctx.inertia.share({

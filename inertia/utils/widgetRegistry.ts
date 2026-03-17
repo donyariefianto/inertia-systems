@@ -436,8 +436,11 @@ export const WidgetRegistry = {
         icon: 'fa-solid fa-circle-notch',
         echartsOptions: { series: [{ type: 'pie', radius: ['40%', '70%'] }] },
         data_config: WidgetConfigBuilder.staticData([
-          { label: 'Desktop', value: 70 },
-          { label: 'Mobile', value: 30 },
+          { kategori: 'Direct', jumlah: 3048 },
+          { kategori: 'Social', jumlah: 2500 },
+          { kategori: 'Organic', jumlah: 4200 },
+          { kategori: 'Referral', jumlah: 1800 },
+          { kategori: 'Email', jumlah: 1200 },
         ]),
       },
     },
@@ -472,10 +475,17 @@ export const WidgetRegistry = {
         echartsOptions: { series: [{ type: 'sunburst', radius: [0, '90%'] }] },
         data_config: WidgetConfigBuilder.staticData([
           {
-            name: 'Direksi',
+            name: 'Pemasukan',
             children: [
-              { name: 'IT', value: 15 },
-              { name: 'HR', value: 10 },
+              { name: 'Produk A', value: 1500 },
+              { name: 'Produk B', value: 1200 },
+            ],
+          },
+          {
+            name: 'Pengeluaran',
+            children: [
+              { name: 'Operasional', value: 800 },
+              { name: 'Pemasaran', value: 400 },
             ],
           },
         ]),
@@ -497,8 +507,8 @@ export const WidgetRegistry = {
         icon: 'fa-solid fa-braille',
         echartsOptions: { xAxis: { type: 'value' }, yAxis: { type: 'value' } },
         data_config: WidgetConfigBuilder.staticData([
-          { value: [10, 250], label: 'Produk A' },
-          { value: [20, 300], label: 'Produk B' },
+          { kategori: 'Produk A', harga: 150000, terjual: 450 },
+          { kategori: 'Produk B', harga: 200000, terjual: 320 },
         ]),
       },
     },
@@ -514,13 +524,8 @@ export const WidgetRegistry = {
         icon: 'fa-solid fa-compass',
         echartsOptions: { radar: { indicator: [] }, series: [{ type: 'radar' }] },
         data_config: WidgetConfigBuilder.staticData([
-          { name: 'Team A', value: [80, 90, 70, 85, 60] },
-          {
-            indicators: [
-              { name: 'Sales', max: 100 },
-              { name: 'Support', max: 100 },
-            ],
-          },
+          { entitas: 'Anggaran', IT: 500, Marketing: 400, Ops: 600, HR: 300 },
+          { entitas: 'Realisasi', IT: 450, Marketing: 450, Ops: 550, HR: 250 },
         ]),
       },
     },
@@ -539,15 +544,13 @@ export const WidgetRegistry = {
         title: 'Sistem Cabang',
         icon: 'fa-solid fa-sitemap',
         echartsOptions: { series: [{ type: 'tree', orient: 'horizontal' }] },
-        data_config: WidgetConfigBuilder.staticData([
-          {
-            name: 'Pusat',
-            children: [
-              { name: 'Cabang A', value: 100 },
-              { name: 'Cabang B', value: 200 },
-            ],
-          },
-        ]),
+        data_config: WidgetConfigBuilder.staticData({
+          name: 'Direktur',
+          children: [
+            { name: 'Manajer IT', value: 100 },
+            { name: 'Manajer HR', value: 80 },
+          ],
+        }),
       },
     },
     sankey: {
@@ -561,15 +564,13 @@ export const WidgetRegistry = {
         title: 'Cash Flow',
         icon: 'fa-solid fa-water',
         echartsOptions: { series: [{ type: 'sankey', emphasis: { focus: 'adjacency' } }] },
-        data_config: WidgetConfigBuilder.staticData([
-          { nodes: [{ name: 'Income' }, { name: 'Taxes' }, { name: 'Profit' }] },
-          {
-            links: [
-              { source: 'Income', target: 'Taxes', value: 20 },
-              { source: 'Income', target: 'Profit', value: 80 },
-            ],
-          },
-        ]),
+        data_config: WidgetConfigBuilder.staticData({
+          nodes: [{ name: 'Gaji' }, { name: 'Pajak' }, { name: 'Tabungan' }],
+          links: [
+            { source: 'Gaji', target: 'Pajak', value: 200 },
+            { source: 'Gaji', target: 'Tabungan', value: 800 },
+          ],
+        }),
       },
     },
 

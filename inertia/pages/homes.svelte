@@ -42,7 +42,6 @@
 
 <MainLayout>
   <div class="flex h-full flex-col gap-8 animate-fade-in">
-    <!-- Header -->
     <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center shrink-0 px-1">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
@@ -78,10 +77,8 @@
       </button>
     </header>
 
-    <!-- Main content area dengan scroll -->
     <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
       <div class="space-y-10 pb-10 px-1">
-        <!-- Grid Modul Portal -->
         <section aria-labelledby="modules-heading">
           <h2 id="modules-heading" class="sr-only">Modul Portal</h2>
           <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -119,9 +116,7 @@
           </div>
         </section>
 
-        <!-- Panel Informasi (dua kolom) -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <!-- Informasi Sesi -->
           <article
             class="rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
             in:fade={{ delay: 400 }}
@@ -160,7 +155,6 @@
             </dl>
           </article>
 
-          <!-- Informasi Rilis -->
           <article
             class="rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
             in:fade={{ delay: 500 }}

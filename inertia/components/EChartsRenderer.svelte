@@ -86,13 +86,11 @@
 
     try {
       isError = false
-
       const textColor = getCssVar('--color-foreground', '#09090b')
       const tooltipBg = getCssVar('--color-popover', 'rgba(255, 255, 255, 0.95)')
       const tooltipBorder = getCssVar('--color-border', '#e4e4e7')
       const tooltipText = getCssVar('--color-popover-foreground', '#09090b')
       const gridLineColor = getCssVar('--color-border', '#e4e4e7')
-
       const baseTheme = {
         backgroundColor: 'transparent',
         textStyle: {
@@ -108,7 +106,6 @@
           extraCssText:
             'backdrop-filter: blur(4px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);',
         },
-
         valueAxis: {
           splitLine: { lineStyle: { color: gridLineColor, opacity: 0.5 } },
         },

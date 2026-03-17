@@ -9,7 +9,7 @@
 
   let { config } = $props()
   const themeTrigger = $derived(`${themeState.mode}-${themeState.colorTheme}`)
-
+  let fullscreenWidgetId = $state<string | null>(null);
   let dashboardId = $state<string | null>(null)
   let currentDashboard = $state<any>(null)
   let isLoading = $state(true)
@@ -229,6 +229,17 @@
       visualConfig
     )
   }
+
+  function handleDownloadImage(id: string) {
+    const chartInstance = id; 
+    if (!chartInstance) return;
+    console.log('download');    
+  }
+
+  function handleCopyUrl(id: string) {
+    const url = `${id}`;
+    navigator.clipboard.writeText(url);
+  }
 </script>
 
 <div
@@ -332,61 +343,85 @@
         </div>
       {:else}
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 max-w-[1600px] mx-auto pb-5"
+          class="w-full mx-auto transition-all duration-1000 ease-in-out pb-8
+          {fullscreenWidgetId 
+            ? 'max-w-none px-0 items-stretch' 
+            : 'max-w-[1600px] px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'}"
         >
           {#each currentDashboard.widgets || [] as widget}
-            <div class={getWidgetSpan(widget.config?.width)}>
-              <div
-                class="bg-card border border-border rounded-xl h-[380px] p-5 shadow-sm flex flex-col hover:shadow-md transition-all group"
-              >
+            {#if !fullscreenWidgetId || fullscreenWidgetId === widget.id}
+              <div class={getWidgetSpan(widget.config?.width)}>
                 <div
-                  class="flex items-center justify-between border-b border-border/40 pb-4 mb-4 shrink-0"
+                  class="bg-card border border-border rounded-xl h-[380px] p-5 shadow-sm flex flex-col hover:shadow-md transition-all group"
                 >
-                  <div class="flex items-center gap-3 min-w-0">
-                    <div
-                      class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    >
-                      <i class="{widget.config?.icon || 'fas fa-chart-bar'} text-xs"></i>
-                    </div>
-                    <h3 class="font-bold text-sm text-foreground truncate">
-                      {widget.title || 'Widget'}
-                    </h3>
-                  </div>
-                  <button
-                    aria-label="ellipsis"
-                    class="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-primary transition-colors shrink-0"
+                  <div
+                    class="flex items-center justify-between border-b border-border/40 pb-4 mb-4 shrink-0"
                   >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div
+                        class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                      >
+                        <i class="{widget.config?.icon || 'fas fa-chart-bar'} text-xs"></i>
+                      </div>
+                      <h3 class="font-bold text-sm text-foreground truncate">
+                        {widget.title || 'Widget'}
+                      </h3>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                      <button
+                        onclick={() => handleDownloadImage(widget.id)}
+                        title="Download Image"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all active:scale-95"
+                      >
+                        <i class="fas fa-download text-[10px]"></i>
+                      </button>
 
-                <div class="flex-1 min-h-0 relative w-full rounded-lg">
-                  {#if widget.type === 'simple_table'}
-                    <div
-                      class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
-                    >
-                      <i class="fas fa-table text-2xl text-muted-foreground/30 mb-2"></i>
-                      <span
-                        class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
-                        >Table View Logic</span
+                      <button
+                        onclick={() => handleCopyUrl(widget.id)}
+                        title="Copy Link"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all active:scale-95"
                       >
-                    </div>
-                  {:else if widget.type === 'label'}
-                    <div
-                      class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
-                    >
-                      <i class="fas fa-tag text-2xl text-muted-foreground/30 mb-2"></i>
-                      <span
-                        class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
-                        >Label View Logic</span
+                        <i class="fas fa-link text-[10px]"></i>
+                      </button>
+
+                      <button
+                        onclick={() => fullscreenWidgetId = fullscreenWidgetId === widget.id ? null : widget.id}
+                        title={fullscreenWidgetId === widget.id ? "Exit Fullscreen" : "Fullscreen"}
+                        class="w-8 h-8 flex items-center justify-center rounded-lg {fullscreenWidgetId === widget.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'} transition-all active:scale-95"
                       >
+                        <i class="fas {fullscreenWidgetId === widget.id ? 'fa-compress-arrows-alt' : 'fa-expand-alt'} text-[10px]"></i>
+                      </button>
                     </div>
-                  {:else}
-                    <EChartsRenderer options={getWidgetOptions(widget, themeTrigger)} />
-                  {/if}
+                  </div>
+
+                  <div class="flex-1 min-h-0 relative w-full rounded-lg">
+                    {#if widget.type === 'simple_table'}
+                      <div
+                        class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
+                      >
+                        <i class="fas fa-table text-2xl text-muted-foreground/30 mb-2"></i>
+                        <span
+                          class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
+                          >Table View Logic</span
+                        >
+                      </div>
+                    {:else if widget.type === 'label'}
+                      <div
+                        class="w-full h-full flex flex-col items-center justify-center border border-dashed border-border/50 rounded-lg bg-muted/5"
+                      >
+                        <i class="fas fa-tag text-2xl text-muted-foreground/30 mb-2"></i>
+                        <span
+                          class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest"
+                          >Label View Logic</span
+                        >
+                      </div>
+                    {:else}
+                      <EChartsRenderer options={getWidgetOptions(widget, themeTrigger)} />
+                    {/if}
+                  </div>
                 </div>
               </div>
-            </div>
+            {/if}
           {/each}
         </div>
       {/if}

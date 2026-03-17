@@ -1,5 +1,3 @@
-import * as echarts from 'echarts'
-
 export class DataTransformer {
   static getCSSVar(name: string) {
     if (typeof window !== 'undefined') {
@@ -7,6 +5,14 @@ export class DataTransformer {
       return val || null
     }
     return null
+  }
+  static resultColor() {
+    return {
+      primaryColor: this.getCSSVar('--color-primary') || '#18181b',
+      mutedColor: this.getCSSVar('--color-muted') || '#f4f4f5',
+      borderColor: this.getCSSVar('--color-border') || '#e4e4e7',
+      textColor: this.getCSSVar('--color-muted-foreground') || '#71717a',
+    }
   }
   static transform(
     categoryType: string,
@@ -23,6 +29,14 @@ export class DataTransformer {
           return this.handleLineCategory(widgetType, safeData, finalOptions)
         case 'bar':
           return this.handleBarCategory(widgetType, safeData, finalOptions)
+        case 'pie':
+          return this.handlePieCategory(widgetType, safeData, finalOptions)
+        case 'scatter':
+          return this.handleScatterCategory(widgetType, safeData, finalOptions)
+        case 'radar':
+          return this.handleRadarCategory(widgetType, safeData, finalOptions)
+        case 'flow':
+          return this.handleFlowCategory(widgetType, safeData, finalOptions)
         default:
           console.warn(`[DataTransformer] Category '${categoryType}' belum dihandle.`)
           return finalOptions
@@ -33,9 +47,10 @@ export class DataTransformer {
     }
   }
   private static handleLineCategory(widgetType: string, data: any, option: any): any {
-    const primaryColor = this.getCSSVar('--color-primary') || '#18181b'
-    const textColor = this.getCSSVar('--color-muted-foreground') || '#71717a'
-    const borderColor = this.getCSSVar('--color-border') || '#e4e4e7'
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
     option.xAxis = option.xAxis || { type: 'category' }
     option.yAxis = option.yAxis || { type: 'value' }
     option.series = Array.isArray(option.series) && option.series.length > 0 ? option.series : [{}]
@@ -136,21 +151,46 @@ export class DataTransformer {
             playInterval: 1000,
             realtime: true,
             data: timeFrames.map(String),
-            bottom: '2%',
-            left: '10%',
-            right: '10%',
-            label: { color: textColor, fontSize: 10 },
-            checkpointStyle: { color: primaryColor, borderWidth: 2 },
+            bottom: '0%',
+            left: '5%',
+            right: '5%',
+            padding: [0, 0, 10, 0],
+            lineStyle: { color: borderColor, width: 1 },
+            label: {
+              color: textColor,
+              fontSize: 10,
+              emphasis: {
+                color: primaryColor,
+                fontWeight: 'bold',
+              },
+            },
+            itemStyle: { color: mutedColor },
+            checkpointStyle: {
+              color: primaryColor,
+              borderColor: 'white',
+              borderWidth: 2,
+            },
             controlStyle: {
-              showPlayBtn: false,
+              showPlayBtn: true,
               showNextBtn: true,
               showPrevBtn: true,
-              itemSize: 20,
+              itemSize: 18,
               color: textColor,
+              borderColor: textColor,
+              position: 'left',
             },
-            lineStyle: {
-              color: borderColor, // Mengikuti --color-border (Zinc/Forest)
-              width: 2,
+            emphasis: {
+              itemStyle: { color: primaryColor },
+              controlStyle: { color: primaryColor, borderColor: primaryColor },
+            },
+            progress: {
+              lineStyle: {
+                color: primaryColor,
+                width: 2,
+              },
+              itemStyle: {
+                color: primaryColor,
+              },
             },
           },
           grid: {
@@ -174,12 +214,12 @@ export class DataTransformer {
             smooth: true,
             showSymbol: false,
             lineStyle: { width: 3 },
-            // endLabel: {
-            //   show: true,
-            //   formatter: (params: any) => `${params.seriesName}: ${params.value.toLocaleString()}`,
-            //   fontWeight: 'bold',
-            //   distance: 10,
-            // },
+            
+            
+            
+            
+            
+            
             labelLayout: { moveOverlap: 'shiftY' },
             emphasis: { focus: 'series' },
           })),
@@ -200,17 +240,14 @@ export class DataTransformer {
 
         return option
       }
-      default:
-        console.warn(`[handleLineCategory] Type '${widgetType}' belum dihandle. Fallback ke basic.`)
-        return option
     }
   }
   private static handleBarCategory(widgetType: string, data: any[], option: any): any {
     const safeData = Array.isArray(data) ? data : []
-    const primaryColor = this.getCSSVar('--color-primary') || '#18181b'
-    const mutedColor = this.getCSSVar('--color-muted') || '#f4f4f5'
-    const borderColor = this.getCSSVar('--color-border') || '#e4e4e7'
-    const textColor = this.getCSSVar('--color-muted-foreground') || '#71717a'
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
     const isHorizontal = widgetType === 'bar_horizontal' || widgetType === 'bar_race'
     switch (widgetType) {
       case 'bar': {
@@ -342,14 +379,14 @@ export class DataTransformer {
           timeline: {
             show: true,
             autoPlay: true,
-            playInterval: 800,
+            playInterval: 1000,
             loop: false,
             data: timeFrames.map(String),
             bottom: '0%',
             left: '5%',
             right: '5%',
             padding: [0, 0, 10, 0],
-            lineStyle: { color: mutedColor, width: 1 },
+            lineStyle: { color: borderColor, width: 1 },
             label: {
               color: textColor,
               fontSize: 10,
@@ -365,7 +402,7 @@ export class DataTransformer {
               borderWidth: 2,
             },
             controlStyle: {
-              showPlayBtn: false,
+              showPlayBtn: true,
               showNextBtn: true,
               showPrevBtn: true,
               itemSize: 18,
@@ -376,6 +413,15 @@ export class DataTransformer {
             emphasis: {
               itemStyle: { color: primaryColor },
               controlStyle: { color: primaryColor, borderColor: primaryColor },
+            },
+            progress: {
+              lineStyle: {
+                color: primaryColor,
+                width: 2,
+              },
+              itemStyle: {
+                color: primaryColor,
+              },
             },
           },
           grid: { top: '5%', left: '3%', right: '15%', bottom: '65px', containLabel: true },
@@ -393,8 +439,7 @@ export class DataTransformer {
           series: [
             {
               type: 'bar',
-              realtimeSort: true,
-
+              realtimeSort: false,
               encode: { x: valKey, y: nameKey },
               itemStyle: {
                 color: primaryColor,
@@ -418,9 +463,255 @@ export class DataTransformer {
         }))
         return option
       }
-      default:
-        console.warn(`[handleBarCategory] Type '${widgetType}' belum dihandle. Fallback ke basic.`)
+    }
+  }
+  private static handlePieCategory(widgetType: string, data: any[], option: any): any {
+    const safeData = Array.isArray(data) ? data : []
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
+    let valKey = '',
+      nameKey = ''
+    if (safeData.length > 0 && widgetType !== 'sunburst') {
+      const sample = safeData[0]
+      const keys = Object.keys(sample)
+      keys.forEach((k) => {
+        if (typeof sample[k] === 'number') valKey = k
+        else if (typeof sample[k] === 'string') nameKey = k
+      })
+    }
+    switch (widgetType) {
+      case 'pie_donut': {
+        if (!valKey || !nameKey) return option
+
+        option.tooltip = { trigger: 'item' }
+        option.legend = {
+          bottom: '0%',
+          left: 'center',
+          textStyle: { color: textColor },
+          icon: 'circle',
+        }
+
+        option.series = [
+          {
+            type: 'pie',
+            radius: ['45%', '70%'], 
+            center: ['50%', '45%'], 
+            avoidLabelOverlap: true,
+            itemStyle: {
+              borderRadius: 10,
+              borderWidth: 10,
+            },
+            label: {
+              show: false, 
+              position: 'center',
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: textColor,
+                formatter: `{b}\n{c}`, 
+              },
+            },
+            labelLine: { show: false },
+            data: safeData.map((item) => ({
+              name: item[nameKey],
+              value: item[valKey],
+            })),
+          },
+        ]
         return option
+      }
+
+      case 'pie_rose': {
+        if (!valKey || !nameKey) return option
+        option.tooltip = { trigger: 'item' }
+        option.legend = { show: false } 
+        option.series = [
+          {
+            type: 'pie',
+            radius: ['15%', '75%'], 
+            center: ['50%', '50%'],
+            roseType: 'area', 
+            itemStyle: {
+              borderRadius: 6,
+              borderWidth: 1.5,
+            },
+            label: {
+              color: textColor,
+              formatter: '{b}\n{d}%', 
+              fontFamily: 'inherit',
+            },
+            data: safeData
+              .map((item) => ({ name: item[nameKey], value: item[valKey] }))
+              
+              .sort((a, b) => b.value - a.value),
+          },
+        ]
+        return option
+      }
+
+      case 'sunburst': {
+        option.tooltip = { trigger: 'item' }
+        option.series = [
+          {
+            type: 'sunburst',
+            data: safeData, 
+            radius: [0, '75%'], 
+            itemStyle: {
+              borderRadius: 4,
+              borderColor: '#ffffff',
+              borderWidth: 1.5,
+            },
+            label: {
+              rotate: 'radial', 
+              
+              fontSize: 10,
+              fontFamily: 'inherit',
+            },
+            emphasis: { focus: 'ancestor' }, 
+          },
+        ]
+        return option
+      }
+    }
+  }
+  private static handleScatterCategory(widgetType: string, data: any[], option: any): any {
+    const safeData = Array.isArray(data) ? data : []
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
+    switch (widgetType) {
+      case 'scatter': {
+        if (safeData.length === 0) return option;        
+        const keys = Object.keys(safeData[0]);
+        const numKeys = keys.filter(k => typeof safeData[0][k] === 'number');
+        const strKey = keys.find(k => typeof safeData[0][k] === 'string') || keys[0];
+        if (numKeys.length < 2) return option; 
+        option.tooltip = {
+          trigger: 'item',
+          formatter: (p: any) => 
+            `<b>${p.value[strKey]}</b><br/>${numKeys[0]}: ${p.value[numKeys[0]]}<br/>${numKeys[1]}: ${p.value[numKeys[1]]}`
+        };
+
+        option.grid = { top: '10%', bottom: '10%', left: '10%', right: '10%', containLabel: true };
+        option.xAxis = { type: 'value', name: numKeys[0], splitLine: { lineStyle: { type: 'dashed', color: borderColor } } };
+        option.yAxis = { type: 'value', name: numKeys[1], splitLine: { lineStyle: { type: 'dashed', color: borderColor } } };        
+        option.dataset = { source: safeData };
+        option.series = [{
+          type: 'scatter',
+          symbolSize: 14, 
+          itemStyle: { color: primaryColor, opacity: 0.8 },
+          encode: { x: numKeys[0], y: numKeys[1], tooltip: [numKeys[0], numKeys[1]], itemName: strKey }
+        }];
+        return option;
+      }
+    }
+  }
+  private static handleRadarCategory(widgetType: string, data: any[], option: any): any {
+    const safeData = Array.isArray(data) ? data : []
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
+    switch (widgetType) {
+      case 'radar': {
+        if (safeData.length === 0) return option;        
+        const keys = Object.keys(safeData[0]);
+        const strKey = keys.find(k => typeof safeData[0][k] === 'string') || keys[0];
+        const metrics = keys.filter(k => k !== strKey);        
+        const indicators = metrics.map(m => ({ name: m }));
+
+        option.tooltip = { trigger: 'item' };
+        option.legend = { bottom: 0, textStyle: { color: textColor } };        
+        option.radar = {
+          indicator: indicators,
+          shape: 'polygon',
+          radius: '65%', 
+          splitNumber: 4,
+          axisName: { color: textColor, fontWeight: 'bold' },
+          splitLine: { lineStyle: { color: borderColor } },
+          splitArea: { show: false }, 
+          axisLine: { lineStyle: { color: borderColor } }
+        };
+
+        option.series = [{
+          type: 'radar',
+          symbolSize: 6,
+          lineStyle: { width: 2 },
+          areaStyle: { opacity: 0.2 }, 
+          data: safeData.map(item => ({
+            name: String(item[strKey]),
+            value: metrics.map(m => item[m])
+          }))
+        }];
+        return option;
+      }
+    }
+  }
+  private static handleFlowCategory(widgetType: string, data: any[], option: any): any {
+    const primaryColor = this.resultColor().primaryColor
+    const mutedColor = this.resultColor().mutedColor
+    const borderColor = this.resultColor().borderColor
+    const textColor = this.resultColor().textColor
+    switch (widgetType) {
+      case 'tree': {        
+        const treeData = Array.isArray(data) ? data : [data];
+        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' };
+        option.series = [{
+          type: 'tree',
+          data: treeData,
+          roam: true, 
+          symbolSize: 12,
+          initialTreeDepth: 2, 
+          label: {
+            position: 'left',
+            verticalAlign: 'middle',
+            align: 'right',
+            fontSize: 12,
+            color: textColor
+          },
+          leaves: {
+            label: { position: 'right', verticalAlign: 'middle', align: 'left' }
+          },
+          lineStyle: { curveness: 0.5, color: borderColor, width: 1.5 },
+          itemStyle: { color: primaryColor, borderColor: '#fff', borderWidth: 2 },
+          expandAndCollapse: true,
+          animationDuration: 550,
+          animationDurationUpdate: 750
+        }];
+        return option;
+      }
+      case 'sankey': {        
+        const sankeyData = (data as any); 
+        if (!sankeyData.nodes || !sankeyData.links) return option;
+        option.tooltip = { trigger: 'item', triggerOn: 'mousemove' };
+        option.series = [{
+          type: 'sankey',
+          data: sankeyData.nodes,
+          links: sankeyData.links,
+          emphasis: { focus: 'adjacency' }, 
+          nodeAlign: 'justify',
+          nodeWidth: 15,
+          nodeGap: 10, 
+          layoutIterations: 32, 
+          lineStyle: {
+            color: 'source', 
+            curveness: 0.5,
+            opacity: 0.3
+          },
+          itemStyle: {
+            borderColor: '#fff',
+            borderWidth: 1
+          },
+          label: { color: textColor, fontSize: 11 }
+        }];
+        return option;
+      }
     }
   }
 }
