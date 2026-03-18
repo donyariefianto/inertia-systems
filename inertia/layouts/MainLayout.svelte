@@ -310,7 +310,7 @@
     onClose={() => (isMobileOpen = false)}
   />
 
-  <div class="flex flex-1 flex-col min-h-0 relative">
+  <div class="flex flex-1 flex-col min-h-0 min-w-0 w-full relative">
     <header
       class="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-6 backdrop-blur-md lg:px-8"
     >
@@ -353,7 +353,9 @@
       </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 animate-fade-in custom-scrollbar">
+    <main
+      class="flex flex-1 flex-col min-w-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 animate-fade-in custom-scrollbar"
+    >
       {#if isOrchestrating && activeMenuItem?.type}
         <div class="max-w-full overflow-hidden">
           {@render children()}

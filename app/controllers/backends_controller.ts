@@ -255,18 +255,24 @@ export default class BackendsController {
     }
   }
   async getCollectionData({ params, request, response }: HttpContext) {
+    function isObject(value) {
+      return typeof value === 'object' && value !== null && !Array.isArray(value)
+    }
+
     const colName = params.col
     const { page = 1, limit = 10, sortField, sortOrder, search, filter } = request.all()
     const collections = MongoService.collection(colName)
     let query: any = {}
     if (search) {
-      let object_search = JSON.parse(search)
-      query.$or = []
-      for (const element of Object.keys(object_search)) {
-        if (typeof object_search[element] === 'string') {
-          query.$or.push({ [element]: { $regex: object_search[element], $options: 'i' } })
-        } else if (typeof Number(object_search[element]) === 'number') {
-          query.$or.push({ [element]: object_search[element] })
+      if (isObject(search)) {
+        let object_search = JSON.parse(search)
+        query.$or = []
+        for (const element of Object.keys(object_search)) {
+          if (typeof object_search[element] === 'string') {
+            query.$or.push({ [element]: { $regex: object_search[element], $options: 'i' } })
+          } else if (typeof Number(object_search[element]) === 'number') {
+            query.$or.push({ [element]: object_search[element] })
+          }
         }
       }
     }

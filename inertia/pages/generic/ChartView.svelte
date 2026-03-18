@@ -246,58 +246,65 @@
   class="flex-1 min-h-0 w-full bg-background border border-border/80 rounded-lg flex flex-col animate-in fade-in duration-500 overflow-hidden shadow-2xl"
 >
   <div
-    class="flex justify-between gap-3 sm:flex-row sm:items-end p-2 md:p-4 lg:px-8 shrink-0 border-b border-border/40"
+    class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 md:py-5 md:px-6 lg:px-8 shrink-0 border-b border-border/50 bg-background/50 backdrop-blur-md relative z-10"
   >
-    <div class="space-y-1.5 min-w-0">
+    <div class="space-y-1.5 min-w-0 flex-1">
       {#if isLoading}
-        <div class="h-8 w-48 bg-muted/40 animate-pulse rounded-md mb-2"></div>
-        <div class="h-4 w-32 bg-muted/30 animate-pulse rounded-md"></div>
+        <div class="h-7 w-3/4 max-w-[240px] bg-muted/60 animate-pulse rounded-md mb-2"></div>
+        <div class="h-3 w-40 bg-muted/40 animate-pulse rounded-md"></div>
       {:else if currentDashboard}
-        <h1
-          class="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-3 truncate"
+        <div class="flex items-center gap-3">
+          <div
+            class="hidden sm:flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 text-primary shrink-0"
+          >
+            <i class="fas fa-chart-pie text-sm"></i>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black text-foreground tracking-tight truncate">
+            {currentDashboard.name}
+          </h1>
+        </div>
+        <p
+          class="text-[11px] font-semibold text-muted-foreground/80 mt-1 flex items-center gap-1.5"
         >
-          {currentDashboard.name}
-        </h1>
-        <p class="text-[11px] font-medium text-muted-foreground mt-1 flex items-center gap-2">
-          <i class="fas fa-clock opacity-50"></i>
-          Terakhir diperbarui: {currentDashboard.updated_at
+          <i class="fas fa-clock text-[10px] text-muted-foreground/50"></i>
+          Diperbarui: {currentDashboard.updated_at
             ? new Date(currentDashboard.updated_at).toLocaleString('id-ID')
             : new Date().toLocaleString('id-ID')}
         </p>
       {:else}
-        <h1 class="text-xl font-bold text-muted-foreground">Dashboard Tidak Tersedia</h1>
+        <div class="flex items-center gap-3 opacity-60">
+          <div
+            class="h-8 w-8 flex items-center justify-center rounded-lg bg-muted text-muted-foreground"
+          >
+            <i class="fas fa-folder-minus text-sm"></i>
+          </div>
+          <h1 class="text-xl font-bold text-muted-foreground tracking-tight">Dashboard Kosong</h1>
+        </div>
       {/if}
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 md:gap-3 shrink-0">
+    <div class="flex items-center gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-1 md:mt-0">
       {#if isLoading}
-        <div class="h-9 w-32 bg-muted/40 animate-pulse rounded-lg"></div>
-        <div class="h-9 w-9 bg-muted/40 animate-pulse rounded-lg"></div>
+        <div class="h-9 w-full md:w-36 bg-muted/60 animate-pulse rounded-lg"></div>
+        <div class="h-9 w-10 bg-muted/40 animate-pulse rounded-lg"></div>
       {:else}
-        <div class="relative group w-full sm:w-auto">
-          <div class="relative">
-            <button
-              onclick={() => (isSelectorOpen = true)}
-              class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-all shadow-sm active:scale-95"
-            >
-              <i class="fas fa-list-ul"></i>
-              <span>Pilih Dashboard</span>
-            </button>
-          </div>
-        </div>
+        <button
+          onclick={() => (isSelectorOpen = true)}
+          class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-all shadow-[0_4px_14px_0_rgba(var(--color-primary),0.2)] active:scale-95 ring-1 ring-primary/20"
+        >
+          <i class="fas fa-layer-group text-[11px]"></i>
+          <span>Pilih Dashboard</span>
+          <i class="fas fa-chevron-down text-[9px] ml-1 opacity-70"></i>
+        </button>
 
         {#if currentDashboard && dashboardId}
-          <div class="relative group w-full sm:w-auto">
-            <div class="relative">
-              <button
-                onclick={() => dashboardId && fetchDashboard(dashboardId)}
-                class="w-9 h-9 flex items-center justify-center bg-card border border-border rounded-lg text-muted-foreground hover:text-primary hover:border-primary/50 transition-all shadow-sm active:scale-95"
-                title="Refresh Data"
-              >
-                <i class="fas fa-sync-alt text-[11px]"></i>
-              </button>
-            </div>
-          </div>
+          <button
+            onclick={() => dashboardId && fetchDashboard(dashboardId)}
+            class="w-9 h-9 shrink-0 flex items-center justify-center bg-card border border-border/80 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 hover:border-border transition-all shadow-sm active:scale-95"
+            title="Refresh Data"
+          >
+            <i class="fas fa-sync-alt text-[11px]"></i>
+          </button>
         {/if}
       {/if}
     </div>

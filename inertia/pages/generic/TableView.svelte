@@ -1228,26 +1228,40 @@
                     class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-mono font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-inner"
                   />
                 {:else if field.type === 'password'}
-                  <div class="relative">
+                  <div class="relative group">
+                    <div
+                      class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-focus-within:text-primary/60 transition-colors duration-300"
+                    >
+                      <i class="fas fa-lock text-[10px]"></i>
+                    </div>
+
                     <input
                       id="field-{field.name}"
                       type={visiblePasswordFields[field.name] ? 'text' : 'password'}
                       bind:value={formData[field.name]}
                       placeholder="Masukkan {field.label.toLowerCase()}..."
                       readonly={field.readonly}
-                      class="w-full px-4 py-3 bg-background border border-border/80 rounded-xl text-xs font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
+                      class="w-full pl-10 pr-12 py-3 bg-background border border-border/60 rounded-xl text-xs font-medium
+                            {visiblePasswordFields[field.name] ? '' : 'tracking-[0.2em] font-mono'} 
+                            placeholder:text-muted-foreground/30 placeholder:tracking-normal placeholder:font-sans
+                            focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none
+                            transition-all duration-300 shadow-sm hover:border-border
+                            read-only:bg-muted/30 read-only:text-muted-foreground/70 read-only:cursor-not-allowed"
                     />
+
                     <button
-                      aria-label="eyes"
+                      aria-label="Toggle Password Visibility"
                       type="button"
                       onclick={() => toggleVisibility(field.name)}
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/50 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg
+                            text-muted-foreground/30 hover:text-primary hover:bg-primary/10
+                            active:scale-90 transition-all duration-200"
                       tabindex="-1"
                     >
                       <i
                         class="fas {visiblePasswordFields[field.name]
                           ? 'fa-eye-slash'
-                          : 'fa-eye'} text-xs"
+                          : 'fa-eye'} text-[11px]"
                       ></i>
                     </button>
                   </div>
